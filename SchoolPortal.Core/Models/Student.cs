@@ -25,6 +25,7 @@ namespace SchoolPortal.Core.Models
         public string EntrySession { get; set; }
         public long EntryTermId { get; set; }
         public long EntryClassId { get; set; }
+        public string PhotoPath { get; set; }
         public bool IsActive { get; set; }
         public string UpdatedByType { get; set; }
         public string UpdatedBy { get; set; }

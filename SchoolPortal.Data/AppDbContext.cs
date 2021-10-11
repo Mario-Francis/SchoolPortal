@@ -1,14 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Audit.EntityFramework;
+using Microsoft.EntityFrameworkCore;
 using SchoolPortal.Core.Models;
 using System;
 
 namespace SchoolPortal.Data
 {
-    public class AppDbContext:DbContext
+    public class AppDbContext:AuditDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
+
         public DbSet<BehaviouralRating> BehaviouralRatings { get; set; }
         public DbSet<BehaviouralResult> BehaviouralResults { get; set; }
         public DbSet<Class> Classes { get; set; }
