@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20210908154938_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20210908154938_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20210908155225_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20210908155225_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20210908160235_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20210908160235_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20210908161127_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20210908161127_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20210908161529_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20210908161529_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20210908162035_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20210908162035_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20210908162512_Initial_Migration.cs" />
+    <Compile Remove="Migrations\20210908162512_Initial_Migration.Designer.cs" />
+    <Compile Remove="Migrations\20210916112517_Updated_Models.cs" />
+    <Compile Remove="Migrations\20210916112517_Updated_Models.Designer.cs" />
+    <Compile Remove="Migrations\20210916112916_Updated_Models.cs" />
+    <Compile Remove="Migrations\20210916112916_Updated_Models.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="EFCore.BulkExtensions" Version="3.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.18" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.18">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.18" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SchoolPortal.Core\SchoolPortal.Core.csproj" />
+  </ItemGroup>
+</Project>
