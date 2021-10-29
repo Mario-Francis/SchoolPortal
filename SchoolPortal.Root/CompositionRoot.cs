@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SchoolPortal.Data;
 using SchoolPortal.Data.Repositories;
 using SchoolPortal.Data.Repositories.Implementations;
+using SchoolPortal.Services;
+using SchoolPortal.Services.Implementations;
 using System;
 
 namespace SchoolPortal.Root
@@ -26,13 +28,19 @@ namespace SchoolPortal.Root
 
 
             // services
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IPasswordService, PasswordService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserManagerService, UserManagerService>();
+            services.AddScoped<IRoleManagerService, RoleManagerService>();
+            services.AddScoped<IListService, ListService>();
             //services.AddTransient(typeof(ILoggerService<>), typeof(LoggerService<>));
             //services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             //services.AddScoped<IMyHRService, MyHRService>();
             //services.AddScoped<IUAMService, UAMServiceMock>();
             //services.AddScoped<IEmployeeService, EmployeeService>();
             //services.AddScoped<IReviewerMapperService, ReviewerMapperService>();
-            //services.AddScoped<IListService, ListService>();
+
 
             //services.AddSingleton<IBackgroundTaskQueue>(ctx => {
             //    if (!int.TryParse(config["TaskQueueCapacity"], out var queueCapacity))

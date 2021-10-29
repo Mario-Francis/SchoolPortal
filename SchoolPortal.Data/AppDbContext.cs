@@ -1,11 +1,12 @@
 ﻿using Audit.EntityFramework;
 using Microsoft.EntityFrameworkCore;
+using SchoolPortal.Core;
 using SchoolPortal.Core.Models;
 using System;
 
 namespace SchoolPortal.Data
 {
-    public class AppDbContext:AuditDbContext
+    public class AppDbContext : AuditDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -125,51 +126,120 @@ namespace SchoolPortal.Data
               .WithMany()
               .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Grade>()
+              .HasOne(x => x.TermSection)
+              .WithMany()
+              .OnDelete(DeleteBehavior.NoAction);
+
             SeeData(modelBuilder);
         }
 
         private void SeeData(ModelBuilder modelBuilder)
         {
-           // modelBuilder.Entity<CadreLevel>().HasData(
-           //     new CadreLevel
-           //     {
-           //         Id = 1,
-           //         Name = "EXECUTIVES",
-           //         CreatedBy = Constants.SYSTEM_NAME,
-           //         CreatedDate = DateTimeOffset.Now,
-           //         UpdatedBy = Constants.SYSTEM_NAME,
-           //         UpdatedDate = DateTimeOffset.Now
-           //     },
-           //     new CadreLevel
-           //     {
-           //         Id = 2,
-           //         Name = "SENIOR MANAGEMENT",
-           //         CreatedBy = Constants.SYSTEM_NAME,
-           //         CreatedDate = DateTimeOffset.Now,
-           //         UpdatedBy = Constants.SYSTEM_NAME,
-           //         UpdatedDate = DateTimeOffset.Now
-           //     },
-           //     new CadreLevel
-           //     {
-           //         Id = 3,
-           //         Name = "MANAGEMENT",
-           //         CreatedBy = Constants.SYSTEM_NAME,
-           //         CreatedDate = DateTimeOffset.Now,
-           //         UpdatedBy = Constants.SYSTEM_NAME,
-           //         UpdatedDate = DateTimeOffset.Now
-           //     },
-           //     new CadreLevel
-           //     {
-           //         Id = 4,
-           //         Name = "OFFICERS",
-           //         CreatedBy = Constants.SYSTEM_NAME,
-           //         CreatedDate = DateTimeOffset.Now,
-           //         UpdatedBy = Constants.SYSTEM_NAME,
-           //         UpdatedDate = DateTimeOffset.Now
-           //     }
-           //);
+            modelBuilder.Entity<Role>().HasData(
+                new Role
+                {
+                    Id = 1,
+                    Name = "Administrator",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                },
+                new Role
+                {
+                    Id = 2,
+                    Name = "Head Teacher",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                },
+                new Role
+                {
+                    Id = 3,
+                    Name = "Teacher",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                },
+                new Role
+                {
+                    Id = 4,
+                    Name = "Parent",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                },
+                 new Role
+                 {
+                     Id = 5,
+                     Name = "Student",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                 }
+           );
 
-            
+            modelBuilder.Entity<Term>().HasData(
+               new Role
+               {
+                   Id = 1,
+                   Name = "First",
+                   CreatedBy = Constants.SYSTEM_NAME,
+                   CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+               },
+               new Role
+               {
+                   Id = 2,
+                   Name = "Second",
+                   CreatedBy = Constants.SYSTEM_NAME,
+                   CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+               },
+               new Role
+               {
+                   Id = 3,
+                   Name = "Third",
+                   CreatedBy = Constants.SYSTEM_NAME,
+                   CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+               }
+          );
+
+            modelBuilder.Entity<TermSection>().HasData(
+              new Role
+              {
+                  Id = 1,
+                  Name = "First-Half",
+                  CreatedBy = Constants.SYSTEM_NAME,
+                  CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+              },
+              new Role
+              {
+                  Id = 2,
+                  Name = "Second-Half",
+                  CreatedBy = Constants.SYSTEM_NAME,
+                  CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+              }
+         );
+
+            modelBuilder.Entity<ClassType>().HasData(
+             new ClassType
+             {
+                 Id = 1,
+                 Name = "Nursery",
+                 CreatedBy = Constants.SYSTEM_NAME,
+                 CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+             },
+             new Role
+             {
+                 Id = 2,
+                 Name = "Primary",
+                 CreatedBy = Constants.SYSTEM_NAME,
+                 CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+             },
+              new Role
+              {
+                  Id = 3,
+                  Name = "Secondary",
+                  CreatedBy = Constants.SYSTEM_NAME,
+                  CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+              }
+        );
+
+
         }
     }
 }

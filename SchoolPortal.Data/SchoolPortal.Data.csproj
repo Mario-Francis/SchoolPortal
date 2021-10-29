@@ -25,6 +25,8 @@
     <Compile Remove="Migrations\20210916112916_Updated_Models.Designer.cs" />
     <Compile Remove="Migrations\20211011140236_Added_Audit_Tables.cs" />
     <Compile Remove="Migrations\20211011140236_Added_Audit_Tables.Designer.cs" />
+    <Compile Remove="Migrations\20211029175619_Added.cs" />
+    <Compile Remove="Migrations\20211029175619_Added.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Audit.EntityFramework.Core.v3" Version="18.1.6" />

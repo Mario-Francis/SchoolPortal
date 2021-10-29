@@ -23,4 +23,8 @@
     <ProjectReference Include="..\SchoolPortal.Services\SchoolPortal.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UIServices\" />
+  </ItemGroup>
+
 </Project>

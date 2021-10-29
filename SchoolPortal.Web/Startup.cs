@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SchoolPortal.Core;
 using SchoolPortal.Root;
+using SchoolPortal.Web.UIServices;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +41,9 @@ namespace SchoolPortal.Web
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             CompositionRoot.InjectDependencies(services, Configuration);
+            services.AddScoped<IDropdownService, DropdownService>();
+            services.AddScoped<ISessionService, SessionService>();
+
             services.AddControllersWithViews();
 
             services.AddHttpContextAccessor();
@@ -81,7 +85,7 @@ namespace SchoolPortal.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Auth}/{action=Index}/{id?}");
             });
         }
     }

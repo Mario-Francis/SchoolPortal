@@ -1,4 +1,6 @@
-﻿<!doctype html>
+﻿@inject ISessionService service;
+
+<!doctype html>
 <html class="no-js" lang="en">
 
 <head>
@@ -8,7 +10,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.png">
+    <link rel="shortcut icon" type="image/x-icon" href="~/img/favicon.png">
     <!-- Normalize CSS -->
     <link rel="stylesheet" href="~/lib/normalize/normalize.css">
     <!-- Main CSS -->
@@ -555,8 +557,8 @@
                             <div class="text-muted text-center text-md-left">&copy; Copyrights <a href="#">Caleb Internationl School</a> @(DateTime.Now.ToString("yyyy")). All rights reserved.@*<br /><span class="f12">Powered by eProcess Nigeria.</span>*@</div>
                             <div class=" text-center text-md-right">
                                 @*<a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>*@
+                                    &middot;
+                                    <a href="#">Terms &amp; Conditions</a>*@
                                 Version 1.0.0
                             </div>
                         </div>
@@ -598,14 +600,17 @@
     <script src="~/lib/accounting.js/accounting.js"></script>
     <script src="~/js/notify.js" asp-append-version="true"></script>
     <script src="~/lib/Zebra_datepicker/zebra_datepicker.min.js"></script>
+    <script src="~/js/error_handler.js" asp-append-version="true"></script>
     <script src="~/js/utilities.js" asp-append-version="true"></script>
     <script>
-            @*$base = '@service.BaseUrl';*@
+        $base = '@service.BaseUrl';
 
-            // roles
-            @*var isInputter = @(service.IsInputter.ToString().ToLower());
-            var isAuthorizer = @(service.IsAuthorizer.ToString().ToLower());
-            var isAdmin = @(service.IsAdmin.ToString().ToLower());*@
+        // roles
+        var isAdmin = @(service.IsAdmin.ToString().ToLower());
+        var isHeadTeacher = @(service.IsHeadTeacher.ToString().ToLower());
+        var isTeacher = @(service.IsTeacher.ToString().ToLower());
+        var isParent = @(service.IsParent.ToString().ToLower());
+        var isStudent = @(service.IsStudent.ToString().ToLower());
 
     </script>
     @RenderSection("js", false)
