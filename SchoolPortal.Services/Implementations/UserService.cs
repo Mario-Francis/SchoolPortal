@@ -12,22 +12,22 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services.Implementations
 {
-    public class UserManagerService:IUserManagerService
+    public class UserService:IUserService
     {
         private readonly IRepository<User> userRepo;
         private readonly IRepository<Role> roleRepo;
         private readonly IEmailService emailService;
         private readonly IPasswordService passwordService;
-        private readonly ILogger<UserManagerService> logger;
+        private readonly ILogger<UserService> logger;
         private readonly IHttpContextAccessor accessor;
         private readonly ITokenService tokenService;
 
-        public UserManagerService(
+        public UserService(
             IRepository<User> userRepo, 
             IRepository<Role> roleRepo, 
             IEmailService emailService, 
             IPasswordService passwordService, 
-            ILogger<UserManagerService> logger, 
+            ILogger<UserService> logger, 
             IHttpContextAccessor accessor, 
             ITokenService tokenService)
         {
@@ -211,18 +211,18 @@ namespace SchoolPortal.Services.Implementations
         {
             if (string.IsNullOrEmpty(credential?.Email))
             {
-                throw new AppException($"Email is required");
+                throw new AppException($"Email/Username is required");
             }
             if (string.IsNullOrEmpty(credential?.Password))
             {
                 throw new AppException($"Password is required");
             }
-            if (!await userRepo.Any(u => u.Email == credential.Email))
+            var user = await userRepo.GetSingleWhere(u => u.Email == credential.Email || u.Username == credential.Email);
+            if (user==null)
             {
-                throw new AppException($"Email is invalid");
+                throw new AppException($"Email/username is invalid");
             }
-            var user = userRepo.GetSingleWhere(u => u.Email == credential.Email && passwordService.Verify(credential.Password, u.Password));
-            if (user == null)
+            if (!passwordService.Verify(credential.Password, user.Password))
             {
                 throw new AppException($"Password is invalid");
             }
@@ -241,12 +241,13 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<User> GetUser(string email)
         {
-            var user = await userRepo.GetSingleWhere(u=>u.Email == email);
+            var user = await userRepo.GetSingleWhere(u=>u.Email == email || u.Username == email);
             if (user == null)
-                throw new AppException($"User with email: '{email}' does not exist");
+                throw new AppException($"User with email or username: '{email}' does not exist");
             else
                 return user;
         }
+       
         // get users
         public IEnumerable<User> GetUsers(bool includeInactive=true)
         {
@@ -304,5 +305,6 @@ namespace SchoolPortal.Services.Implementations
         {
             return (await userRepo.Count()) > 0;
         }
+    
     }
 }

@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services.Implementations
 {
-    public class RoleManagerService:IRoleManagerService
+    public class RoleService:IRoleService
     {
         private readonly IRepository<Role> roleRepo;
         private readonly IHttpContextAccessor accessor;
-        private readonly ILogger<RoleManagerService> logger;
+        private readonly ILogger<RoleService> logger;
 
-        public RoleManagerService(
+        public RoleService(
             IRepository<Role> roleRepo, 
             IHttpContextAccessor accessor, 
-            ILogger<RoleManagerService> logger)
+            ILogger<RoleService> logger)
         {
             this.roleRepo = roleRepo;
             this.accessor = accessor;

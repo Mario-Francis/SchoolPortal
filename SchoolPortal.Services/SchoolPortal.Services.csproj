@@ -15,9 +15,6 @@
     <ProjectReference Include="..\SchoolPortal.Data\SchoolPortal.Data.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Implementations\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="BadLists\top-100k-passwords.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

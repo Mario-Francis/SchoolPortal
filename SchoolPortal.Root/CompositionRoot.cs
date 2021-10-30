@@ -31,8 +31,8 @@ namespace SchoolPortal.Root
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IUserManagerService, UserManagerService>();
-            services.AddScoped<IRoleManagerService, RoleManagerService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IListService, ListService>();
             //services.AddTransient(typeof(ILoggerService<>), typeof(LoggerService<>));
             //services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));

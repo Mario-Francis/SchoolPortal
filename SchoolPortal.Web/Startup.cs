@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SchoolPortal.Core;
 using SchoolPortal.Root;
+using SchoolPortal.Web.Middlewares;
 using SchoolPortal.Web.UIServices;
 using System;
 using System.Collections.Generic;
@@ -37,6 +39,14 @@ namespace SchoolPortal.Web
                 options.Cookie.IsEssential = true;
                 options.Cookie.Name = Constants.SESSION_COOKIE_ID;
             });
+
+            services.AddAuthentication(Constants.AUTH_COOKIE_ID)
+                .AddCookie(Constants.AUTH_COOKIE_ID,
+                    options =>
+                    {
+                        options.LoginPath = "/Auth";
+                        options.LogoutPath = "/Auth/Logout";
+                    });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -79,6 +89,8 @@ namespace SchoolPortal.Web
             app.UseRouting();
             app.UseSession();
 
+            app.UseAuthentication();
+            app.UseMiddleware<SessionMiddleware>();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

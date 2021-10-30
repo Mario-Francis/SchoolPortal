@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services
 {
-    public interface IRoleManagerService
+    public interface IRoleService
     {
         Task<Role> GetRole(long roleId);
 

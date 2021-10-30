@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services
 {
-    public interface IUserManagerService
+    public interface IUserService
     {
         Task<long> InitialUserSetup(User user);
         Task<long> CreateUser(User user);

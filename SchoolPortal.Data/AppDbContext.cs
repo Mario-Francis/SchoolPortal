@@ -1,4 +1,5 @@
-﻿using Audit.EntityFramework;
+﻿using Audit.Core;
+using Audit.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using SchoolPortal.Core;
 using SchoolPortal.Core.Models;
@@ -6,7 +7,7 @@ using System;
 
 namespace SchoolPortal.Data
 {
-    public class AppDbContext : AuditDbContext
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -130,6 +131,11 @@ namespace SchoolPortal.Data
               .HasOne(x => x.TermSection)
               .WithMany()
               .OnDelete(DeleteBehavior.NoAction);
+
+    //        Audit.Core.Configuration.Setup()
+    //.UseEntityFramework()
+    //.IgnoreMatchedProperties(true));
+
 
             SeeData(modelBuilder);
         }

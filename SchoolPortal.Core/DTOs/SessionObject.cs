@@ -15,6 +15,7 @@ namespace SchoolPortal.Core.DTOs
         public string Email { get; set; }
         public string PhotoPath { get; set; }
         public List<RoleObject> Roles { get; set; }
+        public string UserType { get; set; } // user or student
 
         public static SessionObject FromUser(User user)
         {
@@ -27,7 +28,8 @@ namespace SchoolPortal.Core.DTOs
                 Username =user.Username,
                 Id = user.Id,
                 Roles = user.UserRoles.Select(er => RoleObject.FromRole(er.Role)).ToList(),
-                PhotoPath=user.PhotoPath
+                PhotoPath=user.PhotoPath,
+                UserType = Constants.USER_TYPE_USER
             };
         }
 
@@ -47,7 +49,8 @@ namespace SchoolPortal.Core.DTOs
                         Name = AppRoles.STUDENT.ToString().Capitalize()
                     } 
                 },
-                PhotoPath = student.PhotoPath
+                PhotoPath = student.PhotoPath,
+                UserType = Constants.USER_TYPE_STUDENT
             };
         }
     }

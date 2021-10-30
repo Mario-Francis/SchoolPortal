@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SchoolPortal.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,11 +8,31 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Authorize]
     public class DashboardController : Controller
     {
         public IActionResult Index()
         {
-            return View();
+            if (!User.IsInRole(Constants.ROLE_STUDENT))
+            {
+                return UserDashboard();
+            }
+            else
+            {
+                return StudentDashboard();
+            }
+        }
+
+        [NonAction]
+        public IActionResult UserDashboard()
+        {
+            return View("UserDashboard");
+        }
+
+        [NonAction]
+        public IActionResult StudentDashboard()
+        {
+            return View("StudentDashboard");
         }
     }
 }
