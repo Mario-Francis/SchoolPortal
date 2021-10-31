@@ -59,8 +59,10 @@
         }
         if ($("#wrapper").hasClass("sidebar-collapsed-mobile")) {
             $(".overlay").show();
+            $('.sidebar-menu-one .sidebar-menu-content').css('width', '260px');
         } else {
             $(".overlay").hide();
+            $('.sidebar-menu-one .sidebar-menu-content').css('width', 'inherit');
         }
     });
 

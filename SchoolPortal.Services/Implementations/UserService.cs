@@ -290,7 +290,7 @@ namespace SchoolPortal.Services.Implementations
        // generate username
        public async Task<string> GenerateUsername(string firstName, string lastName)
         {
-            var uname = $"{firstName}.{lastName}";
+            var uname = $"{firstName.ToLower()}.{lastName.ToLower()}";
             var cnt = 1;
             while (await userRepo.Any(u => u.Username == uname))
             {

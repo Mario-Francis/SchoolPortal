@@ -23,6 +23,11 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        public IActionResult Default()
+        {
+            return View("Index");
+        }
+
         [NonAction]
         public IActionResult UserDashboard()
         {

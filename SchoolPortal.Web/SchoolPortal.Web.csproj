@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.18" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="2.0.0" />
+    <PackageReference Include="DatatablesParser-core" Version="1.5.0" />
   </ItemGroup>
 
   <ItemGroup>

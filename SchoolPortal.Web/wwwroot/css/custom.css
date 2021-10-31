@@ -16,11 +16,17 @@ label{
   margin-bottom: 0 !important;
 }
 
-.text-beige{
-  color:var(--beige);
+.text-beige {
+    color: var(--beige);
+}
+.bg-beige {
+    background-color: var(--beige);
 }
 .text-claret{
   color:var(--claret);
+}
+.bg-claret {
+    background-color: var(--claret);
 }
 .nav-bar-header-one {
   background: linear-gradient(to right, var(--white), var(--white));
@@ -198,6 +204,124 @@ label{
     min-height:calc(100vh - (70px + 63px));
 }
 
+.initial-box {
+    width: 40px;
+    height: 40px;
+    padding-top:7px;
+}
+.breadcrumbs-area ul li::before {
+    top: 44% !important;
+    color: var(--secondary);
+}
+.breadcrumbs-area ul li{
+    font-size:14px;
+}
+.breadcrumbs-area ul li a{
+    color:var(--secondary);
+}
+.breadcrumbs-area ul li a:hover{
+    color: var(--claret);
+}
+.breadcrumbs-area ul li{
+    color:var(--claret);
+}
+
+.btn-primary2{
+    background-color: var(--claret);
+    color:#fff;
+    border-color:var(--claret);
+    cursor:pointer;
+}
+
+    .btn-primary2:hover, .btn-primary2:focus, .btn-primary2:active {
+        background-color: var(--cabaret);
+        color: #fff;
+        border-color: var(--cabaret);
+    }
+
+.dataTables_wrapper .table thead tr th {
+    border-bottom: none;
+    font-size: 14px;
+    color: var(--dark);
+    padding: 8px 16px;
+}
+
+.dataTables_wrapper .table thead .sorting::before {
+    top: 32%;
+}
+.dataTables_wrapper .table thead .sorting::after{
+    bottom: 54%;
+}
+.dataTables_wrapper .table thead .sorting_asc::after {
+    content: "\f0d7";
+    bottom: 54%;
+    color: #bfbfbf;
+    opacity:0.3;
+}
+.dataTables_wrapper .table thead .sorting_asc::before {
+    content: "\f0d8";
+    bottom: 32%;
+    color:var(--dark);
+}
+
+.dataTables_wrapper .table thead .sorting_desc::after {
+    content: "\f0d7";
+    bottom: 54%;
+    color: var(--dark);
+}
+
+.dataTables_wrapper .table thead .sorting_desc::before {
+    content: "\f0d8";
+    bottom: 32%;
+}
+.dataTables_wrapper .table tbody tr td{
+    font-size:14px;
+}
+div.dataTables_wrapper div.dataTables_length select,
+div.dataTables_wrapper div.dataTables_filter input,
+div.dataTables_wrapper div.dataTables_filter,
+div.dataTables_wrapper div.dataTables_length,
+div.dataTables_wrapper div.dataTables_info,
+div.dataTables_wrapper div.dataTables_paginate {
+    font-size: 14px;
+}
+.page-link{
+    padding: 6px 12px;
+}
+div.dataTables_wrapper div.dataTables_info{
+    padding-top:26px;
+}
+div.dataTables_wrapper div.dataTables_length{
+    padding: 4px 0;
+}
+.Zebra_DatePicker_Icon_Wrapper{
+    width:100% !important;
+}
+.modal .modal-dialog .modal-content .modal-footer {
+    padding: 0.75rem;
+}
+.alert-warning p{
+    color: #856404 !important;
+}
+.alert-danger p{
+    color: #721c24 !important;
+}
+.alert-success p{
+    color: #155724 !important;
+}
+.dataTables_wrapper .table tbody tr td .dropdown .dropdown-menu {
+    padding: 8px 0 8px;
+    font-size:14px;
+}
+    .dataTables_wrapper .table tbody tr td .dropdown .dropdown-menu .dropdown-item {
+        font-size: 13px;
+        padding: 4px 16px;
+    }
+
+.page-item.active .page-link {
+    background-color: var(--claret);
+    border-color: var(--claret);
+}
 
 
 

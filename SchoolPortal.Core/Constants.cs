@@ -42,5 +42,7 @@ namespace SchoolPortal.Core
 
         public const string USER_TYPE_USER = "User";
         public const string USER_TYPE_STUDENT = "Student";
+
+        public const string CLIENT_TIMEOFFSET_COOKIE_ID = "clientTimeZoneOffset";
     }
 }

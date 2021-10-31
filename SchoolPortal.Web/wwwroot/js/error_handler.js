@@ -5,7 +5,7 @@
     } else if (req.status == 400) {
         let eItems = '';
         if (res.errorItems != null) {
-            eItems = '<ul>';
+            eItems = '<ul class="f14">';
             res.errorItems.forEach((v, i) => {
                 eItems += `<li>${i + 1}. ${v}</li>`;
             });

@@ -28,7 +28,7 @@ function notify(message, type = 'info', title = null, timeout = null) {
         delay: _delay,
         timer: 1000,
         // url_target: '_blank',
-        // mouse_over: null,
+        mouse_over: true,
         animate: {
             enter: 'animate__animated animate__fadeInDown animate__faster',
             exit: 'animate__animated animate__fadeOutUp animate__faster'
@@ -110,11 +110,11 @@ function bootConfirm(message, { title = 'Confirm Action', size = 'small', okBtnT
         buttons: {
             confirm: {
                 label: '<i class="fa fa-check-circle"></i> &nbsp;' + okBtnText,
-                className: 'btn-primary btn-sm px-3 f12'
+                className: 'btn-primary2 btn-sm px-4 py-2 f12'
             },
             cancel: {
                 label: '<i class="fa fa-times-circle"></i> &nbsp;' + cancelBtnText,
-                className: 'btn-outline-secondary btn-sm px-3 f12'
+                className: 'btn-outline-secondary btn-sm px-3 py-2 f12'
             }
         },
         callback: callback
@@ -131,7 +131,7 @@ function bootAlert(message, { title = null, size = 'small', btnText = 'OK' }) {
         buttons: {
             ok: {
                 label: btnText,
-                className: 'btn-primary btn-sm px-4 f12'
+                className: 'btn-primary2 btn-sm px-4 f12'
             }
         },
     });
