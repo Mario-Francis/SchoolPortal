@@ -120,12 +120,168 @@ namespace SchoolPortal.Services.Implementations
 
         public IEnumerable<Class> GetClasses()
         {
-            return classRepo.GetAll().OrderBy(c => c.ClassGrade);
+            return classRepo.GetAll().OrderBy(c => c.ClassTypeId).ThenBy(c=>c.ClassGrade);
         }
 
         public async Task<Class> GetClass(long id)
         {
             return await classRepo.GetById(id);
+        }
+
+        //========= Class room methods ===============
+        // add class
+        public async Task CreateClassRoom(ClassRoom classRoom)
+        {
+            if (classRoom == null)
+            {
+                throw new AppException("Classroom object cannot be null");
+            }
+
+            if (await classRoomRepo.Any(c => c.ClassId == classRoom.ClassId && c.RoomCode == classRoom.RoomCode))
+            {
+                throw new AppException($"A classroom of same class already exist with same room code");
+            }
+
+            if (classRoom.TeacherId != null)
+            {
+                if (await classRoomRepo.Any(c => c.TeacherId == classRoom.TeacherId))
+                {
+                    throw new AppException($"Teacher has already been assigned to another class. Please assign someone else.");
+                }
+            }
+
+            var currentUser = accessor.HttpContext.GetUserSession();
+            classRoom.IsActive = true;
+            classRoom.TeacherId = classRoom.TeacherId == 0 ? null : classRoom.TeacherId;
+            classRoom.CreatedBy = currentUser.Username;
+            classRoom.CreatedDate = DateTimeOffset.Now;
+            classRoom.UpdatedBy = currentUser.Username;
+            classRoom.UpdatedDate = DateTimeOffset.Now;
+
+            await classRoomRepo.Insert(classRoom, true);
+
+            //log action
+            //await loggerService.LogActivity(ActivityActionType.CREATED_ASSESSMENT,
+            //    currentUser.PersonNumber,
+            //    $"Created new assessment of type '{((Core.AssessmentType)((int)assessment.AssessmentTypeId)).ToString()}' for {assessment.FromDate.ToString("dd-MM-yyyy")} to {assessment.ToDate.ToString("dd-MM-yyyy")}");
+        }
+
+        // delete classroom - without students
+        public async Task DeleteClassRoom(long classRoomId)
+        {
+            var classRoom = await classRoomRepo.GetById(classRoomId);
+            if (classRoom == null)
+            {
+                throw new AppException($"Invalid classroom id {classRoomId}");
+            }
+            else
+            {
+                if (classRoom.ClassRoomStudents.Count > 0)
+                {
+                    throw new AppException("Classroom cannot be deleted as it still has one or more students in it");
+                }
+                else
+                {
+                    var _classRoom = classRoom.Clone<ClassRoom>();
+                    await classRoomRepo.Delete(classRoomId, true);
+
+                    var currentUser = accessor.HttpContext.GetUserSession();
+                    // log activity
+                    //await loggerService.LogActivity(ActivityActionType.DELETED_ASSESSMENT, currentUser.PersonNumber,
+                    //    $"Deleted assessment of type '{((Core.AssessmentType)((int)_assessment.AssessmentTypeId)).ToString()}' for {_assessment.FromDate.ToString("dd-MM-yyyy")} to {_assessment.ToDate.ToString("dd-MM-yyyy")}");
+                }
+            }
+        }
+
+        // update classroom
+        public async Task UpdateClassRoom(ClassRoom classRoom)
+        {
+            var _classRoom = await classRoomRepo.GetById(classRoom.Id);
+            if (_classRoom == null)
+            {
+                throw new AppException($"Invalid classroom id {classRoom.Id}");
+            }
+            else if (await classRoomRepo.Any(c => (c.ClassId == classRoom.ClassId && c.RoomCode == classRoom.RoomCode) &&
+            !(_classRoom.ClassId == classRoom.ClassId && _classRoom.RoomCode == classRoom.RoomCode)))
+            {
+                throw new AppException($"A classroom of same class already exist with same room code");
+            }
+            else
+            {
+                if (classRoom.TeacherId != null)
+                {
+                    if (await classRoomRepo.Any(c => c.TeacherId == classRoom.TeacherId && _classRoom.TeacherId != classRoom.TeacherId))
+                    {
+                        throw new AppException($"Teacher has already been assigned to another class. Please assign someone else.");
+                    }
+                }
+
+                var currentUser = accessor.HttpContext.GetUserSession();
+                var _oldclassRoom = _classRoom.Clone<ClassRoom>();
+
+                _classRoom.ClassId = classRoom.ClassId;
+                _classRoom.RoomCode = classRoom.RoomCode;
+                _classRoom.TeacherId = classRoom.TeacherId == 0 ? null : classRoom.TeacherId;
+               // _classRoom.IsActive = classRoom.IsActive;
+                _classRoom.UpdatedBy = currentUser.Username;
+                _classRoom.UpdatedDate = DateTimeOffset.Now;
+
+                await classRoomRepo.Update(_classRoom, true);
+
+
+                // log activity
+                //await loggerService.LogActivity(ActivityActionType.UPDATED_class, currentUser.PersonNumber,
+                //    classRepo.TableName, _oldclass, _class,
+                //     $"Updated class of type '{((Core.classType)((int)_class.classTypeId)).ToString()}' for {_class.FromDate.ToString("dd-MM-yyyy")} to {_class.ToDate.ToString("dd-MM-yyyy")}");
+
+            }
+        }
+
+        public async Task UpdateClassRoomStatus(long classRoomId, bool isActive)
+        {
+            var _classRoom = await classRoomRepo.GetById(classRoomId);
+            if (_classRoom == null)
+            {
+                throw new AppException($"Invalid classroom id {classRoomId}");
+            }
+            else if (!isActive && _classRoom.ClassRoomStudents.Count > 0)
+            {
+                throw new AppException($"Classroom cannot be deactivated as there are still students in it");
+            }
+            else
+            {
+                var currentUser = accessor.HttpContext.GetUserSession();
+                var _oldclassRoom = _classRoom.Clone<ClassRoom>();
+
+               
+                 _classRoom.IsActive = isActive;
+                _classRoom.UpdatedBy = currentUser.Username;
+                _classRoom.UpdatedDate = DateTimeOffset.Now;
+
+                await classRoomRepo.Update(_classRoom, true);
+
+
+                // log activity
+                //await loggerService.LogActivity(ActivityActionType.UPDATED_class, currentUser.PersonNumber,
+                //    classRepo.TableName, _oldclass, _class,
+                //     $"Updated class of type '{((Core.classType)((int)_class.classTypeId)).ToString()}' for {_class.FromDate.ToString("dd-MM-yyyy")} to {_class.ToDate.ToString("dd-MM-yyyy")}");
+
+            }
+        }
+
+        public IEnumerable<ClassRoom> GetClassRooms(bool includeInactive=false)
+        {   
+            var classRooms =  classRoomRepo.GetAll();
+            if (!includeInactive)
+            {
+                classRooms = classRooms.Where(c => c.IsActive);
+            }
+            return classRooms.OrderBy(c => c.ClassId).ThenBy(c => c.RoomCode);
+        }
+
+        public async Task<ClassRoom> GetClassRoom(long id)
+        {
+            return await classRoomRepo.GetById(id);
         }
     }
 }

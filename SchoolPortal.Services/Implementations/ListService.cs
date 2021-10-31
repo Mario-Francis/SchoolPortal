@@ -13,18 +13,24 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<TermSection> termSectionRepo;
         private readonly IRepository<ClassType> classTypeRepo;
         private readonly IRepository<Role> roleRepo;
+        private readonly IRepository<Class> classRepo;
+        private readonly IRepository<ClassRoom> classRoomRepo;
         private readonly IHttpContextAccessor contextAccessor;
 
         public ListService(IRepository<Term> termRepo,
             IRepository<TermSection> termSectionRepo,
             IRepository<ClassType> classTypeRepo,
             IRepository<Role> roleRepo,
+            IRepository<Class> classRepo,
+            IRepository<ClassRoom> classRoomRepo,
             IHttpContextAccessor contextAccessor)
         {
             this.termRepo = termRepo;
             this.termSectionRepo = termSectionRepo;
             this.classTypeRepo = classTypeRepo;
             this.roleRepo = roleRepo;
+            this.classRepo = classRepo;
+            this.classRoomRepo = classRoomRepo;
             this.contextAccessor = contextAccessor;
         }
 
@@ -52,6 +58,15 @@ namespace SchoolPortal.Services.Implementations
             }
 
             return roles;
+        }
+        public IEnumerable<Class> GetClasses()
+        {
+            return classRepo.GetAll().OrderBy(c => c.ClassTypeId).ThenBy(c => c.ClassGrade);
+        }
+
+        public IEnumerable<ClassRoom> GetClassRooms()
+        {
+            return classRoomRepo.GetAll().OrderBy(c => c.ClassId).ThenBy(c => c.RoomCode);
         }
     }
 }

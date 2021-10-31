@@ -13,5 +13,12 @@ namespace SchoolPortal.Services
         Task UpdateClass(Class @class);
         IEnumerable<Class> GetClasses();
         Task<Class> GetClass(long id);
+
+        Task CreateClassRoom(ClassRoom classRoom);
+        Task DeleteClassRoom(long classRoomId);
+        Task UpdateClassRoom(ClassRoom classRoom);
+        Task UpdateClassRoomStatus(long classRoomId, bool isActive);
+        IEnumerable<ClassRoom> GetClassRooms(bool includeInactive = false);
+        Task<ClassRoom> GetClassRoom(long id);
     }
 }

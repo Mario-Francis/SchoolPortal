@@ -68,7 +68,6 @@
                     "filter": "Id",
                     "display": "id"
                 }, "orderable": false, "render": function (data, type, row, meta) {
-                    let status = row.classStatusId;
                     return '<div class="dropdown f14">'
                         + '<button type="button" class="btn px-3" data-toggle="dropdown">'
                         + '<i class="fa fa-ellipsis-v"></i>'

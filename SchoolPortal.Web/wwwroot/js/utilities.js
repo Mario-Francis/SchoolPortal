@@ -221,6 +221,23 @@ function getCookie(key) {
     Cookies.get(key);
 }
 
+function capitalize(word) {
+    var delimeters = [' ', '-', '(', ')'];
+    if (word != null) {
+        word = word.toLowerCase();
+        delimeters.forEach(d => {
+            word = word.split(d)
+                .map((w, index) => {
+                    if (w.length > 0) {
+                        w = w[0].toUpperCase() + w.slice(1);
+                        return w;
+                    }
+                }).join(d);
+        });
+    }
+    return word;
+}
+
 // on document ready
 $(() => {
     // initialize dropdowns

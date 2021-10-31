@@ -10,7 +10,7 @@ namespace SchoolPortal.Core.Models
     {
         public long ClassId { get; set; }
         public string RoomCode { get; set; }
-        public long TeacherId { get; set; }
+        public long? TeacherId { get; set; }
         public bool IsActive { get; set; }
 
         public string UpdatedBy { get; set; }

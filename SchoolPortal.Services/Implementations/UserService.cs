@@ -305,6 +305,26 @@ namespace SchoolPortal.Services.Implementations
         {
             return (await userRepo.Count()) > 0;
         }
+
+        public IEnumerable<User> SearchTeachers(string searchParam, int max=50)
+        {
+            var teacherRoleId = (int)AppRoles.TEACHER;
+            if (string.IsNullOrEmpty(searchParam))
+            {
+                return userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == teacherRoleId)).Take(max);
+            }
+            else
+            {
+                searchParam = searchParam.ToLower();
+                var teachers = userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == teacherRoleId) &&
+                (u.Username.ToLower().Contains(searchParam) || u.Email.ToLower().Contains(searchParam)
+                || u.PhoneNumber.ToLower().Contains(searchParam) || u.FirstName.ToLower().Contains(searchParam)
+                || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam))).Take(max);
+
+                return teachers;
+            }
+           
+        }
     
     }
 }

@@ -9,5 +9,7 @@ namespace SchoolPortal.Services
         IEnumerable<TermSection> GetTermSection();
         IEnumerable<ClassType> GetClassTypes();
         IEnumerable<Role> GetRoles();
+        IEnumerable<Class> GetClasses();
+        IEnumerable<ClassRoom> GetClassRooms();
     }
 }

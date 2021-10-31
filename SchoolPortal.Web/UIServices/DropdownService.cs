@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using SchoolPortal.Core.Extensions;
 using SchoolPortal.Services;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,6 @@ namespace SchoolPortal.Web.UIServices
             return classTypes;
         }
 
-
         public IEnumerable<SelectListItem> GetRoles(string value = null)
         {
             List<SelectListItem> roles = listService.GetRoles()
@@ -48,6 +48,24 @@ namespace SchoolPortal.Web.UIServices
 
             roles.Insert(0, new SelectListItem { Text = "- Select role -", Value = "" });
             return roles;
+        }
+
+        public IEnumerable<SelectListItem> GetClasses(string value = null)
+        {
+            List<SelectListItem> classes = listService.GetClasses()
+                .Select(c => new SelectListItem { Text = $"{c.ClassType.Name.Capitalize()} {c.ClassGrade}", Value = c.Id.ToString(), Selected = c.Id.ToString() == value }).ToList();
+
+            classes.Insert(0, new SelectListItem { Text = "- Select class -", Value = "" });
+            return classes;
+        }
+
+        public IEnumerable<SelectListItem> GetClassRooms(string value = null)
+        {
+            List<SelectListItem> classRooms = listService.GetClassRooms()
+                .Select(c => new SelectListItem { Text = $"{c.Class.ClassType.Name.Capitalize()} {c.Class.ClassGrade}", Value = c.Id.ToString(), Selected = c.Id.ToString() == value }).ToList();
+
+            classRooms.Insert(0, new SelectListItem { Text = "- Select classroom -", Value = "" });
+            return classRooms;
         }
     }
 }

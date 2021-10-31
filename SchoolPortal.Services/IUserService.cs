@@ -18,5 +18,6 @@ namespace SchoolPortal.Services
         Task DeleteUser(long userId);
         Task<string> GenerateUsername(string firstName, string lastName);
         Task<bool> AnyUserExists();
+        IEnumerable<User> SearchTeachers(string searchParam, int max = 50);
     }
 }

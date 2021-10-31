@@ -12,5 +12,7 @@ namespace SchoolPortal.Web.UIServices
         IEnumerable<SelectListItem> GetTermSections(string value = null);
         IEnumerable<SelectListItem> GetClassTypes(string value = null);
         IEnumerable<SelectListItem> GetRoles(string value = null);
+        IEnumerable<SelectListItem> GetClasses(string value = null);
+        IEnumerable<SelectListItem> GetClassRooms(string value = null);
     }
 }

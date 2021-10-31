@@ -14,15 +14,15 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
-    public class ClassesController : Controller
+    public class ClassRoomsController : Controller
     {
         private readonly AppSettings appSettings;
         private readonly IClassService classService;
-        private readonly ILogger<ClassesController> logger;
+        private readonly ILogger<ClassRoomsController> logger;
 
-        public ClassesController(IOptions<AppSettings> appSettings,
+        public ClassRoomsController(IOptions<AppSettings> appSettings,
             IClassService classService,
-            ILogger<ClassesController> logger)
+            ILogger<ClassRoomsController> logger)
         {
             this.appSettings = appSettings.Value;
             this.classService = classService;
@@ -34,22 +34,22 @@ namespace SchoolPortal.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult ClassesDataTable()
+        public IActionResult ClassRoomsDataTable()
         {
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
                 appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
-            var classes = classService.GetClasses().Select(c => ClassVM.FromClass(c, clientTimeOffset));
+            var classRooms = classService.GetClassRooms(true).Select(c => ClassRoomVM.FromClassRoom(c, clientTimeOffset));
 
-            var parser = new Parser<ClassVM>(Request.Form, classes.AsQueryable())
+            var parser = new Parser<ClassRoomVM>(Request.Form, classRooms.AsQueryable())
                   .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
                    .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
 
             return Ok(parser.Parse());
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> AddClass(ClassVM classVM)
+        public async Task<IActionResult> AddClassRoom(ClassRoomVM classRoomVM)
         {
             try
             {
@@ -60,13 +60,13 @@ namespace SchoolPortal.Web.Controllers
                 }
                 else
                 {
-                    if (classVM.ClassTypeId == 0)
+                    if (classRoomVM.ClassId == 0)
                     {
-                        throw new AppException($"Class type id is required");
+                        throw new AppException($"Class id is required");
                     }
 
-                    await classService.CreateClass(classVM.ToClass());
-                    return Ok(new { IsSuccess = true, Message = "Class added succeessfully", ErrorItems = new string[] { } });
+                    await classService.CreateClassRoom(classRoomVM.ToClassRoom());
+                    return Ok(new { IsSuccess = true, Message = "Classroom added succeessfully", ErrorItems = new string[] { } });
                 }
             }
             catch (AppException ex)
@@ -75,7 +75,7 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while creating a new class");
+                logger.LogError(ex, "An error was encountered while creating a new classroom");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
@@ -85,7 +85,7 @@ namespace SchoolPortal.Web.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> UpdateClass(ClassVM classVM)
+        public async Task<IActionResult> UpdateClassRoom(ClassRoomVM classRoomVM)
         {
             try
             {
@@ -94,19 +94,19 @@ namespace SchoolPortal.Web.Controllers
                     var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
                     return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
                 }
-                else if (classVM.Id == 0)
+                else if (classRoomVM.Id == 0)
                 {
-                    return StatusCode(400, new { IsSuccess = false, Message = $"Invalid class id {classVM.Id}", ErrorItems = new string[] { } });
+                    return StatusCode(400, new { IsSuccess = false, Message = $"Invalid classroom id {classRoomVM.Id}", ErrorItems = new string[] { } });
                 }
                 else
                 {
-                    if (classVM.ClassTypeId == 0)
+                    if (classRoomVM.ClassId == 0)
                     {
-                        throw new AppException($"Class type id is required");
+                        throw new AppException($"Class id is required");
                     }
 
-                    await classService.UpdateClass(classVM.ToClass());
-                    return Ok(new { IsSuccess = true, Message = "Class updated succeessfully", ErrorItems = new string[] { } });
+                    await classService.UpdateClassRoom(classRoomVM.ToClassRoom());
+                    return Ok(new { IsSuccess = true, Message = "Classroom updated succeessfully", ErrorItems = new string[] { } });
                 }
             }
             catch (AppException ex)
@@ -115,7 +115,7 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while updating a class");
+                logger.LogError(ex, "An error was encountered while updating a classroom");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
@@ -123,18 +123,19 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
-        public async Task<IActionResult> DeleteClass(long? id)
+        [HttpPost]
+        public async Task<IActionResult> UpdateClassRoomStatus(long? id, bool isActive)
         {
             try
             {
                 if (id == null)
                 {
-                    return StatusCode(400, new { IsSuccess = false, Message = "Class is not found", ErrorItems = new string[] { } });
+                    return StatusCode(400, new { IsSuccess = false, Message = "Classroom is not found", ErrorItems = new string[] { } });
                 }
                 else
                 {
-                    await classService.DeleteClass(id.Value);
-                    return Ok(new { IsSuccess = true, Message = "Class deleted succeessfully", ErrorItems = new string[] { } });
+                    await classService.UpdateClassRoomStatus(id.Value, isActive);
+                    return Ok(new { IsSuccess = true, Message = "Classroom status updated succeessfully", ErrorItems = new string[] { } });
                 }
             }
             catch (AppException ex)
@@ -143,7 +144,7 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while deleting a class");
+                logger.LogError(ex, "An error was encountered while updating a classroom status");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
@@ -151,18 +152,18 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
-        public async Task<IActionResult> GetClass(long? id)
+        public async Task<IActionResult> DeleteClassRoom(long? id)
         {
             try
             {
                 if (id == null)
                 {
-                    return StatusCode(400, new { IsSuccess = false, Message = "Class is not found", ErrorItems = new string[] { } });
+                    return StatusCode(400, new { IsSuccess = false, Message = "Classroom is not found", ErrorItems = new string[] { } });
                 }
                 else
                 {
-                    var @class = await classService.GetClass(id.Value);
-                    return Ok(new { IsSuccess = true, Message = "Class retrieved succeessfully", Data = ClassVM.FromClass(@class) });
+                    await classService.DeleteClassRoom(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "Classroom deleted succeessfully", ErrorItems = new string[] { } });
                 }
             }
             catch (AppException ex)
@@ -171,7 +172,35 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while fetching a class");
+                logger.LogError(ex, "An error was encountered while deleting a classroom");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        public async Task<IActionResult> GetClassRoom(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "Classroom is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    var classRoom = await classService.GetClassRoom(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "Classroom retrieved succeessfully", Data = ClassRoomVM.FromClassRoom(classRoom) });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while fetching a classroom");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
