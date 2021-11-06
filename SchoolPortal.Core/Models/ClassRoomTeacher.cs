@@ -6,10 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace SchoolPortal.Core.Models
 {
-    public class Class:BaseEntity,IUpdatable
+    public class ClassRoomTeacher:BaseEntity,IUpdatable
     {
-        public long ClassTypeId { get; set; }
-        public int ClassGrade { get; set; }
+        public long ClassRoomId { get; set; }
+        public long TeacherId { get; set; }
 
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; } = DateTimeOffset.Now;
@@ -18,9 +18,9 @@ namespace SchoolPortal.Core.Models
         [JsonIgnore]
         [NotMapped]
         public virtual User UpdatedByUser { get; set; }
-        [ForeignKey("ClassTypeId")]
-        public virtual ClassType ClassType { get; set; }
-        public virtual ICollection<ClassRoom> ClassRooms { get; set; }
-        public virtual ICollection<Subject> Subjects { get; set; }
+        [ForeignKey("ClassRoomId")]
+        public virtual ClassRoom ClassRoom { get; set; }
+        [ForeignKey("TeacherId")]
+        public virtual User Teacher { get; set; }
     }
 }

@@ -1,19 +1,19 @@
 ﻿
 @inject IDropdownService dropdownService
 @{
-    ViewData["Title"] = "Classrooms";
+    ViewData["Title"] = "Subjects";
 }
 <!-- Breadcubs Area Start Here -->
 <div class="breadcrumbs-area">
-    <h3>Classrooms</h3>
+    <h3>Subjects</h3>
     <ul>
         <li>
             <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
         </li>
-        <li>
+        @*<li>
             <a asp-action="Index" asp-controller="Classes">Classes</a>
-        </li>
-        <li>Classrooms</li>
+        </li>*@
+        <li>Subjects</li>
     </ul>
 </div>
 <!-- Breadcubs Area End Here -->
@@ -21,17 +21,17 @@
 <div class="card height-auto">
     <div class="card-body">
         <div class="text-right">
-            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Classroom</button>
+            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Subject</button>
         </div>
         <div class="table-responsive">
-            <table id="classroomsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+            <table id="subjectsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
                 <thead>
                     <tr>
                         <th style="width:28px">#</th>
                         <th>Class</th>
-                        <th>Room&nbsp;Code</th>
-                        @*<th>Teacher</th>*@
-                        <th>Status</th>
+                        <th>Name</th>
+                        <th>Code</th>
+                        <th>Description</th>
                         <th>Date&nbsp;Created</th>
                         <th>Date&nbsp;Created</th>
                         <th>Updated&nbsp;By</th>
@@ -57,7 +57,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">New Classroom <span></span></h4>
+                <h4 class="modal-title">New Subject <span></span></h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
@@ -75,17 +75,22 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="code" class="f14">* Room Code</label>
-                                    <input id="code" type="text" class="form-control" maxlength="20" placeholder="E.g Charity, Peace" required />
+                                    <label for="name" class="f14">* Name</label>
+                                    <input id="name" type="text" class="form-control" placeholder="Enter subject title" required />
                                 </div>
                             </div>
-                            @*<div class="col-md-12">
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="teacherId" class="f14">Teacher</label>
-                                    <select id="teacherId" class="form-control custom-select teachersdd">
-                                    </select>
+                                    <label for="code" class="f14">Code</label>
+                                    <input id="code" type="text" class="form-control" maxlength="10" placeholder="E.g. MTH for Mathematics" />
                                 </div>
-                            </div>*@
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="description" class="f14">Description</label>
+                                    <textarea id="description" type="text" class="form-control"  placeholder="A brief description of the subject" rows="2"></textarea>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- Modal footer -->
@@ -107,7 +112,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Edit Classroom <span></span></h4>
+                <h4 class="modal-title">Edit Subject <span></span></h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
@@ -125,17 +130,22 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="e_code" class="f14">* Room Code</label>
-                                    <input id="e_code" type="text" class="form-control" maxlength="20" placeholder="E.g Charity, Peace" required />
+                                    <label for="e_name" class="f14">* Name</label>
+                                    <input id="e_name" type="text" class="form-control" placeholder="Enter subject title" required />
                                 </div>
                             </div>
-                            @*<div class="col-md-12">
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="e_teacherId" class="f14">Teacher</label>
-                                    <select id="e_teacherId" class="form-control custom-select teachersdd">
-                                    </select>
+                                    <label for="e_code" class="f14">Code</label>
+                                    <input id="e_code" type="text" class="form-control" maxlength="10" placeholder="E.g. MTH for Mathematics" />
                                 </div>
-                            </div>*@
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="e_description" class="f14">Description</label>
+                                    <textarea id="e_description" type="text" class="form-control" placeholder="A brief description of the subject" rows="2"></textarea>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- Modal footer -->
@@ -162,6 +172,6 @@
     <script>
 
     </script>
-    <script src="~/js/classrooms.js" asp-append-version="true"></script>
+    <script src="~/js/subjects.js" asp-append-version="true"></script>
 
 }

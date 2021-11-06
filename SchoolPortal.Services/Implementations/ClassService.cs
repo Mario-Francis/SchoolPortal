@@ -142,17 +142,8 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"A classroom of same class already exist with same room code");
             }
 
-            if (classRoom.TeacherId != null)
-            {
-                if (await classRoomRepo.Any(c => c.TeacherId == classRoom.TeacherId))
-                {
-                    throw new AppException($"Teacher has already been assigned to another class. Please assign someone else.");
-                }
-            }
-
             var currentUser = accessor.HttpContext.GetUserSession();
             classRoom.IsActive = true;
-            classRoom.TeacherId = classRoom.TeacherId == 0 ? null : classRoom.TeacherId;
             classRoom.CreatedBy = currentUser.Username;
             classRoom.CreatedDate = DateTimeOffset.Now;
             classRoom.UpdatedBy = currentUser.Username;
@@ -208,20 +199,12 @@ namespace SchoolPortal.Services.Implementations
             }
             else
             {
-                if (classRoom.TeacherId != null)
-                {
-                    if (await classRoomRepo.Any(c => c.TeacherId == classRoom.TeacherId && _classRoom.TeacherId != classRoom.TeacherId))
-                    {
-                        throw new AppException($"Teacher has already been assigned to another class. Please assign someone else.");
-                    }
-                }
 
                 var currentUser = accessor.HttpContext.GetUserSession();
                 var _oldclassRoom = _classRoom.Clone<ClassRoom>();
 
                 _classRoom.ClassId = classRoom.ClassId;
                 _classRoom.RoomCode = classRoom.RoomCode;
-                _classRoom.TeacherId = classRoom.TeacherId == 0 ? null : classRoom.TeacherId;
                // _classRoom.IsActive = classRoom.IsActive;
                 _classRoom.UpdatedBy = currentUser.Username;
                 _classRoom.UpdatedDate = DateTimeOffset.Now;

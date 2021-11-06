@@ -9,7 +9,7 @@ namespace SchoolPortal.Core.Models
     public class MidTermResult:BaseEntity,IUpdatable
     {
         public long ExamId { get; set; }
-        public long CourseId { get; set; }
+        public long SubjectId { get; set; }
         public long StudentId { get; set; }
         public decimal ClassWorkScore { get; set; }
         public decimal TestScore { get; set; }
@@ -25,8 +25,8 @@ namespace SchoolPortal.Core.Models
         public virtual User UpdatedByUser { get; set; }
         [ForeignKey("ExamId")]
         public virtual Exam Exam { get; set; }
-        [ForeignKey("CourseId")]
-        public virtual Course Course { get; set; }
+        [ForeignKey("SubjectId")]
+        public virtual Subject Subject { get; set; }
         [ForeignKey("StudentId")]
         public virtual Student Student { get; set; }
     }

@@ -32,6 +32,6 @@ namespace SchoolPortal.Core.Models
         public virtual ICollection<UserRole> UserRoles { get; set; }
         public virtual ICollection<StudentGuardian> StudentGuardians{ get; set; }
         public virtual ICollection<UserLoginHistory> UserLoginHistories { get; set; }
-        public virtual ICollection<ClassRoom> ClassRooms { get; set; }
+        public virtual ICollection<ClassRoomTeacher> ClassRoomTeachers { get; set; }
     }
 }

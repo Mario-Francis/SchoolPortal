@@ -1,10 +1,10 @@
 ﻿$(() => {
     // initialize datatable
-    var classesTable = $('#classesTable').DataTable({
+    var subjectsTable = $('#subjectsTable').DataTable({
         serverSide: true,
         processing: true,
         ajax: {
-            url: $base + 'classes/classesDataTable',
+            url: $base + 'subjects/SubjectsDataTable',
             type: "POST"
         },
         "order": [[2, "asc"]],
@@ -23,14 +23,28 @@
             },
             {
                 data: {
-                    "filter": "ClassType",
-                    "display": "classType"
+                    "filter": "Class",
+                    "display": "class"
                 }, visible: true
             },
             {
                 data: {
-                    "filter": "ClassGrade",
-                    "display": "classGrade"
+                    "filter": "Name",
+                    "display": "name"
+                }
+            },
+            {
+                data: {
+                    "filter": "Code",
+                    "display": "code"
+                }
+            },
+            {
+                data: {
+                    "filter": "Description",
+                    "display": "description"
+                }, "render": function (data, type, row, meta) {
+                    return `<p style="width:200px;white-space:normal;" class="text-dark">${data?data:''}</p>`;
                 }
             },
             {
@@ -43,7 +57,7 @@
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 3
+                }, orderData: 5
             },
             {
                 data: {
@@ -61,22 +75,24 @@
                 data: {
                     "filter": "FormattedUpdatedDate",
                     "display": "formattedUpdatedDate"
-                }, orderData: 6
+                }, orderData: 8
             },
             {
                 data: {
                     "filter": "Id",
                     "display": "id"
                 }, "orderable": false, "render": function (data, type, row, meta) {
+                    let status = row.isActive;
                     return '<div class="dropdown f14">'
                         + '<button type="button" class="btn px-3 f12" data-toggle="dropdown">'
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" cid="${row.id}">View Classrooms</a>`
+                        + `<a class="dropdown-item" href="#" cid="${row.id}">View Mid-Term Results</a>`
+                        + `<a class="dropdown-item" href="#" cid="${row.id}">View End-Term Results</a>`
                         + `<div class="dropdown-divider"></div>`
-                        + `<a class="dropdown-item edit" href="javascript:void(0)" cid="${row.id}">Edit</a>`
-                        + `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
+                        + `<a class="dropdown-item edit" href="javascript:void(0)" sid="${row.id}">Edit</a>`
+                        + `<a class="dropdown-item delete" href="javascript:void(0)" sid="${row.id}">Delete</a>`
                         + '</div>'
                         + '</div>';
                 }
@@ -95,18 +111,22 @@
         try {
             let form = $("form")[0];
             if (validateForm(form)) {
-                let classTypeId = $.trim($('#classTypeId').val());
-                let classGrade = $('#grade').val();
+                let classId = $.trim($('#classId').val());
+                let name = $.trim($('#name').val());
+                let code = $.trim($('#code').val());
+                let description = $.trim($('#description').val());
 
-                if (classTypeId == '' || classGrade == '') {
-                    notify('All fields are required', 'warning');
+                if (classId == '' || name == '') {
+                    notify('Fields with asteriks (*) are required', 'warning');
                 } else {
                     $('fieldset').prop('disabled', true);
-                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Adding class...');
-                    let url = $base + 'classes/AddClass';
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Adding subject...');
+                    let url = $base + 'subjects/AddSubject';
                     let data = {
-                        classTypeId,
-                        classGrade
+                        classId,
+                        name,
+                        code,
+                        description
                     };
                     $.ajax({
                         type: 'POST',
@@ -114,7 +134,7 @@
                         data: data,
                         success: (response) => {
                             if (response.isSuccess) {
-                                classesTable.ajax.reload();
+                                subjectsTable.ajax.reload();
                                 notify(response.message + '.', 'success');
 
                                 form.reset();
@@ -147,42 +167,55 @@
 
     // on edit
     $(document).on('click', '.edit', async (e) => {
-        let cid = $(e.currentTarget).attr('cid');
-        let loader = bootLoaderDialog('Fetching class...');
-        let $class = await getClass(cid);
-        loader.hide();
+        let sid = $(e.currentTarget).attr('sid');
+        let loader = bootLoaderDialog('Fetching subject...');
+        let subject = null;
+        try {
+            subject = await getSubject(sid);
+            loader.hide();
 
-        $('#e_classTypeId').val($class.classTypeId);
-        $('#e_grade').val($class.classGrade);
+            $('#e_classId').val(subject.classId);
+            $('#e_name').val(subject.name);
+            $('#e_code').val(subject.code);
+            $('#e_description').val(subject.description);
 
-        $('#updateBtn').attr('cid', cid);
+            $('#updateBtn').attr('sid', sid);
 
-        setTimeout(() => {
-            $('#editModal').modal({ backdrop: 'static', keyboard: false }, 'show');
-        }, 700);
+            setTimeout(() => {
+                $('#editModal').modal({ backdrop: 'static', keyboard: false }, 'show');
+            }, 700);
+        } catch (ex) {
+            console.error(ex);
+            notify(ex.message, 'danger');
+            loader.hide();
+        }
     });
 
     // on update
     $('#updateBtn').on('click', (e) => {
         e.preventDefault();
         let btn = $(e.currentTarget);
-        let cid = btn.attr('cid');
+        let sid = btn.attr('sid');
         try {
             let form = $("form")[1];
             if (validateForm(form)) {
-                let classTypeId = $.trim($('#e_classTypeId').val());
-                let classGrade = $('#e_grade').val();
+                let classId = $.trim($('#e_classId').val());
+                let name = $.trim($('#e_name').val());
+                let code = $.trim($('#e_code').val());
+                let description = $.trim($('#e_description').val());
 
-                if (classTypeId == '' || classGrade == '') {
-                    notify('All fields are required', 'warning');
+                if (classId == '' || name == '') {
+                    notify('Fields with asteriks (*) are required', 'warning');
                 } else {
                     $('fieldset').prop('disabled', true);
-                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating class...');
-                    let url = $base + 'classes/UpdateClass';
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating subject...');
+                    let url = $base + 'subjects/UpdateSubject';
                     let data = {
-                        id: cid,
-                        classTypeId,
-                        classGrade
+                        id: sid,
+                        classId,
+                        name,
+                        code,
+                        description
                     };
                     $.ajax({
                         type: 'POST',
@@ -190,7 +223,7 @@
                         data: data,
                         success: (response) => {
                             if (response.isSuccess) {
-                                classesTable.ajax.reload();
+                                subjectsTable.ajax.reload();
                                 notify(response.message + '.', 'success');
 
                                 form.reset();
@@ -209,7 +242,7 @@
                                     $('fieldset').prop('disabled', false);
                                 }
                             });
-                           
+
                         }
                     });
                 }
@@ -225,17 +258,17 @@
     // on remove
     $(document).on('click', '.delete', async (e) => {
         let loader;
-        let cid = $(e.currentTarget).attr('cid');
-        bootConfirm('Are you sure you want to delete class?', {
+        let sid = $(e.currentTarget).attr('sid');
+        bootConfirm('Are you sure you want to delete this subject?', {
             title: 'Confirm Action', size: 'small', callback: async (res) => {
                 if (res) {
                     try {
-                        loader = bootLoaderDialog('Deleting class...');
-                        let message = await deleteClass(cid);
+                        loader = bootLoaderDialog('Deleting subject...');
+                        let message = await deleteSubject(sid);
                         loader.hide();
 
                         notify(message + '.', 'success');
-                        classesTable.ajax.reload();
+                        subjectsTable.ajax.reload();
                     } catch (ex) {
                         loader.hide();
                         console.error(ex);
@@ -244,20 +277,19 @@
                 }
             }
         });
-
     });
 
 });
 
 
 
-function getClass(id) {
+function getSubject(id) {
     var promise = new Promise((resolve, reject) => {
         try {
             if (id == undefined || id == '' || id == 0) {
-                reject('Invalid class id');
+                reject('Invalid subject id');
             } else {
-                let url = $base + 'classes/GetClass/' + id;
+                let url = $base + 'subjects/GetSubject/' + id;
                 $.ajax({
                     type: 'GET',
                     url: url,
@@ -283,13 +315,13 @@ function getClass(id) {
     return promise;
 }
 
-function deleteClass(id) {
+function deleteSubject(id) {
     var promise = new Promise((resolve, reject) => {
         try {
             if (id == undefined || id == '' || id == 0) {
-                reject('Invalid class id');
+                reject('Invalid subject id');
             } else {
-                let url = $base + 'classes/DeleteClass/' + id;
+                let url = $base + 'subjects/DeleteSubject/' + id;
                 $.ajax({
                     type: 'GET',
                     url: url,

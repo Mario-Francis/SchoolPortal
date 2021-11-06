@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolPortal.Data;
 
 namespace SchoolPortal.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211106150706_Removed_Teachers_From_ClassRooms_And_Created_ClassRoomTeachers_Table_And_Changed_Courses_To_Subjects")]
+    partial class Removed_Teachers_From_ClassRooms_And_Created_ClassRoomTeachers_Table_And_Changed_Courses_To_Subjects
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1206,9 +1208,9 @@ namespace SchoolPortal.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("SchoolPortal.Core.Models.Subject", "Subject")
-                        .WithMany("EndTermResults")
+                        .WithMany()
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -1260,9 +1262,9 @@ namespace SchoolPortal.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("SchoolPortal.Core.Models.Subject", "Subject")
-                        .WithMany("MidTermResults")
+                        .WithMany()
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

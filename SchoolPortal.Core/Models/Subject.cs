@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace SchoolPortal.Core.Models
 {
-    public class Course:BaseEntity,IUpdatable
+    public class Subject:BaseEntity,IUpdatable
     {
         public string Name { get; set; }
         public string Code { get; set; }
@@ -22,5 +22,8 @@ namespace SchoolPortal.Core.Models
         public virtual User UpdatedByUser { get; set; }
         [ForeignKey("ClassId")]
         public virtual Class Class { get; set; }
+
+        public virtual ICollection<MidTermResult> MidTermResults { get; set; }
+        public virtual ICollection<EndTermResult> EndTermResults { get; set; }
     }
 }

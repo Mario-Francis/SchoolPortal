@@ -10,7 +10,6 @@ namespace SchoolPortal.Core.Models
     {
         public long ClassId { get; set; }
         public string RoomCode { get; set; }
-        public long? TeacherId { get; set; }
         public bool IsActive { get; set; }
 
         public string UpdatedBy { get; set; }
@@ -22,8 +21,8 @@ namespace SchoolPortal.Core.Models
         public virtual User UpdatedByUser { get; set; }
         [ForeignKey("ClassId")]
         public virtual Class Class { get; set; }
-        [ForeignKey("TeacherId")]
-        public virtual User Teacher { get; set; }
         public virtual ICollection<ClassRoomStudent> ClassRoomStudents { get; set; }
+        public virtual ICollection<ClassRoomTeacher> ClassRoomTeachers { get; set; }
     }
+
 }

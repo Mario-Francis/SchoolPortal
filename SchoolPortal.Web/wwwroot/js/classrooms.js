@@ -1,6 +1,6 @@
-﻿var selectizedd;
+﻿////var selectizedd;
 $(() => {
-    selectizedd = initializeTeachersDropdown();
+    //selectizedd = initializeTeachersDropdown();
     // initialize datatable
     var classroomsTable = $('#classroomsTable').DataTable({
         serverSide: true,
@@ -35,12 +35,12 @@ $(() => {
                     "display": "roomCode"
                 }
             },
-            {
-                data: {
-                    "filter": "Teacher",
-                    "display": "teacher"
-                }
-            },
+            //{
+            //    data: {
+            //        "filter": "Teacher",
+            //        "display": "teacher"
+            //    }
+            //},
             {
                 data: {
                     "filter": "IsActive",
@@ -63,7 +63,7 @@ $(() => {
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 5
+                }, orderData: 4
             },
             {
                 data: {
@@ -81,7 +81,7 @@ $(() => {
                 data: {
                     "filter": "FormattedUpdatedDate",
                     "display": "formattedUpdatedDate"
-                }, orderData: 8
+                }, orderData: 7
             },
             {
                 data: {
@@ -90,7 +90,7 @@ $(() => {
                 }, "orderable": false, "render": function (data, type, row, meta) {
                     let status = row.isActive;
                     return '<div class="dropdown f14">'
-                        + '<button type="button" class="btn px-3" data-toggle="dropdown">'
+                        + '<button type="button" class="btn px-3 f12" data-toggle="dropdown">'
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
@@ -119,8 +119,8 @@ $(() => {
             let form = $("form")[0];
             if (validateForm(form)) {
                 let classId = $.trim($('#classId').val());
-                let roomCode = $('#code').val();
-                let teacherId = $('#teacherId').val();
+                let roomCode = $.trim($('#code').val());
+                /*let teacherId = $('#teacherId').val();*/
 
                 if (classId == '' || roomCode == '') {
                     notify('Fields with asteriks (*) are required', 'warning');
@@ -131,7 +131,7 @@ $(() => {
                     let data = {
                         classId,
                         roomCode,
-                        teacherId
+                       /* teacherId*/
                     };
                     $.ajax({
                         type: 'POST',
@@ -143,7 +143,7 @@ $(() => {
                                 notify(response.message + '.', 'success');
 
                                 form.reset();
-                                selectizedd[0].selectize.clear();
+                               /* selectizedd[0].selectize.clear();*/
                                 $('#addModal').modal('hide');
 
                             } else {
@@ -182,13 +182,13 @@ $(() => {
 
             $('#e_classId').val(classRoom.classId);
             $('#e_code').val(classRoom.roomCode);
-            if (classRoom.teacherId != null) {
-                $('#e_teacherId').val(classRoom.teacherId);
-                $selectize = selectizedd[1].selectize;
-                $selectize.addOption(classRoom.teacherObject);
-                $selectize.addItem(classRoom.teacherId);
-                $selectize.setValue(classRoom.teacherId);
-            }
+            //if (classRoom.teacherId != null) {
+            //    $('#e_teacherId').val(classRoom.teacherId);
+            //    $selectize = selectizedd[1].selectize;
+            //    $selectize.addOption(classRoom.teacherObject);
+            //    $selectize.addItem(classRoom.teacherId);
+            //    $selectize.setValue(classRoom.teacherId);
+            //}
 
             $('#updateBtn').attr('cid', cid);
 
@@ -211,8 +211,8 @@ $(() => {
             let form = $("form")[1];
             if (validateForm(form)) {
                 let classId = $.trim($('#e_classId').val());
-                let roomCode = $('#e_code').val();
-                let teacherId = $('#e_teacherId').val();
+                let roomCode = $.trim($('#e_code').val());
+                /*let teacherId = $('#e_teacherId').val();*/
 
                 if (classId == '' || roomCode == '') {
                     notify('Fields with asteriks (*) are required', 'warning');
@@ -224,7 +224,7 @@ $(() => {
                         id: cid,
                         classId,
                         roomCode,
-                        teacherId
+                       /* teacherId*/
                     };
                     $.ajax({
                         type: 'POST',
@@ -236,7 +236,7 @@ $(() => {
                                 notify(response.message + '.', 'success');
 
                                 form.reset();
-                                selectizedd[1].selectize.clear();
+                               /* selectizedd[1].selectize.clear();*/
                                 $('#editModal').modal('hide');
 
                             } else {
@@ -435,68 +435,4 @@ function updateClassRoomStatus(id, isActive=true) {
         }
     });
     return promise;
-}
-
-function initializeTeachersDropdown() {
-    var _select = $(".teachersdd").selectize({
-        valueField: "id",
-        searchField: ["email", "username", "firstName", "surname", "middleName", "phoneNumber"],
-        placeholder: '- Search teacher -',
-        dropdownParent: 'body',
-        create: false,
-        preload: 'focus',
-        render: {
-            option: function (item, escape) {
-                return (
-                    `<div class="d-flex flex-row px-3 py-2 border-top bg-white">
-                        <div>
-                            <div class="rounded-circle mr-3 bg-claret" style="height:36px;width:36px;padding-top:8px;">
-                                <p class="m-0 f14 text-center text-white">${getInitial(item, escape)}</p>
-                            </div>
-                        </div>
-                        <div class="flex-fill">
-                            <p class="f14 font-weight-bold text-dark mt-1">${capitalize(escape(item.firstName).trim())} ${capitalize(escape(item.surname).trim())}</p>
-                            <p class="f12" style="margin-top:-6px;">${escape(item.email).trim()}</p>
-                        </div>
-                    </div>`
-                );
-            },
-            item: function (item, escape) {
-                return (
-                    `<div class="d-flex flex-row px-3 py-1">
-                        <div>
-                            <div class="rounded-circle mr-3 bg-claret" style="height:36px;width:36px;padding-top:8px;">
-                                <p class="m-0 f14 text-center text-white">${getInitial(item, escape)}</p>
-                            </div>
-                        </div>
-                        <div class="flex-fill">
-                            <p class="f14 font-weight-bold text-dark mt-1">${capitalize(escape(item.firstName).trim())} ${capitalize(escape(item.surname).trim())}</p>
-                            <p class="f12" style="margin-top:-6px;">${escape(item.email).trim()}</p>
-                        </div>
-                    </div>`
-                );
-            },
-        },
-        load: function (query, callback) {
-            if (!query.length) return callback();
-            $.ajax({
-                url: $base + 'users/SearchTeachers?max=50&query=' + encodeURIComponent(query),
-                type: "GET",
-                error: function (err) {
-                    console.log(err);
-                    callback();
-                },
-                success: function (res) {
-                    callback(res.data);
-                },
-            });
-        },
-    });
-    return _select;
-}
-
-function getInitial(item, escape) {
-    var l1 = item.firstName == null ? "" : escape(item.firstName.trim())[0];
-    var l2 = item.surname == null ? "" : escape(item.surname.trim())[0];
-    return l1 + l2;
 }

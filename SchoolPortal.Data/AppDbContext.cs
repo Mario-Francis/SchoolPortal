@@ -19,7 +19,7 @@ namespace SchoolPortal.Data
         public DbSet<ClassRoom> ClassRooms { get; set; }
         public DbSet<ClassRoomStudent> ClassRoomStudents { get; set; }
         public DbSet<ClassType> ClassTypes { get; set; }
-        public DbSet<Course> Courses { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
         public DbSet<EndTermResult> EndTermResults { get; set; }
         public DbSet<Exam> Exams { get; set; }
         public DbSet<Grade> Grades { get; set; }
@@ -39,6 +39,7 @@ namespace SchoolPortal.Data
         public DbSet<User> Users { get; set; }
         public DbSet<UserLoginHistory> UserLoginHistories { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<ClassRoomTeacher> ClassRoomTeachers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,7 +55,7 @@ namespace SchoolPortal.Data
                 .WithOne(x => x.Role);
 
             modelBuilder.Entity<User>()
-                .HasMany(x => x.ClassRooms)
+                .HasMany(x => x.ClassRoomTeachers)
                 .WithOne(x => x.Teacher);
 
             modelBuilder.Entity<User>()
@@ -99,7 +100,7 @@ namespace SchoolPortal.Data
                .WithOne(x => x.Class);
 
             modelBuilder.Entity<Class>()
-              .HasMany(x => x.Courses)
+              .HasMany(x => x.Subjects)
               .WithOne(x => x.Class);
 
             modelBuilder.Entity<ClassRoom>()
@@ -132,9 +133,29 @@ namespace SchoolPortal.Data
               .WithMany()
               .OnDelete(DeleteBehavior.NoAction);
 
-    //        Audit.Core.Configuration.Setup()
-    //.UseEntityFramework()
-    //.IgnoreMatchedProperties(true));
+            modelBuilder.Entity<ClassRoomTeacher>()
+              .HasOne(x => x.ClassRoom)
+              .WithMany(x=> x.ClassRoomTeachers)
+              .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ClassRoomTeacher>()
+             .HasOne(x => x.Teacher)
+             .WithMany(x => x.ClassRoomTeachers)
+             .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Subject>()
+             .HasMany(x => x.MidTermResults)
+             .WithOne(x => x.Subject)
+             .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Subject>()
+             .HasMany(x => x.EndTermResults)
+             .WithOne(x => x.Subject)
+             .OnDelete(DeleteBehavior.NoAction);
+
+            //        Audit.Core.Configuration.Setup()
+            //.UseEntityFramework()
+            //.IgnoreMatchedProperties(true));
 
 
             SeeData(modelBuilder);
