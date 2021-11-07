@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DataTablesParser;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
+using SchoolPortal.Core.DTOs;
 using SchoolPortal.Services;
 using SchoolPortal.Web.ViewModels;
 using System;
@@ -14,12 +17,15 @@ namespace SchoolPortal.Web.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService userService;
+        private readonly AppSettings appSettings;
         private readonly ILogger<UsersController> logger;
 
         public UsersController(IUserService userService,
+            IOptions<AppSettings> appSettings,
             ILogger<UsersController> logger)
         {
             this.userService = userService;
+            this.appSettings = appSettings.Value;
             this.logger = logger;
         }
         public IActionResult Index()
@@ -57,6 +63,264 @@ namespace SchoolPortal.Web.Controllers
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
         }
+
+        [HttpPost]
+        public IActionResult UsersDataTable()
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var Users = userService.GetUsers().Select(u => UserVM.FromUser(u, clientTimeOffset));
+
+            var parser = new Parser<UserVM>(Request.Form, Users.AsQueryable())
+                .SetConverter(x => x.DateOfBirth, x => x.DateOfBirth ==null?"":x.DateOfBirth.Value.ToString("MMM d, yyyy"))
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost]
+        public IActionResult AdminsDataTable()
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var Users = userService.GetUsers().Where(u=> u.UserRoles.Any(ur=> ur.RoleId == Convert.ToInt64(AppRoles.ADMINISTRATOR) || ur.RoleId == Convert.ToInt64(AppRoles.HEAD_TEACHER)))
+                .Select(u => UserVM.FromUser(u, clientTimeOffset));
+
+            var parser = new Parser<UserVM>(Request.Form, Users.AsQueryable())
+                .SetConverter(x => x.DateOfBirth, x => x.DateOfBirth == null ? "" : x.DateOfBirth.Value.ToString("MMM d, yyyy"))
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost]
+        public IActionResult TeachersDataTable()
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var Users = userService.GetUsers().Where(u => u.UserRoles.Any(ur => ur.RoleId == Convert.ToInt64(AppRoles.TEACHER)))
+                .Select(u => UserVM.FromUser(u, clientTimeOffset));
+
+            var parser = new Parser<UserVM>(Request.Form, Users.AsQueryable())
+                .SetConverter(x => x.DateOfBirth, x => x.DateOfBirth == null ? "" : x.DateOfBirth.Value.ToString("MMM d, yyyy"))
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost]
+        public IActionResult ParentsDataTable()
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var Users = userService.GetUsers().Where(u => u.UserRoles.Any(ur => ur.RoleId == Convert.ToInt64(AppRoles.PARENT)))
+                .Select(u => UserVM.FromUser(u, clientTimeOffset));
+
+            var parser = new Parser<UserVM>(Request.Form, Users.AsQueryable())
+                .SetConverter(x => x.DateOfBirth, x => x.DateOfBirth == null ? "" : x.DateOfBirth.Value.ToString("MMM d, yyyy"))
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUser(UserVM userVM)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else
+                {
+                    if (userVM.Roles.Count() == 0)
+                    {
+                        throw new AppException($"Role is required");
+                    }
+
+                    await userService.CreateUser(userVM.ToUser());
+                    return Ok(new { IsSuccess = true, Message = "User added succeessfully and credentials sent to user via mail", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while creating a new user");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(UserVM userVM)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else if (userVM.Id == 0)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = $"Invalid user id {userVM.Id}", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    if (userVM.Roles.Count() == 0)
+                    {
+                        throw new AppException($"Role is required");
+                    }
+
+                    await userService.UpdateUser(userVM.ToUser());
+                    return Ok(new { IsSuccess = true, Message = "User updated succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while updating a user");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+
+        public async Task<IActionResult> DeleteUser(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "User is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await userService.DeleteUser(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "User deleted succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while deleting a user");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        public async Task<IActionResult> GetUser(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "User is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    var User = await userService.GetUser(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "User retrieved succeessfully", Data = UserVM.FromUser(User) });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while fetching a user");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUserStatus(long? id, bool isActive)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "User is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await userService.UpdateUserStatus(id.Value, isActive);
+                    return Ok(new { IsSuccess = true, Message = "User status updated succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while updating a user status");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssignClassRoom(long? id, long? roomId)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "User is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await userService.AssignClassRoom(id.Value, roomId);
+                    return Ok(new { IsSuccess = true, Message = "Teacher assigned to classroom succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while assigning teaccher to classroom");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
 
     }
 }

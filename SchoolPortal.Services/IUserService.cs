@@ -19,5 +19,7 @@ namespace SchoolPortal.Services
         Task<string> GenerateUsername(string firstName, string lastName);
         Task<bool> AnyUserExists();
         IEnumerable<User> SearchTeachers(string searchParam, int max = 50);
+        Task UpdateUserStatus(long userId, bool isActive);
+        Task AssignClassRoom(long userId, long? roomId);
     }
 }

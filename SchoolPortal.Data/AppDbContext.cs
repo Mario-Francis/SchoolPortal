@@ -56,7 +56,8 @@ namespace SchoolPortal.Data
 
             modelBuilder.Entity<User>()
                 .HasMany(x => x.ClassRoomTeachers)
-                .WithOne(x => x.Teacher);
+                .WithOne(x => x.Teacher)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
                 .HasMany(x => x.UserLoginHistories)
@@ -136,12 +137,12 @@ namespace SchoolPortal.Data
             modelBuilder.Entity<ClassRoomTeacher>()
               .HasOne(x => x.ClassRoom)
               .WithMany(x=> x.ClassRoomTeachers)
-              .OnDelete(DeleteBehavior.NoAction);
+              .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ClassRoomTeacher>()
              .HasOne(x => x.Teacher)
              .WithMany(x => x.ClassRoomTeachers)
-             .OnDelete(DeleteBehavior.NoAction);
+             .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Subject>()
              .HasMany(x => x.MidTermResults)

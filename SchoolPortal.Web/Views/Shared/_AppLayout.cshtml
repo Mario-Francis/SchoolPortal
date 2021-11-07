@@ -608,11 +608,16 @@
         $base = '@service.BaseUrl';
 
         // roles
-        var isAdmin = @(service.IsAdmin.ToString().ToLower());
-        var isHeadTeacher = @(service.IsHeadTeacher.ToString().ToLower());
-        var isTeacher = @(service.IsTeacher.ToString().ToLower());
-        var isParent = @(service.IsParent.ToString().ToLower());
-        var isStudent = @(service.IsStudent.ToString().ToLower());
+        const isAdmin = @(service.IsAdmin.ToString().ToLower());
+        const isHeadTeacher = @(service.IsHeadTeacher.ToString().ToLower());
+        const isTeacher = @(service.IsTeacher.ToString().ToLower());
+        const isParent = @(service.IsParent.ToString().ToLower());
+        const isStudent = @(service.IsStudent.ToString().ToLower());
+
+        const Admin = 1;
+        const HeadTeacher = 2;
+        const Teacher = 3;
+        const Parent = 4;
 
     </script>
     @RenderSection("js", false)

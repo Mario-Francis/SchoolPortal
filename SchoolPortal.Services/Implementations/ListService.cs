@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using SchoolPortal.Core;
 using SchoolPortal.Core.Models;
 using SchoolPortal.Data.Repositories;
 using System;
@@ -51,7 +52,7 @@ namespace SchoolPortal.Services.Implementations
 
         public IEnumerable<Role> GetRoles()
         {
-            var roles = roleRepo.GetAll();
+            var roles = roleRepo.GetWhere(r => r.Id != (long)AppRoles.STUDENT);
             if (!contextAccessor.HttpContext.User.IsInRole(Core.Constants.ROLE_ADMIN))
             {
                 roles = roles.Where(r => r.Name != Core.Constants.ROLE_ADMIN);
@@ -66,7 +67,7 @@ namespace SchoolPortal.Services.Implementations
 
         public IEnumerable<ClassRoom> GetClassRooms()
         {
-            return classRoomRepo.GetAll().OrderBy(c => c.ClassId).ThenBy(c => c.RoomCode);
+            return classRoomRepo.GetWhere(c=>c.IsActive).OrderBy(c => c.ClassId).ThenBy(c => c.RoomCode);
         }
     }
 }

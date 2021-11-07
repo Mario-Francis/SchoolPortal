@@ -109,11 +109,19 @@ namespace SchoolPortal.Services.Implementations
             var currentUser = accessor.HttpContext.GetUserSession();
             user.Username = await GenerateUsername(user.FirstName, user.Surname);
             user.Password = passwordService.Hash(Constants.DEFAULT_NEW_USER_PASSWORD);
+            user.IsActive = true;
             user.CreatedBy = currentUser.Username;
             user.UpdatedBy = currentUser.Username;
+            user.UserRoles = user.UserRoles.Select(ur =>
+            {
+                ur.CreatedBy = currentUser.Username;
+                return ur;
+            }).ToList();
             await userRepo.Insert(user, true);
 
             var token = tokenService.GenerateTokenFromData(user.Id.ToString());
+            user.EmailVerificationToken = token;
+            await userRepo.Update(user, true);
 
             //// log action
             //await loggerService.LogActivity(
@@ -139,6 +147,10 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"User with id '{user.Id}' does not exist");
             }
+            if (user.UserRoles == null || user.UserRoles.Count == 0)
+            {
+                throw new AppException($"Role is required");
+            }
             if (!await emailService.IsEmailValidAsync(user.Email))
             {
                 throw new AppException($"Email '{user.Email}' is not valid");
@@ -149,7 +161,22 @@ namespace SchoolPortal.Services.Implementations
             }
 
             var currentUser = accessor.HttpContext.GetUserSession();
+
             var oldUser = _user.Clone<User>();
+            if (user.Id == currentUser.Id && _user.UserRoles.Any(ur => ur.RoleId == (long)AppRoles.ADMINISTRATOR) && !user.UserRoles.Any(ur => ur.RoleId == (long)AppRoles.ADMINISTRATOR))
+            {
+                throw new AppException($"You cannot unassign the Administartor role from yourself. You can make another user an administrator and then the user can unassign the role from you");
+            }
+            if (_user.UserRoles.Any(ur=>ur.RoleId == (long)AppRoles.PARENT) &&  !user.UserRoles.Any(ur=>ur.RoleId == (long)AppRoles.PARENT))
+            {
+                _user.StudentGuardians.Clear();
+            }
+
+            if (_user.UserRoles.Any(ur => ur.RoleId == (long)AppRoles.TEACHER) && !user.UserRoles.Any(ur => ur.RoleId == (long)AppRoles.TEACHER))
+            {
+                _user.ClassRoomTeachers.Clear();
+            }
+
             _user.FirstName = user.FirstName;
             _user.MiddleName = user.MiddleName;
             _user.Surname = user.Surname;
@@ -157,10 +184,18 @@ namespace SchoolPortal.Services.Implementations
             _user.Email = user.Email;
             _user.Gender = user.Gender;
             _user.DateOfBirth = user.DateOfBirth;
+            _user.UserRoles.Clear();
+            _user.UserRoles.AddRange(user.UserRoles.Select(ur =>
+            {
+                ur.UserId = user.Id;
+                ur.CreatedBy = currentUser.Username;
+                return ur;
+            }).ToList());
+           
             _user.UpdatedBy = currentUser.Username;
             _user.UpdatedDate = DateTimeOffset.Now;
 
-            await userRepo.Update(user, false);
+            await userRepo.Update(_user, true);
             // log action
             //await loggerService.LogActivity(
             //    $"Updated user",
@@ -272,6 +307,12 @@ namespace SchoolPortal.Services.Implementations
                     throw new AppException($"No user with id '{userId}' exist");
                 }
 
+                if(user.ClassRoomTeachers.Count > 0 || user.StudentGuardians.Count > 0 || user.UserLoginHistories.Count > 0)
+                {
+                    throw new AppException($"User cannot be deleted as user is still associated with one or more entities");
+                }
+
+                await roleRepo.DeleteRange(user.UserRoles.Select(ur => ur.Id), false);
                 await userRepo.Delete(user.Id, true);
 
                 var currentUser = accessor.HttpContext.GetUserSession();
@@ -325,6 +366,78 @@ namespace SchoolPortal.Services.Implementations
             }
            
         }
-    
+
+        public async Task UpdateUserStatus(long userId, bool isActive)
+        {
+            var _user = await userRepo.GetById(userId);
+            if (_user == null)
+            {
+                throw new AppException($"Invalid user id {userId}");
+            }
+            else
+            {
+                var currentUser = accessor.HttpContext.GetUserSession();
+                if(userId == currentUser.Id)
+                {
+                    throw new AppException($"Sorry! You cannot change your own status");
+                }
+                var _olduser = _user.Clone<User>();
+
+
+                _user.IsActive = isActive;
+                _user.UpdatedBy = currentUser.Username;
+                _user.UpdatedDate = DateTimeOffset.Now;
+
+                await userRepo.Update(_user, true);
+
+
+                // log activity
+                //await loggerService.LogActivity(ActivityActionType.UPDATED_class, currentUser.PersonNumber,
+                //    classRepo.TableName, _oldclass, _class,
+                //     $"Updated class of type '{((Core.classType)((int)_class.classTypeId)).ToString()}' for {_class.FromDate.ToString("dd-MM-yyyy")} to {_class.ToDate.ToString("dd-MM-yyyy")}");
+
+            }
+        }
+
+        public async Task AssignClassRoom(long userId, long? roomId)
+        {
+            var _user = await userRepo.GetById(userId);
+            if (_user == null)
+            {
+                throw new AppException($"Invalid user id {userId}");
+            }
+            else
+            {
+                var currentUser = accessor.HttpContext.GetUserSession();
+              
+                var _olduser = _user.Clone<User>();
+
+                _user.ClassRoomTeachers.Clear();
+                if (roomId != null)
+                {
+                    _user.ClassRoomTeachers.Add(new ClassRoomTeacher
+                    {
+                        ClassRoomId=roomId.Value,
+                        TeacherId =userId,
+                        CreatedBy=currentUser.Username,
+                        UpdatedBy=currentUser.Username,
+                        CreatedDate=DateTimeOffset.Now,
+                        UpdatedDate=DateTimeOffset.Now
+                    });
+                }
+                _user.UpdatedBy = currentUser.Username;
+                _user.UpdatedDate = DateTimeOffset.Now;
+
+                await userRepo.Update(_user, true);
+
+
+                // log activity
+                //await loggerService.LogActivity(ActivityActionType.UPDATED_class, currentUser.PersonNumber,
+                //    classRepo.TableName, _oldclass, _class,
+                //     $"Updated class of type '{((Core.classType)((int)_class.classTypeId)).ToString()}' for {_class.FromDate.ToString("dd-MM-yyyy")} to {_class.ToDate.ToString("dd-MM-yyyy")}");
+
+            }
+        }
+
     }
 }

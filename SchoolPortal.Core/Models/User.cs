@@ -19,6 +19,7 @@ namespace SchoolPortal.Core.Models
         public DateTimeOffset? DateOfBirth { get; set; }
         public string EmailVerificationToken { get; set; }
         public string PasswordRecoveryToken { get; set; }
+        public bool IsPasswordChanged { get; set; }
         public string PhotoPath { get; set; }
 
         public bool IsActive { get; set; }

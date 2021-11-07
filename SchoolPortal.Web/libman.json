@@ -175,6 +175,16 @@
         "dist/simplebar.min.css",
         "dist/simplebar.min.js"
       ]
+    },
+    {
+      "library": "choices.js@9.0.1",
+      "destination": "wwwroot/lib/choices.js/",
+      "files": [
+        "choices.min.js",
+        "choices.min.css",
+        "choices.js",
+        "choices.css"
+      ]
     }
   ]
 }

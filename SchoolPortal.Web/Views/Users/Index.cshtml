@@ -1,0 +1,365 @@
+﻿
+@inject IDropdownService dropdownService
+@{
+    ViewData["Title"] = "Users";
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>Users</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        @*<li>
+                <a asp-action="Index" asp-controller="Classes">Classes</a>
+            </li>*@
+        <li>Users</li>
+    </ul>
+</div>
+<!-- Breadcubs Area End Here -->
+
+<div class="card height-auto">
+    <div class="card-body">
+        <div class="text-right mb-3">
+            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add User</button>
+        </div>
+        <div>
+            <nav>
+                <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                    <a class="nav-link active" id="nav-all-tab" data-toggle="tab" href="#nav-all" role="tab" aria-controls="nav-home" aria-selected="true">All Users</a>
+                    <a class="nav-link" id="nav-admins-tab" data-toggle="tab" href="#nav-admins" role="tab" aria-controls="nav-profile" aria-selected="false">Administrators</a>
+                    <a class="nav-link" id="nav-teachers-tab" data-toggle="tab" href="#nav-teachers" role="tab" aria-controls="nav-contact" aria-selected="false">Teachers</a>
+                    <a class="nav-link" id="nav-parents-tab" data-toggle="tab" href="#nav-parents" role="tab" aria-controls="nav-contact" aria-selected="false">Parents</a>
+                </div>
+            </nav>
+            <div class="tab-content px-3 p-3" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
+                    <div class="table-responsive">
+                        <table id="usersTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:28px">#</th>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Date&nbsp;Created</th>
+                                    <th>Date&nbsp;Created</th>
+                                    <th>Updated&nbsp;By</th>
+                                    <th>Date&nbsp;Updated</th>
+                                    <th>Date&nbsp;Updated</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="nav-admins" role="tabpanel" aria-labelledby="nav-admins-tab">
+                    <div class="table-responsive">
+                        <table id="adminsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:28px">#</th>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Date&nbsp;Created</th>
+                                    <th>Date&nbsp;Created</th>
+                                    <th>Updated&nbsp;By</th>
+                                    <th>Date&nbsp;Updated</th>
+                                    <th>Date&nbsp;Updated</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="nav-teachers" role="tabpanel" aria-labelledby="nav-teachers-tab">
+                    <div class="table-responsive">
+                        <table id="teachersTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:28px">#</th>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Classroom</th>
+                                    <th>Status</th>
+                                    <th>Date&nbsp;Created</th>
+                                    <th>Date&nbsp;Created</th>
+                                    <th>Updated&nbsp;By</th>
+                                    <th>Date&nbsp;Updated</th>
+                                    <th>Date&nbsp;Updated</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="nav-parents" role="tabpanel" aria-labelledby="nav-parents-tab">
+                    <div class="table-responsive">
+                        <table id="parentsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="width:28px">#</th>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>No.&nbsp;of&nbsp;Ward</th>
+                                    <th>Status</th>
+                                    <th>Date&nbsp;Created</th>
+                                    <th>Date&nbsp;Created</th>
+                                    <th>Updated&nbsp;By</th>
+                                    <th>Date&nbsp;Updated</th>
+                                    <th>Date&nbsp;Updated</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New User <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname" class="f14">* First Name</label>
+                                    <input id="fname" type="text" class="form-control" placeholder="Enter user first name" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="mname" class="f14">Middle Name</label>
+                                    <input id="mname" type="text" class="form-control" placeholder="Enter user middle name" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sname" class="f14">* Surname</label>
+                                    <input id="sname" type="text" class="form-control" placeholder="Enter user surname" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="roles" class="f14">* Roles</label>
+                                    <select id="roles" class="custom-select form-control" asp-items="@dropdownService.GetRoles()" multiple>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="gender" class="f14">* Geder</label>
+                                    <select id="gender" class="custom-select form-control">
+                                        <option value="">- Select gender -</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="dob" class="f14">Date of Birth</label>
+                                    <input id="dob" type="text" class="form-control dob" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="f14">* Email</label>
+                                    <input id="email" type="email" class="form-control" placeholder="Enter user email" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="f14">* Phone Number</label>
+                                    <input id="phone" type="text" class="form-control integer" placeholder="Enter user phone number" maxlength="15" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="createBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Submit</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit User <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <h6 class="mb-1 font-weight-bold"><i class="fa fa-info-circle"></i> Important Information</h6>
+                            <p class="f14">Kindly note that changes in roles can automatically detach the users from related entities. For example, removing a parent role from a user will automatically remove the relationship between the user and any student. Same applies to teachers and classrooms.</p>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_fname" class="f14">* First Name</label>
+                                    <input id="e_fname" type="text" class="form-control" placeholder="Enter user first name" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_mname" class="f14">Middle Name</label>
+                                    <input id="e_mname" type="text" class="form-control" placeholder="Enter user middle name" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_sname" class="f14">* Surname</label>
+                                    <input id="e_sname" type="text" class="form-control" placeholder="Enter user surname" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_roles" class="f14">* Roles</label>
+                                    <select id="e_roles" class="custom-select form-control" asp-items="@dropdownService.GetRoles()" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_gender" class="f14">* Geder</label>
+                                    <select id="e_gender" class="custom-select form-control">
+                                        <option value="">- Select gender -</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_dob" class="f14">Date of Birth</label>
+                                    <input id="e_dob" type="text" class="form-control dob" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_email" class="f14">* Email</label>
+                                    <input id="e_email" type="email" class="form-control" placeholder="Enter user email" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_phone" class="f14">* Phone Number</label>
+                                    <input id="e_phone" type="text" class="form-control integer" placeholder="Enter user phone number" maxlength="15" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Edit Classroom -->
+<div class="modal fade" id="assignClassModal">
+    <div class="modal-dialog modal-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Assign Class <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="classroom" class="f14">* Classroom</label>
+                                    <select id="classroom" class="custom-select form-control" asp-items="@dropdownService.GetClassRooms()">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="assignBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Submit</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+@section css{
+    <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/choices.js/choices.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/lib/choices.js/choices.js"></script>
+    <script>
+
+    </script>
+    <script src="~/js/users.js" asp-append-version="true"></script>
+
+}

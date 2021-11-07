@@ -50,17 +50,20 @@ namespace SchoolPortal.Web.ViewModels
 
         public static ClassRoomVM FromClassRoom(ClassRoom classRoom, int? clientTimeOffset = null)
         {
-            return new ClassRoomVM
-            {
-                Id = classRoom.Id,
-                ClassId = classRoom.ClassId,
-                RoomCode=classRoom.RoomCode,
-                Class = $"{classRoom.Class.ClassType.Name} {classRoom.Class.ClassGrade}",
-                UpdatedBy = classRoom.UpdatedBy,
-                IsActive = classRoom.IsActive,
-                CreatedDate = clientTimeOffset == null ? classRoom.CreatedDate : classRoom.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-                UpdatedDate = clientTimeOffset == null ? classRoom.UpdatedDate : classRoom.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-            };
+            if (classRoom == null)
+                return null;
+            else
+                return new ClassRoomVM
+                {
+                    Id = classRoom.Id,
+                    ClassId = classRoom.ClassId,
+                    RoomCode = classRoom.RoomCode,
+                    Class = $"{classRoom.Class.ClassType.Name} {classRoom.Class.ClassGrade}",
+                    UpdatedBy = classRoom.UpdatedBy,
+                    IsActive = classRoom.IsActive,
+                    CreatedDate = clientTimeOffset == null ? classRoom.CreatedDate : classRoom.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                    UpdatedDate = clientTimeOffset == null ? classRoom.UpdatedDate : classRoom.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                };
         }
     }
 }

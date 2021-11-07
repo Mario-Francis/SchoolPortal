@@ -285,6 +285,18 @@ div.dataTables_wrapper div.dataTables_info,
 div.dataTables_wrapper div.dataTables_paginate {
     font-size: 14px;
 }
+
+    div.dataTables_wrapper div.dataTables_filter input {
+        background-color: #f8f8f8;
+        border-radius: 4px;
+        border: none;
+        padding: 5px 15px;
+    }
+    div.dataTables_wrapper div.dataTables_filter input:focus {
+        outline: none;
+        box-shadow: none;
+        border: none;
+    }
 .page-link{
     padding: 6px 12px;
 }
@@ -366,7 +378,62 @@ textarea{
 .modal .modal-dialog .modal-content .modal-header .modal-title{
     color: var(--claret);
 }
+.nav-tabs .nav-link {
+    font-size: 14px;
+    line-height: 1.5rem;
+    padding: 8px 12px 6px 12px;
+    border-radius: 7px 7px 0 0;
+    color: var(--claret);
+    border-bottom:0;
+}
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+    background-color: var(--claret);
+    color: var(--white);
+    border: none;
+    font-weight:bold;
+}
+.nav.nav-tabs {
+    border-bottom: 2px solid var(--claret);
+}
+.modal-dialog-scrollable .modal-body{
+    max-height:calc(100vh - 144px);
+}
+.choices__list--dropdown{
+    display:none;
+    visibility:visible;
+}
 
+.choices__list--dropdown.is-active {
+    display: block;
+    visibility: visible;
+}
+
+.choices__list--multiple .choices__item{
+    background-color: var(--cabaret);
+    border: 1px solid var(--cabaret);
+}
+.choices[data-type*="select-multiple"] .choices__button, 
+.choices[data-type*="text"] .choices__button{
+    border-left:1px solid #ddd;
+}
+.choices__input{
+    margin-bottom:0px;
+}
+.choices__inner {
+    background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") right 0.75rem center/8px 10px no-repeat;
+    background-color: #f9f9f9;
+    border-color: #f9f9f9;
+}
+button.Zebra_DatePicker_Icon{
+    opacity:.6;
+}
+
+.alert-info h4,
+.alert-info h5,
+.alert-info h6,
+.alert-info p {
+    color: #0c5460;
+}
 
 
 
