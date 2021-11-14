@@ -11,5 +11,6 @@ namespace SchoolPortal.Core.DTOs
         public int ReminderServiceExecutionInterval { get; set; }
         public EmailSMTPConfig EmailSMTPConfig { get; set; }
         public int MailRetentionPeriod { get; set; }
+        public int EmailVerificationTokenExpiryPeriod { get; set; }
     }
 }

@@ -21,6 +21,7 @@ namespace SchoolPortal.Services.Implementations
         private readonly ILogger<UserService> logger;
         private readonly IHttpContextAccessor accessor;
         private readonly ITokenService tokenService;
+        private readonly IMailService mailService;
 
         public UserService(
             IRepository<User> userRepo, 
@@ -29,7 +30,8 @@ namespace SchoolPortal.Services.Implementations
             IPasswordService passwordService, 
             ILogger<UserService> logger, 
             IHttpContextAccessor accessor, 
-            ITokenService tokenService)
+            ITokenService tokenService,
+            IMailService mailService)
         {
             this.userRepo = userRepo;
             this.roleRepo = roleRepo;
@@ -38,6 +40,7 @@ namespace SchoolPortal.Services.Implementations
             this.logger = logger;
             this.accessor = accessor;
             this.tokenService = tokenService;
+            this.mailService = mailService;
         }
 
         // Initial sysadmin user setup
@@ -130,7 +133,18 @@ namespace SchoolPortal.Services.Implementations
             //    currentUser.UserId);
 
             // send welcome/email verification mail
-#warning Schedule welcome/email verification mail
+
+            var mail = new MailObject
+            {
+                Recipients = new List<Recipient> {
+                    new Recipient {
+                        FirstName=user.FirstName,
+                        LastName=user.Surname,
+                    Email=user.Email
+                    }
+                }
+            };
+            await mailService.ScheduleEmailConfirmationMail(mail, user.Username, Constants.DEFAULT_NEW_USER_PASSWORD, token);
 
             return user.Id;
         }

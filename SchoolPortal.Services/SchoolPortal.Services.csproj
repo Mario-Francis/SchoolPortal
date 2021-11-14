@@ -4,11 +4,13 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.15.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.15" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
     <PackageReference Include="DnsClient" Version="1.5.0" />
     <PackageReference Include="Easy.Password.Validator" Version="1.1.1" />
+    <PackageReference Include="NUglify" Version="1.16.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SchoolPortal.Core\SchoolPortal.Core.csproj" />
@@ -21,5 +23,8 @@
     <None Update="BadLists\top-10k-passwords.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>
