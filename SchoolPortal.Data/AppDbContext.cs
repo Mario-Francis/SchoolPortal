@@ -40,6 +40,7 @@ namespace SchoolPortal.Data
         public DbSet<UserLoginHistory> UserLoginHistories { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<ClassRoomTeacher> ClassRoomTeachers { get; set; }
+        public DbSet<RoomCode> RoomCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -203,21 +204,21 @@ namespace SchoolPortal.Data
            );
 
             modelBuilder.Entity<Term>().HasData(
-               new Role
+               new Term
                {
                    Id = 1,
                    Name = "First",
                    CreatedBy = Constants.SYSTEM_NAME,
                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
                },
-               new Role
+               new Term
                {
                    Id = 2,
                    Name = "Second",
                    CreatedBy = Constants.SYSTEM_NAME,
                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
                },
-               new Role
+               new Term
                {
                    Id = 3,
                    Name = "Third",
@@ -227,14 +228,14 @@ namespace SchoolPortal.Data
           );
 
             modelBuilder.Entity<TermSection>().HasData(
-              new Role
+              new TermSection
               {
                   Id = 1,
                   Name = "First-Half",
                   CreatedBy = Constants.SYSTEM_NAME,
                   CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
               },
-              new Role
+              new TermSection
               {
                   Id = 2,
                   Name = "Second-Half",
@@ -243,29 +244,53 @@ namespace SchoolPortal.Data
               }
          );
 
-            modelBuilder.Entity<ClassType>().HasData(
-             new ClassType
-             {
-                 Id = 1,
-                 Name = "Nursery",
-                 CreatedBy = Constants.SYSTEM_NAME,
-                 CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
-             },
-             new Role
-             {
-                 Id = 2,
-                 Name = "Primary",
-                 CreatedBy = Constants.SYSTEM_NAME,
-                 CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
-             },
-              new Role
-              {
-                  Id = 3,
-                  Name = "Secondary",
-                  CreatedBy = Constants.SYSTEM_NAME,
-                  CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
-              }
-        );
+              modelBuilder.Entity<ClassType>().HasData(
+                 new ClassType
+                 {
+                     Id = 1,
+                     Name = "Nursery",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new ClassType
+                 {
+                     Id = 2,
+                     Name = "Primary",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                 },
+                  new ClassType
+                  {
+                      Id = 3,
+                      Name = "Secondary",
+                      CreatedBy = Constants.SYSTEM_NAME,
+                      CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                  }
+            );
+
+            modelBuilder.Entity<RoomCode>().HasData(
+                new RoomCode
+                {
+                    Id = 1,
+                    Code = "CHARITY",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                },
+                new RoomCode
+                {
+                    Id = 2,
+                    Code = "PEACE",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                },
+                 new RoomCode
+                 {
+                     Id = 3,
+                     Code = "LOVE",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                 }
+           );
 
 
         }

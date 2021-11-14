@@ -67,5 +67,14 @@ namespace SchoolPortal.Web.UIServices
             classRooms.Insert(0, new SelectListItem { Text = "- Select classroom -", Value = "" });
             return classRooms;
         }
+
+        public IEnumerable<SelectListItem> GetRoomCodes(string value = null)
+        {
+            List<SelectListItem> codes = listService.GetRoomCodes()
+                .Select(c => new SelectListItem { Text = $"{c.Code}", Value = c.Code, Selected = c.Code.ToString() == value }).ToList();
+
+            codes.Insert(0, new SelectListItem { Text = "- Select room code -", Value = "" });
+            return codes;
+        }
     }
 }

@@ -76,7 +76,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="code" class="f14">* Room Code</label>
-                                    <input id="code" type="text" class="form-control" maxlength="20" placeholder="E.g Charity, Peace" required />
+                                    <select id="code" class="form-control custom-select" required asp-items="@dropdownService.GetRoomCodes()"></select>
+                                    @*<input id="code" type="text" class="form-control" maxlength="20" placeholder="E.g Charity, Peace" required />*@
                                 </div>
                             </div>
                             @*<div class="col-md-12">
@@ -126,7 +127,8 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="e_code" class="f14">* Room Code</label>
-                                    <input id="e_code" type="text" class="form-control" maxlength="20" placeholder="E.g Charity, Peace" required />
+                                    <select id="e_code" class="form-control custom-select" required asp-items="@dropdownService.GetRoomCodes()"></select>
+                                    @*<input id="e_code" type="text" class="form-control" maxlength="20" placeholder="E.g Charity, Peace" required />*@
                                 </div>
                             </div>
                             @*<div class="col-md-12">
