@@ -1,4 +1,5 @@
 ﻿using DataTablesParser;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -235,6 +236,34 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        public async Task<IActionResult> ResetPassword(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "User is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await userService.ResetPassword(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "User password reset succeessfully and new password sent via mail", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while reseting a user's password");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
         public async Task<IActionResult> GetUser(long? id)
         {
             try
@@ -320,6 +349,47 @@ namespace SchoolPortal.Web.Controllers
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> BatchAddUsers(IFormFile file, long roleId)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "No file uploaded!", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    if (!userService.ValidateFile(file, out List<string> errItems))
+                    {
+                        return StatusCode(400, new { IsSuccess = false, Message = "Invalid file uploaded.", ErrorItems = errItems });
+                    }
+                    else
+                    {
+                        var users = await userService.ExtractData(file);
+
+                        await userService.BatchCreateUser(users, roleId);
+
+                        return Ok(new { IsSuccess = true, Message = "File uploaded and read and users created successfully", ErrorItems = new string[] { } });
+                        
+                    }
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while adding users in batch");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
 
 
     }

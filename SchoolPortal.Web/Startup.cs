@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SchoolPortal.Core;
+using SchoolPortal.Core.DTOs;
 using SchoolPortal.Root;
 using SchoolPortal.Web.Middlewares;
 using SchoolPortal.Web.UIServices;
@@ -55,6 +56,8 @@ namespace SchoolPortal.Web
             services.AddScoped<ISessionService, SessionService>();
 
             services.AddControllersWithViews();
+
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             services.AddHttpContextAccessor();
 

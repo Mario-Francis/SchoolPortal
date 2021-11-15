@@ -8,15 +8,18 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services.Implementations
 {
-    public class EmailService:IEmailService
+    public class EmailService : IEmailService
     {
-        public Task<bool> IsEmailValidAsync(string email)
+        public Task<bool> IsEmailValidAsync(string email, bool checkDnsEntries = true)
         {
             try
             {
                 var mailAddress = new MailAddress(email);
                 var host = mailAddress.Host;
-                return CheckDnsEntriesAsync(host);
+                if (checkDnsEntries)
+                    return CheckDnsEntriesAsync(host);
+
+                return Task.FromResult(true);
             }
             catch (FormatException)
             {

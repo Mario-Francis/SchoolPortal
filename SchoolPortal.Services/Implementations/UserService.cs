@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ClosedXML.Excel;
+using ExcelDataReader;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
 using SchoolPortal.Core.DTOs;
 using SchoolPortal.Core.Extensions;
@@ -7,6 +10,8 @@ using SchoolPortal.Core.Models;
 using SchoolPortal.Data.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,6 +27,8 @@ namespace SchoolPortal.Services.Implementations
         private readonly IHttpContextAccessor accessor;
         private readonly ITokenService tokenService;
         private readonly IMailService mailService;
+        private readonly AppSettings appSettings;
+        private string[] headers = new string[] { "SN", "First Name", "Middle Name", "Surname", "Gender", "Date of Birth", "Email", "Phone Number" };
 
         public UserService(
             IRepository<User> userRepo, 
@@ -31,7 +38,8 @@ namespace SchoolPortal.Services.Implementations
             ILogger<UserService> logger, 
             IHttpContextAccessor accessor, 
             ITokenService tokenService,
-            IMailService mailService)
+            IMailService mailService,
+            IOptions<AppSettings> appSettings)
         {
             this.userRepo = userRepo;
             this.roleRepo = roleRepo;
@@ -41,6 +49,7 @@ namespace SchoolPortal.Services.Implementations
             this.accessor = accessor;
             this.tokenService = tokenService;
             this.mailService = mailService;
+            this.appSettings = appSettings.Value;
         }
 
         // Initial sysadmin user setup
@@ -140,11 +149,14 @@ namespace SchoolPortal.Services.Implementations
                     new Recipient {
                         FirstName=user.FirstName,
                         LastName=user.Surname,
-                    Email=user.Email
+                        Email=user.Email,
+                        Username=user.Username,
+                        Password= Constants.DEFAULT_NEW_USER_PASSWORD,
+                        Token=token
                     }
                 }
             };
-            await mailService.ScheduleEmailConfirmationMail(mail, user.Username, Constants.DEFAULT_NEW_USER_PASSWORD, token);
+            await mailService.ScheduleEmailConfirmationMail(mail);
 
             return user.Id;
         }
@@ -254,6 +266,44 @@ namespace SchoolPortal.Services.Implementations
             //    ActivityType.UPDATE_PASSWORD,
             //    currentUser.UserId);
         }
+
+        // reset password
+        public async Task ResetPassword(long userId)
+        {  
+            var user = await userRepo.GetById(userId);
+            if (user == null)
+            {
+                throw new AppException($"User with id '{userId}' does not exist");
+            }
+            var newPassword = Constants.DEFAULT_NEW_USER_PASSWORD;
+            var currentUser = accessor.HttpContext.GetUserSession();
+            user.Password = passwordService.Hash(newPassword);
+            user.UpdatedBy = currentUser.Username;
+            user.UpdatedDate = DateTimeOffset.Now;
+
+            await userRepo.Update(user, true);
+
+            // log action
+            //await loggerService.LogActivity(
+            //    $"Updated password",
+            //    ActivityType.UPDATE_PASSWORD,
+            //    currentUser.UserId);
+
+            var mail = new MailObject
+            {
+                Recipients = new List<Recipient> {
+                    new Recipient {
+                        FirstName=user.FirstName,
+                        LastName=user.Surname,
+                        Email=user.Email,
+                        Password= newPassword
+                    }
+                }
+            };
+            await mailService.SchedulePasswordResetMail(mail);
+
+        }
+
 
         // authenticate user
         public async Task<bool> IsUserAuthentic(LoginCredential credential)
@@ -453,5 +503,262 @@ namespace SchoolPortal.Services.Implementations
             }
         }
 
+        //=========== Batch Upload ===========
+        public bool ValidateFile(IFormFile file, out List<string> errorItems)
+        {
+            bool isValid = true;
+            List<string> errList = new List<string>();
+            var maxUploadSize = appSettings.MaxUploadSize;
+            if (file == null)
+            {
+                isValid = false;
+                errList.Add("No file uploaded.");
+            }
+            else
+            {
+                if (file.Length > (maxUploadSize * 1024 * 1024))
+                {
+                    isValid = false;
+                    errList.Add($"Max upload size exceeded. Max size is {maxUploadSize}MB");
+                }
+                var ext = Path.GetExtension(file.FileName);
+                if (ext != ".xls" && ext != ".xlsx")
+                {
+                    isValid = false;
+                    errList.Add($"Invalid file format. Supported file formats include .xls and .xlsx");
+                }
+            }
+            errorItems = errList;
+            return isValid;
+        }
+
+        private bool ValidateHeader(DataRow row, string[] headers, out string errorMessage)
+        {
+            var err = "";
+            var isValid = true;
+            for (int i = 0; i < headers.Length; i++)
+            {
+                if (row[i] == null || Convert.ToString(row[i]).Trim().ToLower() != headers[i].ToLower())
+                {
+                    isValid = false;
+                    err = $"Invalid header value at column {i + 1}. Expected value is {headers[i]}";
+                    break;
+                }
+            }
+            errorMessage = err;
+            return isValid;
+        }
+
+        private async Task<(bool isValid, string errorMessage)> ValidateDataRow(int index, DataRow row)
+        {
+            var err = "";
+            var isValid = true;
+            if (row[1] == null || Convert.ToString(row[1]).Trim()=="")
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[1]} at row {index}. Field is requiured.";
+            }
+            else if (row[3] == null || Convert.ToString(row[3]).Trim() == "")
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[3]} at row {index}. Field is requiured.";
+            }
+            else if (row[4] == null || Convert.ToString(row[4]).Trim() == "")
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[4]} at row {index}. Field is requiured.";
+            }
+            else if (row[5] != null && !DateTimeOffset.TryParse(Convert.ToString(row[5]).Trim(), out DateTimeOffset _))
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[5]} at row {index}. A valid date value expected.";
+            }
+            else if (row[6] == null || Convert.ToString(row[6]).Trim() == "")
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[6]} at row {index}. Field is requiured.";
+            }
+            else if (row[6] != null && !(await emailService.IsEmailValidAsync(Convert.ToString(row[6]).Trim(), false)))
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[6]} at row {index}. Field is requiured.";
+            }
+            else if (row[7] == null || Convert.ToString(row[7]).Trim() == "")
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[7]} at row {index}. Field is requiured.";
+            }
+
+            return (isValid, err);
+        }
+
+        public async Task<IEnumerable<User>> ExtractData(IFormFile file)
+        {
+            List<User> users = new List<User>();
+            IExcelDataReader excelReader = null;
+            DataSet dataSet = new DataSet();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            var fileStream = file.OpenReadStream();
+
+            if (file.FileName.EndsWith(".xls"))
+                excelReader = ExcelReaderFactory.CreateBinaryReader(fileStream);
+            else if (file.FileName.EndsWith(".xlsx"))
+                excelReader = ExcelReaderFactory.CreateReader(fileStream);
+            else
+                throw new AppException($"Invalid file '{file.FileName}'");
+
+            dataSet = excelReader.AsDataSet();
+            excelReader.Close();
+
+            if (dataSet == null || dataSet.Tables.Count == 0)
+                throw new AppException($"Unable to read file. Ensure file complies with the specified template.");
+
+            var table = dataSet.Tables[0];
+            var header = table.Rows[0];
+            if (!ValidateHeader(header, headers, out string error))
+            {
+                throw new AppException(error);
+            }
+            else
+            {
+                //validate and load data
+                var rows = table.Rows;
+                for (int i = 1; i < rows.Count; i++)
+                {
+                    var validationResult = await ValidateDataRow(i, rows[i]);
+                    if (!validationResult.isValid)
+                    {
+                        throw new AppException(validationResult.errorMessage);
+                    }
+                    else
+                    {
+                        var user = new User()
+                        {
+                            FirstName = Convert.ToString(rows[i][1]),
+                            MiddleName = Convert.ToString(rows[i][2]),
+                            Surname = Convert.ToString(rows[i][3]),
+                            Gender = Convert.ToString(rows[i][4]),
+                            DateOfBirth = DateTimeOffset.Parse(Convert.ToString(rows[i][5])),
+                            Email = Convert.ToString(rows[i][6]),
+                            PhoneNumber = Convert.ToString(rows[i][7])
+                        };
+                        users.Add(user);
+                    }
+                }
+            }
+            fileStream.Dispose();
+            return users;
+        }
+
+        public async Task BatchCreateUser(IEnumerable<User> users, long roleId)
+        {
+            var role = await roleRepo.GetById(roleId);
+            if (role == null)
+            {
+                throw new AppException("Role is required");
+            }
+
+            var currentUser = accessor.HttpContext.GetUserSession();
+            var password = Constants.DEFAULT_NEW_USER_PASSWORD;
+
+            var _users = (await Task.WhenAll(users.Select(async u =>
+              {
+                  u.Username = await GenerateUsername(u.FirstName, u.Surname);
+                  u.Password = passwordService.Hash(password);
+                  u.IsActive = true;
+                  u.CreatedBy = currentUser.Username;
+                  u.UpdatedBy = currentUser.Username;
+                  u.CreatedDate = DateTimeOffset.Now;
+                  u.UpdatedDate = DateTimeOffset.Now;
+                  u.UserRoles = new List<UserRole> { new UserRole { RoleId = roleId, CreatedBy = currentUser.Username } };
+                  return u;
+              }))).ToList();
+
+            await userRepo.InsertRange(_users);
+
+            _users = _users.Select(u =>
+            {
+                u.EmailVerificationToken = tokenService.GenerateTokenFromData(u.Id.ToString());
+                return u;
+            }).ToList();
+
+            await userRepo.UpdateRange(_users);
+
+            //// log action
+            //await loggerService.LogActivity(
+            //    $"Created new user with email '{user.Email}'",
+            //    ActivityType.CREATE_USER,
+            //    currentUser.UserId);
+
+            // send welcome/email verification mail
+
+            var recipients = _users.Select(u => new Recipient
+            {
+                FirstName = u.FirstName,
+                LastName = u.Surname,
+                Email = u.Email,
+                Password = password,
+                Token = u.EmailVerificationToken,
+                Username = u.Username
+            });
+            var mail = new MailObject
+            {
+                Recipients = recipients
+            };
+            await mailService.ScheduleEmailConfirmationMail(mail);
+        }
+
+
+        public byte[] ExportUsersToExcel(int id)
+        {
+            var users = userRepo.GetAll();
+
+            // create excel
+            var workbook = new XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+
+            // using data table
+            var table = new DataTable("Inward Transactions");
+            foreach (var h in headers)
+            {
+                table.Columns.Add(h, typeof(string));
+            }
+            table.Columns.Add("Is Active?", typeof(string));
+            table.Columns.Add("Created By", typeof(string));
+            table.Columns.Add("Date Created", typeof(string));
+
+            var count = 1;
+            foreach (var u in users)
+            {
+                var row = table.NewRow();
+
+                row[0] = count.ToString();
+                row[1] = u.FirstName;
+                row[2] = u.MiddleName;
+                row[3] = u.Surname;
+                row[4] = u.Gender;
+                row[5] = u.DateOfBirth;
+                row[6] = u.Email;
+                row[7] = u.PhoneNumber;
+                row[8] = u.IsActive ? "Yes" : "No";
+                row[9] = u.CreatedBy;
+                row[10] = u.CreatedDate.ToString("yyyy-MM-dd hh:mmtt");
+
+                table.Rows.Add(row);
+                count++;
+            }
+            workbook.AddWorksheet(table);
+
+            byte[] byteFile = null;
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                byteFile = stream.ToArray();
+            }
+
+            return byteFile;
+        }
+
+        //=========== End Batch Upload =============
     }
 }

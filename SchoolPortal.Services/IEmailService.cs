@@ -7,6 +7,6 @@ namespace SchoolPortal.Services
 {
    public interface IEmailService
     {
-        Task<bool> IsEmailValidAsync(string email);
+        Task<bool> IsEmailValidAsync(string email, bool checkDnsEntries = true);
     }
 }

@@ -9,7 +9,8 @@ namespace SchoolPortal.Services
 {
     public interface IMailService
     {
-        Task ScheduleEmailConfirmationMail(MailObject mail, string username, string password, string token);
+        Task SchedulePasswordResetMail(MailObject mail);
+        Task ScheduleEmailConfirmationMail(MailObject mail);
         Task<bool> SendMail(Mail mail);
         Task ProcessUnsentMails();
         Task DeleteOldMails();

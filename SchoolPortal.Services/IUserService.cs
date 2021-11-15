@@ -1,6 +1,8 @@
-﻿using SchoolPortal.Core.DTOs;
+﻿using Microsoft.AspNetCore.Http;
+using SchoolPortal.Core.DTOs;
 using SchoolPortal.Core.Models;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace SchoolPortal.Services
@@ -21,5 +23,11 @@ namespace SchoolPortal.Services
         IEnumerable<User> SearchTeachers(string searchParam, int max = 50);
         Task UpdateUserStatus(long userId, bool isActive);
         Task AssignClassRoom(long userId, long? roomId);
+        Task ResetPassword(long userId);
+
+        bool ValidateFile(IFormFile file, out List<string> errorItems);
+        Task<IEnumerable<User>> ExtractData(IFormFile file);
+        Task BatchCreateUser(IEnumerable<User> users, long roleId);
+        byte[] ExportUsersToExcel(int id);
     }
 }

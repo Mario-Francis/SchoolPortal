@@ -121,6 +121,7 @@ $(() => {
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
+                        + `<a class="dropdown-item reset" href="javascript:void(0)" uid="${row.id}">Reset Password</a>`
                         + `<a class="dropdown-item edit" href="javascript:void(0)" uid="${row.id}">Edit</a>`
                         + `<a class="dropdown-item delete" href="javascript:void(0)" uid="${row.id}">Delete</a>`
                         + '</div>'
@@ -800,6 +801,32 @@ $(() => {
         });
     });
 
+    // on password reset
+    $(document).on('click', '.reset', async (e) => {
+        let loader;
+        let uid = $(e.currentTarget).attr('uid');
+        bootConfirm('Are you sure you want to reset this user\'s password?', {
+            title: 'Confirm Action', size: 'small', callback: async (res) => {
+                if (res) {
+                    try {
+                        loader = bootLoaderDialog('Resetting password...');
+                        let message = await resetPassword(uid);
+                        loader.hide();
+
+                        notify(message + '.', 'success');
+                        refreshTables();
+                    } catch (ex) {
+                        loader.hide();
+                        console.error(ex);
+                        if (ex != null) {
+                            notify(ex + '.', 'danger');
+                        }
+                    }
+                }
+            }
+        });
+    });
+
 });
 
 
@@ -867,6 +894,39 @@ function deleteUser(id) {
     });
     return promise;
 }
+
+function resetPassword(id) {
+    var promise = new Promise((resolve, reject) => {
+        try {
+            if (id == undefined || id == '' || id == 0) {
+                reject('Invalid user id');
+            } else {
+                let url = $base + 'users/ResetPassword/' + id;
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (response) => {
+                        if (response.isSuccess) {
+                            resolve(response.message);
+                        } else {
+                            reject(response.message);
+                        }
+                    },
+                    error: (req, status, err) => {
+                        ajaxErrorHandler(req, status, err, {});
+                    }
+                });
+            }
+
+        } catch (ex) {
+            console.error(ex);
+            //notify(ex.message, 'danger');
+            reject(ex.message);
+        }
+    });
+    return promise;
+}
+
 
 function updateUserStatus(id, isActive = true) {
     var promise = new Promise((resolve, reject) => {

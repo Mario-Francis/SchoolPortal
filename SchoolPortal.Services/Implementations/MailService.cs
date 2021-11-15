@@ -46,30 +46,29 @@ namespace SchoolPortal.Services.Implementations
         }
 
         // schedule email confirmation mail
-        public async Task ScheduleEmailConfirmationMail(MailObject mail, string username, string password, string token)
+        public async Task ScheduleEmailConfirmationMail(MailObject mail)
         {
-            var url = contextAccessor.HttpContext.GetBaseUrl() + "Auth/VerifEmail?token=" + token;
-            var message = $"Welcome onboard and we are glad to have you. You have just been profiled on the Caleb International School Portal and you are required to confirm your email address." +
-                $"Kindly find your login credentials below.<br />" +
-                 $"<ul><li><b>Username: </b> {username}</li><li><b>Password: </b> {password}</li></ul><br /> On login, you will be required to change your password. Please click the button below to confirm your email address.";
-
-             var message2 = $"If you are having issues clicking the above button, copy and past the link below on your browser's address bar<br /><b>URL: </b><a href='{url}' target='_blank'>{url}</a>.<br /><br />" +
-                $"The above confirmation link will expire in {appSettings.EmailVerificationTokenExpiryPeriod} days.";
-
             var templatePath = Path.Combine(hostEnvironment.WebRootPath, "templates", "email_verification_template.html");
             var htmlBody = await File.ReadAllTextAsync(templatePath);
             var baseUrl = contextAccessor.HttpContext.GetBaseUrl();
-            htmlBody = htmlBody.Replace("{message}", message);
-            htmlBody = htmlBody.Replace("{message2}", message2);
-            htmlBody = htmlBody.Replace("{url}", url);
-
             htmlBody = htmlBody.Replace("{base_url}", baseUrl);
 
             var _mails = new List<Mail>();
             foreach (var m in mail.Recipients)
             {
                 var _htmlBody = htmlBody;
+                var url = contextAccessor.HttpContext.GetBaseUrl() + "Auth/VerifEmail?token=" + m.Token;
+                var message = $"Welcome onboard and we are glad to have you. You have just been profiled on the Caleb International School Portal and you are required to confirm your email address." +
+                    $"Kindly find your login credentials below.<br />" +
+                     $"<ul><li><b>Username: </b> {m.Username}</li><li><b>Password: </b> {m.Password}</li></ul><br /> On login, you will be required to change your password. Please click the button below to confirm your email address.";
+
+                var message2 = $"If you are having issues clicking the above button, copy and past the link below on your browser's address bar<br /><b>URL: </b><a style='color:#8f1b39;' href='{url}' target='_blank'>{url}</a>.<br /><br />" +
+                   $"The above confirmation link will expire in {appSettings.EmailVerificationTokenExpiryPeriod} days.";
+
                 _htmlBody = _htmlBody.Replace("{name}", m.FirstName);
+                _htmlBody = _htmlBody.Replace("{message}", message);
+                _htmlBody = _htmlBody.Replace("{message2}", message2);
+                _htmlBody = _htmlBody.Replace("{url}", url);
                 var _mail = new Mail
                 {
                     Body = _htmlBody,
@@ -79,6 +78,43 @@ namespace SchoolPortal.Services.Implementations
                     UpdatedDate = DateTimeOffset.Now,
                     Email = m.Email,
                     Subject = $"Welcome - Caleb School Portal Team"
+                };
+                _mails.Add(_mail);
+            }
+            await mailRepo.InsertBulk(_mails);
+        }
+
+        // schedule password reset mail
+        public async Task SchedulePasswordResetMail(MailObject mail)
+        {
+            var templatePath = Path.Combine(hostEnvironment.WebRootPath, "templates", "mail_template.html");
+            var htmlBody = await File.ReadAllTextAsync(templatePath);
+            var baseUrl = contextAccessor.HttpContext.GetBaseUrl();
+            htmlBody = htmlBody.Replace("{base_url}", baseUrl);
+
+            var _mails = new List<Mail>();
+            foreach (var m in mail.Recipients)
+            {
+                var _htmlBody = htmlBody;
+                var url = contextAccessor.HttpContext.GetBaseUrl() + "Dashboard";
+                var message = $"This is to notify you that your account password on the CIS Portal has been reset by your System Administrator. " +
+                    $"Kindly find new password below.<br />" +
+                     $"<ul><li><b>Password: </b> {m.Password}</li></ul><br /> On login, you will be required to change your password.";
+
+
+                _htmlBody = _htmlBody.Replace("{name}", m.FirstName);
+                _htmlBody = _htmlBody.Replace("{message}", message);
+                _htmlBody = _htmlBody.Replace("{action_text}", "Login to your dashboard");
+                _htmlBody = _htmlBody.Replace("{action_url}", url);
+                var _mail = new Mail
+                {
+                    Body = _htmlBody,
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = DateTimeOffset.Now,
+                    UpdatedBy = Constants.SYSTEM_NAME,
+                    UpdatedDate = DateTimeOffset.Now,
+                    Email = m.Email,
+                    Subject = $"Password Reset Alert - Caleb School Portal Team"
                 };
                 _mails.Add(_mail);
             }

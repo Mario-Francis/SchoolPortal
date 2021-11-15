@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -11,6 +11,10 @@
     <PackageReference Include="DnsClient" Version="1.5.0" />
     <PackageReference Include="Easy.Password.Validator" Version="1.1.1" />
     <PackageReference Include="NUglify" Version="1.16.1" />
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SchoolPortal.Core\SchoolPortal.Core.csproj" />
