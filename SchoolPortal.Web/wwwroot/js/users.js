@@ -485,6 +485,11 @@ $(() => {
     $('#addBtn').on('click', (e) => {
         $('#addModal').modal({ backdrop: 'static', keyboard: false }, 'show');
     });
+    $('#batchAddBtn').on('click', (e) => {
+        $('#batchUploadModal').modal({ backdrop: 'static', keyboard: false }, 'show');
+    });
+
+    
 
     // on add
     $('#createBtn').on('click', (e) => {
@@ -825,6 +830,69 @@ $(() => {
                 }
             }
         });
+    });
+
+
+    // batch upload users
+    $('#uploadBtn').on('click', (e) => {
+        e.preventDefault();
+        let btn = $(e.currentTarget);
+        try {
+            let form = $("form")[3];
+            if (validateForm(form)) {
+                let files = $('#file')[0].files;
+                let role = $('#b_role').val();
+
+                if (role == '') {
+                    notify('Role is required.', 'warning');
+                }else if (files.length == 0) {
+                    notify('No file selected! Kindly select a valid excel file.', 'warning');
+                } else {
+                    let formData = new FormData();
+                    formData.append('file', files[0]);
+                    formData.append('roleId', role);
+
+                    $('fieldset').prop('disabled', true);
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Uploading file...');
+                    let url = $base + 'users/BatchAddUsers';
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: formData,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+                        success: (response) => {
+                            if (response.isSuccess) {
+                                refreshTables();
+                                notify(response.message + '.', 'success');
+
+                                form.reset();
+                                $('#batchUploadModal').modal('hide');
+                            } else {
+                                notify(response.message+'.', 'danger');
+                            }
+                            btn.html('<i class="fa fa-upload"></i> &nbsp;Upload File');
+                            $('fieldset').prop('disabled', false);
+                        },
+                        error: (req, status, err) => {
+                            ajaxErrorHandler(req, status, err, {
+                                callback: () => {
+                                    btn.html('<i class="fa fa-upload"></i> &nbsp;Upload File');
+                                    $('fieldset').prop('disabled', false);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+            notify(ex.message, 'danger');
+            btn.html('<i class="fa fa-upload"></i> &nbsp;Upload File');
+            $('fieldset').prop('disabled', false);
+        }
     });
 
 });

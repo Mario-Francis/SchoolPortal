@@ -662,18 +662,21 @@ namespace SchoolPortal.Services.Implementations
             var currentUser = accessor.HttpContext.GetUserSession();
             var password = Constants.DEFAULT_NEW_USER_PASSWORD;
 
-            var _users = (await Task.WhenAll(users.Select(async u =>
-              {
-                  u.Username = await GenerateUsername(u.FirstName, u.Surname);
-                  u.Password = passwordService.Hash(password);
-                  u.IsActive = true;
-                  u.CreatedBy = currentUser.Username;
-                  u.UpdatedBy = currentUser.Username;
-                  u.CreatedDate = DateTimeOffset.Now;
-                  u.UpdatedDate = DateTimeOffset.Now;
-                  u.UserRoles = new List<UserRole> { new UserRole { RoleId = roleId, CreatedBy = currentUser.Username } };
-                  return u;
-              }))).ToList();
+            var _users = new List<User>();
+
+            foreach(var u in users)
+            {
+                u.Username = await GenerateUsername(u.FirstName, u.Surname);
+                u.Password = passwordService.Hash(password);
+                u.IsActive = true;
+                u.CreatedBy = currentUser.Username;
+                u.UpdatedBy = currentUser.Username;
+                u.CreatedDate = DateTimeOffset.Now;
+                u.UpdatedDate = DateTimeOffset.Now;
+                u.UserRoles = new List<UserRole> { new UserRole { RoleId = roleId, CreatedBy = currentUser.Username } };
+
+                _users.Add(u);
+            }
 
             await userRepo.InsertRange(_users);
 
