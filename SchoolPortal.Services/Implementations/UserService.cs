@@ -21,6 +21,7 @@ namespace SchoolPortal.Services.Implementations
     {
         private readonly IRepository<User> userRepo;
         private readonly IRepository<Role> roleRepo;
+        private readonly IRepository<UserRole> userRoleRepo;
         private readonly IEmailService emailService;
         private readonly IPasswordService passwordService;
         private readonly ILogger<UserService> logger;
@@ -32,7 +33,8 @@ namespace SchoolPortal.Services.Implementations
 
         public UserService(
             IRepository<User> userRepo, 
-            IRepository<Role> roleRepo, 
+            IRepository<Role> roleRepo,
+            IRepository<UserRole> userRoleRepo,
             IEmailService emailService, 
             IPasswordService passwordService, 
             ILogger<UserService> logger, 
@@ -43,6 +45,7 @@ namespace SchoolPortal.Services.Implementations
         {
             this.userRepo = userRepo;
             this.roleRepo = roleRepo;
+            this.userRoleRepo = userRoleRepo;
             this.emailService = emailService;
             this.passwordService = passwordService;
             this.logger = logger;
@@ -376,7 +379,7 @@ namespace SchoolPortal.Services.Implementations
                     throw new AppException($"User cannot be deleted as user is still associated with one or more entities");
                 }
 
-                await roleRepo.DeleteRange(user.UserRoles.Select(ur => ur.Id), false);
+                await userRoleRepo.DeleteRange(user.UserRoles.Select(ur => ur.Id), false);
                 await userRepo.Delete(user.Id, true);
 
                 var currentUser = accessor.HttpContext.GetUserSession();
@@ -388,6 +391,7 @@ namespace SchoolPortal.Services.Implementations
             }
             catch (Exception ex)
             {
+                logger.LogError(ex, ex.Message);
                 throw new AppException($"User cannot be deleted as user is still associated with one or more entities");
             }
         }
@@ -556,17 +560,22 @@ namespace SchoolPortal.Services.Implementations
             if (row[1] == null || Convert.ToString(row[1]).Trim()=="")
             {
                 isValid = false;
-                err = $"Invalid value for {headers[1]} at row {index}. Field is requiured.";
+                err = $"Invalid value for {headers[1]} at row {index}. Field is required.";
             }
             else if (row[3] == null || Convert.ToString(row[3]).Trim() == "")
             {
                 isValid = false;
-                err = $"Invalid value for {headers[3]} at row {index}. Field is requiured.";
+                err = $"Invalid value for {headers[3]} at row {index}. Field is required.";
             }
             else if (row[4] == null || Convert.ToString(row[4]).Trim() == "")
             {
                 isValid = false;
-                err = $"Invalid value for {headers[4]} at row {index}. Field is requiured.";
+                err = $"Invalid value for {headers[4]} at row {index}. Field is required.";
+            }
+            else if (!(new string[] { "male", "female" }).Contains(Convert.ToString(row[4]).Trim().ToLower())) // gender
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[4]} at row {index}. Value can either be 'Male' or 'Female'.";
             }
             else if (row[5] != null && !DateTimeOffset.TryParse(Convert.ToString(row[5]).Trim(), out DateTimeOffset _))
             {
@@ -576,17 +585,17 @@ namespace SchoolPortal.Services.Implementations
             else if (row[6] == null || Convert.ToString(row[6]).Trim() == "")
             {
                 isValid = false;
-                err = $"Invalid value for {headers[6]} at row {index}. Field is requiured.";
+                err = $"Invalid value for {headers[6]} at row {index}. Field is required.";
             }
             else if (row[6] != null && !(await emailService.IsEmailValidAsync(Convert.ToString(row[6]).Trim(), false)))
             {
                 isValid = false;
-                err = $"Invalid value for {headers[6]} at row {index}. Field is requiured.";
+                err = $"Invalid value for {headers[6]} at row {index}. Field is required.";
             }
             else if (row[7] == null || Convert.ToString(row[7]).Trim() == "")
             {
                 isValid = false;
-                err = $"Invalid value for {headers[7]} at row {index}. Field is requiured.";
+                err = $"Invalid value for {headers[7]} at row {index}. Field is required.";
             }
 
             return (isValid, err);
@@ -639,7 +648,7 @@ namespace SchoolPortal.Services.Implementations
                             MiddleName = Convert.ToString(rows[i][2]),
                             Surname = Convert.ToString(rows[i][3]),
                             Gender = Convert.ToString(rows[i][4]),
-                            DateOfBirth = DateTimeOffset.Parse(Convert.ToString(rows[i][5])),
+                            DateOfBirth = string.IsNullOrEmpty(Convert.ToString(rows[i][5]))?(DateTimeOffset?)null: DateTimeOffset.Parse(Convert.ToString(rows[i][5])),
                             Email = Convert.ToString(rows[i][6]),
                             PhoneNumber = Convert.ToString(rows[i][7])
                         };
@@ -666,7 +675,7 @@ namespace SchoolPortal.Services.Implementations
 
             foreach(var u in users)
             {
-                u.Username = await GenerateUsername(u.FirstName, u.Surname);
+               
                 u.Password = passwordService.Hash(password);
                 u.IsActive = true;
                 u.CreatedBy = currentUser.Username;
@@ -674,6 +683,25 @@ namespace SchoolPortal.Services.Implementations
                 u.CreatedDate = DateTimeOffset.Now;
                 u.UpdatedDate = DateTimeOffset.Now;
                 u.UserRoles = new List<UserRole> { new UserRole { RoleId = roleId, CreatedBy = currentUser.Username } };
+
+                //  validate email and username for duplicate
+                if(_users.Any(usr=>usr.Email == u.Email))
+                {
+                    throw new AppException($"A user with email '{u.Email}' already exists on excel");
+                }
+                if(await userRepo.Any(usr=>usr.Email == u.Email))
+                {
+                    throw new AppException($"A user with email '{u.Email}' already exists");
+                }
+
+                u.Username = await GenerateUsername(u.FirstName, u.Surname);
+                var ucnt = 1;
+                while(_users.Any(usr=>usr.Username == u.Username))
+                {
+                    u.Username = u.Username + ucnt.ToString();
+                    ucnt++;
+                }
+                ucnt = 1;
 
                 _users.Add(u);
             }
@@ -721,7 +749,7 @@ namespace SchoolPortal.Services.Implementations
             var workbook = new XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
 
             // using data table
-            var table = new DataTable("Inward Transactions");
+            var table = new DataTable("Users");
             foreach (var h in headers)
             {
                 table.Columns.Add(h, typeof(string));

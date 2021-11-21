@@ -19,9 +19,10 @@ namespace SchoolPortal.Core.Models
         public DateTimeOffset DateOfBirth { get; set; }
         public string EmailVerificationToken { get; set; }
         public string PasswordRecoveryToken { get; set; }
+        public bool IsPasswordChanged { get; set; }
         public string AdmissionNo { get; set; }
         public DateTimeOffset EnrollmentDate { get; set; }
-        public int Status { get; set; }
+        public bool IsGraduated { get; set; }
         public string EntrySession { get; set; }
         public long EntryTermId { get; set; }
         public long EntryClassId { get; set; }

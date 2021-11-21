@@ -95,7 +95,7 @@ namespace SchoolPortal.Data
             modelBuilder.Entity<Student>()
               .HasMany(x => x.ClassRoomStudents)
               .WithOne(x => x.Student)
-              .OnDelete(DeleteBehavior.NoAction);
+              .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Class>()
                .HasMany(x => x.ClassRooms)

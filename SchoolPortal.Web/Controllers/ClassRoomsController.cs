@@ -208,5 +208,34 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        [HttpGet("[controller]/GetClassRooms/{classid}")]
+        public IActionResult GetClassRooms(long? classid)
+        {
+            try
+            {
+                if (classid == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "Class is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    var classRooms = classService.GetClassRooms().Where(r => r.ClassId == classid).Select(c => ClassRoomVM.FromClassRoom(c));
+                    return Ok(new { IsSuccess = true, Message = "Classroom retrieved succeessfully", Data = classRooms });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while fetching a classroom");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
     }
 }
