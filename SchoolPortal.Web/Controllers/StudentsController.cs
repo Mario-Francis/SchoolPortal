@@ -509,6 +509,36 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        [HttpGet("[controller]/SearchStudents")]
+        public IActionResult SearchStudents([FromQuery] string query, [FromQuery] int max = 100)
+        {
+            try
+            {
+                var students = studentService.SearchStudents(query, max).Select(t => new UserItemVM
+                {
+                    Id = t.Id,
+                    FirstName = t.FirstName,
+                    MiddleName = t.MiddleName,
+                    Surname = t.Surname,
+                    Username = t.Username,
+                    Email = t.Email
+                });
+                return Ok(new { IsSuccess = true, Message = "Success", Data = students });
+
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"An error was encountered while searching parents");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
 
     }
 }

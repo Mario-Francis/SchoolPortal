@@ -27,6 +27,6 @@ namespace SchoolPortal.Services
         Task<IEnumerable<Student>> ExtractData(IFormFile file);
         Task BatchCreateStudent(IEnumerable<Student> students);
         byte[] ExportStudentsToExcel(int id);
-
+        IEnumerable<Student> SearchStudents(string searchParam, int max = 50);
     }
 }

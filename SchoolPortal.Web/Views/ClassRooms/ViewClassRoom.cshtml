@@ -1,0 +1,101 @@
+﻿@model ClassRoomVM;
+@{
+    var name = $"{Model.Class} {Model.RoomCode}".Capitalize();
+    ViewData["Title"] = name;
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>@ViewData["Title"]</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Classes">Classes</a>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Classrooms">Classrooms</a>
+        </li>
+        <li>@name</li>
+
+    </ul>
+</div>
+<div class="card">
+    <div class="card-header bg-light p-4">
+        <h5 class="mb-0">Teachers</h5>
+    </div>
+    <div class="card-body">
+        <input type="hidden" id="roomId" value="@Model.Id" />
+        <!--<div class="text-right mb-3">
+            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Guardian</button>-->
+            @*<button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Add Student</button>*@
+        <!--</div>-->
+        <div class="table-responsive">
+            <table id="teachersTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Full Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Classroom</th>
+                        <th>Status</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-header bg-light p-4">
+        <h5 class="mb-0">Students</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="studentsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Full Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Classroom</th>
+                        <th>Status</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section css{
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script>
+
+    </script>
+    <script src="~/js/view_classroom.js" asp-append-version="true"></script>
+
+}

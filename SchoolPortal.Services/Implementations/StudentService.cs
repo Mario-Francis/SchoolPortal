@@ -986,5 +986,23 @@ namespace SchoolPortal.Services.Implementations
         }
 
         //=========== End Batch Upload =============
+
+        public IEnumerable<Student> SearchStudents(string searchParam, int max = 50)
+        {
+            if (string.IsNullOrEmpty(searchParam))
+            {
+                return studentRepo.GetWhere(s => s.IsActive).Take(max);
+            }
+            else
+            {
+                searchParam = searchParam.ToLower();
+                var students = studentRepo.GetWhere(u => u.IsActive &&
+                (u.Username.ToLower().Contains(searchParam) || u.Email.ToLower().Contains(searchParam)
+                || u.PhoneNumber.ToLower().Contains(searchParam) || u.FirstName.ToLower().Contains(searchParam)
+                || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam))).Take(max);
+
+                return students;
+            }
+        }
     }
 }

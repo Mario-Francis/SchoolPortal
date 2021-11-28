@@ -94,7 +94,7 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" cid="${row.id}">View Students</a>`
+                        + `<a class="dropdown-item" href="${$base}classrooms/${row.id}" cid="${row.id}">View</a>`
                         + `<div class="dropdown-divider"></div>`
                         + `<a class="dropdown-item edit" href="javascript:void(0)" cid="${row.id}">Edit</a>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" cid="${row.id}">Activate</a>` : '')

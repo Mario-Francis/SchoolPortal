@@ -17,9 +17,12 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services.Implementations
 {
-    public class UserService:IUserService
+    public class UserService : IUserService
     {
         private readonly IRepository<User> userRepo;
+        private readonly IRepository<StudentGuardian> guardianRepo;
+        private readonly IRepository<Student> studentRepo;
+        private readonly IRepository<Relationship> relationshipRepo;
         private readonly IRepository<Role> roleRepo;
         private readonly IRepository<UserRole> userRoleRepo;
         private readonly IEmailService emailService;
@@ -32,18 +35,24 @@ namespace SchoolPortal.Services.Implementations
         private string[] headers = new string[] { "SN", "First Name", "Middle Name", "Surname", "Gender", "Date of Birth", "Email", "Phone Number" };
 
         public UserService(
-            IRepository<User> userRepo, 
+            IRepository<User> userRepo,
+             IRepository<StudentGuardian> guardianRepo,
+            IRepository<Student> studentRepo,
+            IRepository<Relationship> relationshipRepo,
             IRepository<Role> roleRepo,
             IRepository<UserRole> userRoleRepo,
-            IEmailService emailService, 
-            IPasswordService passwordService, 
-            ILogger<UserService> logger, 
-            IHttpContextAccessor accessor, 
+            IEmailService emailService,
+            IPasswordService passwordService,
+            ILogger<UserService> logger,
+            IHttpContextAccessor accessor,
             ITokenService tokenService,
             IMailService mailService,
             IOptions<AppSettings> appSettings)
         {
             this.userRepo = userRepo;
+            this.guardianRepo = guardianRepo;
+            this.studentRepo = studentRepo;
+            this.relationshipRepo = relationshipRepo;
             this.roleRepo = roleRepo;
             this.userRoleRepo = userRoleRepo;
             this.emailService = emailService;
@@ -62,18 +71,18 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException("User object is required");
             }
-            if( !await emailService.IsEmailValidAsync(user.Email))
+            if (!await emailService.IsEmailValidAsync(user.Email))
             {
                 throw new AppException($"Email '{user.Email}' is not valid");
             }
-            if(!passwordService.ValidatePassword(user.Password, out string passwordValidationMessage))
+            if (!passwordService.ValidatePassword(user.Password, out string passwordValidationMessage))
             {
                 throw new AppException(passwordValidationMessage);
             }
 
             //var user = req.ToUser();
             user.Password = passwordService.Hash(user.Password);
-            user.Username = await GenerateUsername(user.FirstName,  user.Surname);
+            user.Username = await GenerateUsername(user.FirstName, user.Surname);
             user.IsActive = true;
             //user.CreatedBy = Constants.SYSTEM_NAME;
             user.CreatedDate = DateTimeOffset.Now;
@@ -196,7 +205,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"You cannot unassign the Administartor role from yourself. You can make another user an administrator and then the user can unassign the role from you");
             }
-            if (_user.UserRoles.Any(ur=>ur.RoleId == (long)AppRoles.PARENT) &&  !user.UserRoles.Any(ur=>ur.RoleId == (long)AppRoles.PARENT))
+            if (_user.UserRoles.Any(ur => ur.RoleId == (long)AppRoles.PARENT) && !user.UserRoles.Any(ur => ur.RoleId == (long)AppRoles.PARENT))
             {
                 _user.StudentGuardians.Clear();
             }
@@ -220,7 +229,7 @@ namespace SchoolPortal.Services.Implementations
                 ur.CreatedBy = currentUser.Username;
                 return ur;
             }).ToList());
-           
+
             _user.UpdatedBy = currentUser.Username;
             _user.UpdatedDate = DateTimeOffset.Now;
 
@@ -231,7 +240,7 @@ namespace SchoolPortal.Services.Implementations
             //    ActivityType.UPDATE_USER,
             //    currentUser.UserId, userRepository.TableName, oldUser, user);
         }
-        
+
         // update password
         public async Task UpdatePassword(PasswordRequestObject req)
         {
@@ -244,7 +253,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"User with id '{req.UserId}' does not exist");
             }
-            if(!passwordService.Verify(req.Password, user.Password))
+            if (!passwordService.Verify(req.Password, user.Password))
             {
                 throw new AppException($"Invalid current password");
             }
@@ -272,7 +281,7 @@ namespace SchoolPortal.Services.Implementations
 
         // reset password
         public async Task ResetPassword(long userId)
-        {  
+        {
             var user = await userRepo.GetById(userId);
             if (user == null)
             {
@@ -320,7 +329,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"Password is required");
             }
             var user = await userRepo.GetSingleWhere(u => u.Email == credential.Email || u.Username == credential.Email);
-            if (user==null)
+            if (user == null)
             {
                 throw new AppException($"Email/username is invalid");
             }
@@ -334,7 +343,7 @@ namespace SchoolPortal.Services.Implementations
         // get user
         public async Task<User> GetUser(long userId)
         {
-            var user =  await userRepo.GetById(userId);
+            var user = await userRepo.GetById(userId);
             if (user == null)
                 throw new AppException($"User with id: '{userId}' does not exist");
             else
@@ -343,15 +352,15 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<User> GetUser(string email)
         {
-            var user = await userRepo.GetSingleWhere(u=>u.Email == email || u.Username == email);
+            var user = await userRepo.GetSingleWhere(u => u.Email == email || u.Username == email);
             if (user == null)
                 throw new AppException($"User with email or username: '{email}' does not exist");
             else
                 return user;
         }
-       
+
         // get users
-        public IEnumerable<User> GetUsers(bool includeInactive=true)
+        public IEnumerable<User> GetUsers(bool includeInactive = true)
         {
             var users = userRepo.GetAll();
             if (!includeInactive)
@@ -374,7 +383,7 @@ namespace SchoolPortal.Services.Implementations
                     throw new AppException($"No user with id '{userId}' exist");
                 }
 
-                if(user.ClassRoomTeachers.Count > 0 || user.StudentGuardians.Count > 0 || user.UserLoginHistories.Count > 0)
+                if (user.ClassRoomTeachers.Count > 0 || user.StudentGuardians.Count > 0 || user.UserLoginHistories.Count > 0)
                 {
                     throw new AppException($"User cannot be deleted as user is still associated with one or more entities");
                 }
@@ -396,8 +405,8 @@ namespace SchoolPortal.Services.Implementations
             }
         }
 
-       // generate username
-       public async Task<string> GenerateUsername(string firstName, string lastName)
+        // generate username
+        public async Task<string> GenerateUsername(string firstName, string lastName)
         {
             var uname = $"{firstName.ToLower()}.{lastName.ToLower()}";
             var cnt = 1;
@@ -409,13 +418,13 @@ namespace SchoolPortal.Services.Implementations
 
             return uname;
         }
-    
+
         public async Task<bool> AnyUserExists()
         {
             return (await userRepo.Count()) > 0;
         }
 
-        public IEnumerable<User> SearchTeachers(string searchParam, int max=50)
+        public IEnumerable<User> SearchTeachers(string searchParam, int max = 50)
         {
             var teacherRoleId = (int)AppRoles.TEACHER;
             if (string.IsNullOrEmpty(searchParam))
@@ -432,7 +441,7 @@ namespace SchoolPortal.Services.Implementations
 
                 return teachers;
             }
-           
+
         }
 
         public IEnumerable<User> SearchParents(string searchParam, int max = 50)
@@ -445,7 +454,7 @@ namespace SchoolPortal.Services.Implementations
             else
             {
                 searchParam = searchParam.ToLower();
-                var teachers = userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == parentRoleId) && u.IsActive && 
+                var teachers = userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == parentRoleId) && u.IsActive &&
                 (u.Username.ToLower().Contains(searchParam) || u.Email.ToLower().Contains(searchParam)
                 || u.PhoneNumber.ToLower().Contains(searchParam) || u.FirstName.ToLower().Contains(searchParam)
                 || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam))).Take(max);
@@ -466,7 +475,7 @@ namespace SchoolPortal.Services.Implementations
             else
             {
                 var currentUser = accessor.HttpContext.GetUserSession();
-                if(userId == currentUser.Id)
+                if (userId == currentUser.Id)
                 {
                     throw new AppException($"Sorry! You cannot change your own status");
                 }
@@ -498,7 +507,7 @@ namespace SchoolPortal.Services.Implementations
             else
             {
                 var currentUser = accessor.HttpContext.GetUserSession();
-              
+
                 var _olduser = _user.Clone<User>();
 
                 _user.ClassRoomTeachers.Clear();
@@ -506,12 +515,12 @@ namespace SchoolPortal.Services.Implementations
                 {
                     _user.ClassRoomTeachers.Add(new ClassRoomTeacher
                     {
-                        ClassRoomId=roomId.Value,
-                        TeacherId =userId,
-                        CreatedBy=currentUser.Username,
-                        UpdatedBy=currentUser.Username,
-                        CreatedDate=DateTimeOffset.Now,
-                        UpdatedDate=DateTimeOffset.Now
+                        ClassRoomId = roomId.Value,
+                        TeacherId = userId,
+                        CreatedBy = currentUser.Username,
+                        UpdatedBy = currentUser.Username,
+                        CreatedDate = DateTimeOffset.Now,
+                        UpdatedDate = DateTimeOffset.Now
                     });
                 }
                 _user.UpdatedBy = currentUser.Username;
@@ -526,6 +535,55 @@ namespace SchoolPortal.Services.Implementations
                 //     $"Updated class of type '{((Core.classType)((int)_class.classTypeId)).ToString()}' for {_class.FromDate.ToString("dd-MM-yyyy")} to {_class.ToDate.ToString("dd-MM-yyyy")}");
 
             }
+        }
+        public async Task AddParentWard(long studentId, long parentId, long relationshipId)
+        {
+            var student = await studentRepo.GetById(studentId);
+            if (student == null)
+            {
+                throw new AppException($"Ward is not found");
+            }
+            var parent = await userRepo.GetById(parentId);
+            if (parent == null)
+            {
+                throw new AppException($"Parent is not found");
+            }
+            var relationship = await relationshipRepo.GetById(relationshipId);
+            if (relationship == null)
+            {
+                throw new AppException($"Relationship is not found");
+            }
+            if (await guardianRepo.Any(g => g.StudentId == studentId && g.GuardianId == parentId))
+            {
+                throw new AppException($"Ward already exist");
+            }
+
+            var currentUser = accessor.HttpContext.GetUserSession();
+            var studentGuardian = new StudentGuardian
+            {
+                GuardianId = parentId,
+                StudentId = studentId,
+                RelationshipId = relationshipId,
+                CreatedBy = currentUser.Username,
+                CreatedDate = DateTimeOffset.Now,
+                UpdatedBy = currentUser.Username,
+                UpdatedDate = DateTimeOffset.Now
+            };
+            await guardianRepo.Insert(studentGuardian);
+
+            // log 
+        }
+
+        public async Task RemoveParentWard(long studentGuardianId)
+        {
+            var studentGuardian = await guardianRepo.GetById(studentGuardianId);
+            if (studentGuardian == null)
+            {
+                throw new AppException($"Parent ward is not found");
+            }
+            await guardianRepo.Delete(studentGuardian.Id);
+
+            // log 
         }
 
         //=========== Batch Upload ===========
@@ -578,7 +636,7 @@ namespace SchoolPortal.Services.Implementations
         {
             var err = "";
             var isValid = true;
-            if (row[1] == null || Convert.ToString(row[1]).Trim()=="")
+            if (row[1] == null || Convert.ToString(row[1]).Trim() == "")
             {
                 isValid = false;
                 err = $"Invalid value for {headers[1]} at row {index}. Field is required.";
@@ -669,7 +727,7 @@ namespace SchoolPortal.Services.Implementations
                             MiddleName = Convert.ToString(rows[i][2]),
                             Surname = Convert.ToString(rows[i][3]),
                             Gender = Convert.ToString(rows[i][4]),
-                            DateOfBirth = string.IsNullOrEmpty(Convert.ToString(rows[i][5]))?(DateTimeOffset?)null: DateTimeOffset.Parse(Convert.ToString(rows[i][5])),
+                            DateOfBirth = string.IsNullOrEmpty(Convert.ToString(rows[i][5])) ? (DateTimeOffset?)null : DateTimeOffset.Parse(Convert.ToString(rows[i][5])),
                             Email = Convert.ToString(rows[i][6]),
                             PhoneNumber = Convert.ToString(rows[i][7])
                         };
@@ -694,9 +752,9 @@ namespace SchoolPortal.Services.Implementations
 
             var _users = new List<User>();
 
-            foreach(var u in users)
+            foreach (var u in users)
             {
-               
+
                 u.Password = passwordService.Hash(password);
                 u.IsActive = true;
                 u.CreatedBy = currentUser.Username;
@@ -706,18 +764,18 @@ namespace SchoolPortal.Services.Implementations
                 u.UserRoles = new List<UserRole> { new UserRole { RoleId = roleId, CreatedBy = currentUser.Username } };
 
                 //  validate email and username for duplicate
-                if(_users.Any(usr=>usr.Email == u.Email))
+                if (_users.Any(usr => usr.Email == u.Email))
                 {
                     throw new AppException($"A user with email '{u.Email}' already exists on excel");
                 }
-                if(await userRepo.Any(usr=>usr.Email == u.Email))
+                if (await userRepo.Any(usr => usr.Email == u.Email))
                 {
                     throw new AppException($"A user with email '{u.Email}' already exists");
                 }
 
                 u.Username = await GenerateUsername(u.FirstName, u.Surname);
                 var ucnt = 1;
-                while(_users.Any(usr=>usr.Username == u.Username))
+                while (_users.Any(usr => usr.Username == u.Username))
                 {
                     u.Username = u.Username + ucnt.ToString();
                     ucnt++;

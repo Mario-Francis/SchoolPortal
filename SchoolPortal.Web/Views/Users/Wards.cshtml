@@ -1,8 +1,8 @@
-﻿@model StudentVM;
+﻿@model UserVM;
 @inject IDropdownService dropdownService
 @{
     var name = Model.FullName;
-    ViewData["Title"] = $"{name}'s Guardians";
+    ViewData["Title"] = $"{name}'s Wards";
 }
 <!-- Breadcubs Area Start Here -->
 <div class="breadcrumbs-area">
@@ -12,43 +12,44 @@
             <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
         </li>
         <li>
-            <a asp-action="Index" asp-controller="Students">Students</a>
+            <a asp-action="Index" asp-controller="Users">Users</a>
         </li>
         <li>
-            <a asp-action="@Model.Id" asp-controller="Students">@name</a>
+            <a asp-action="@Model.Id" asp-controller="Users">@name</a>
         </li>
-        <li>Guardians</li>
+        <li>Wards</li>
 
     </ul>
 </div>
- <div class="card">
-            <div class="card-header bg-light p-4">
-                <h5 class="mb-0">Guardians</h5>
-            </div>
-            <div class="card-body">
-                <input type="hidden" id="studentId" value="@Model.Id" />
-                <div class="text-right mb-3">
-                    <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Guardian</button>
-                    @*<button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Add Student</button>*@
-                </div>
-                <div class="table-responsive">
-                    <table id="guardiansTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Relationship</th>
-                                <th>Email</th>
-                                <th>Phone&nbsp;Number</th>
-                                <th>&nbsp;</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="card">
+    <div class="card-header bg-light p-4">
+        <h5 class="mb-0">Wards</h5>
+    </div>
+    <div class="card-body">
+        <input type="hidden" id="userId" value="@Model.Id" />
+        <div class="text-right mb-3">
+            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Ward</button>
+            @*<button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Add Student</button>*@
         </div>
+        <div class="table-responsive">
+            <table id="wardsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Relationship</th>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Class</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <!-- Add Modal -->
 <div class="modal fade" id="addModal">
@@ -57,7 +58,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">New Guardian <span></span></h4>
+                <h4 class="modal-title">New Ward <span></span></h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
@@ -76,8 +77,8 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="parent" class="f14">* Guardian</label>
-                                    <select id="parent" class="custom-select form-control parentsdd" required>
+                                    <label for="student" class="f14">* Ward</label>
+                                    <select id="student" class="custom-select form-control studentsdd" required>
                                     </select>
                                 </div>
                             </div>
@@ -109,6 +110,6 @@
     <script>
 
     </script>
-    <script src="~/js/guardians.js" asp-append-version="true"></script>
+    <script src="~/js/wards.js" asp-append-version="true"></script>
 
 }

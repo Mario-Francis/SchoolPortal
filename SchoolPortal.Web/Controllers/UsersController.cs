@@ -422,6 +422,123 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        [HttpGet("[controller]/{id}")]
+        public async Task<IActionResult> UserProfile(long? id)
+        {
+            if (id == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "User is not found", ErrorItems = new string[] { } });
+            }
+            var user = await userService.GetUser(id.Value);
+            if (user == null)
+            {
+                return NotFound("User is not found");
+            }
+
+            return View(UserVM.FromUser(user));
+        }
+
+        [HttpGet("[controller]/{userId}/Wards")]
+        public async Task<IActionResult> Wards(long? userId)
+        {
+            if (userId == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "user is not found", ErrorItems = new string[] { } });
+            }
+            var user = await userService.GetUser(userId.Value);
+            if (user == null)
+            {
+                return NotFound("User is not found");
+            }
+            if(!user.UserRoles.Any(r=>r.RoleId == (int)AppRoles.PARENT))
+            {
+                return NotFound("User is not found");
+            }
+
+            return View(UserVM.FromUser(user));
+        }
+
+        [HttpPost("[controller]/WardsDataTable/{userId}")]
+        public async Task<IActionResult> WardsDataTable(long? userId)
+        {
+            if (userId == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "User is not found", ErrorItems = new string[] { } });
+            }
+            var user = await userService.GetUser(userId.Value);
+            if (user == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "User is not found", ErrorItems = new string[] { } });
+            }
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var wards = user.StudentGuardians.Select(g => WardVM.FromStudentGuardian(g, clientTimeOffset));
+
+            var parser = new Parser<WardVM>(Request.Form, wards.AsQueryable());
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddWard(WardVM wardVM)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else
+                {
+                    var ward = wardVM.ToStudentGuardian();
+
+                    await userService.AddParentWard(ward.StudentId, ward.GuardianId, ward.RelationshipId);
+                    return Ok(new { IsSuccess = true, Message = "Ward added succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while creating a new ward");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        public async Task<IActionResult> RemoveWard(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "Ward is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await userService.RemoveParentWard(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "Ward removed succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while removing ward");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
 
 
     }

@@ -1,13 +1,13 @@
-﻿var studentId = $('#studentId').val();
+﻿var userId = $('#userId').val();
 var selectizedd;
 $(() => {
     selectizedd = initializeParentssDropdown();
     // initialize datatable
-    guardiansTable = $('#guardiansTable').DataTable({
+    wardsTable = $('#wardsTable').DataTable({
         serverSide: true,
         processing: true,
         ajax: {
-            url: $base + 'students/GuardiansDataTable/' + studentId,
+            url: $base + 'users/WardsDataTable/' + userId,
             type: "POST"
         },
         "order": [[2, "asc"]],
@@ -24,6 +24,13 @@ $(() => {
                     return (meta.row + 1 + meta.settings._iDisplayStart) + '.';
                 }
             },
+          
+            {
+                data: {
+                    "filter": "Relationship",
+                    "display": "relationship"
+                }
+            },
             {
                 data: {
                     "filter": "FullName",
@@ -32,8 +39,10 @@ $(() => {
             },
             {
                 data: {
-                    "filter": "Relationship",
-                    "display": "relationship"
+                    "filter": "Username",
+                    "display": "username"
+                }, "render": function (data, type, row, meta) {
+                    return `${data}`;
                 }
             },
             {
@@ -46,8 +55,8 @@ $(() => {
             },
             {
                 data: {
-                    "filter": "PhoneNumber",
-                    "display": "phoneNumber"
+                    "filter": "FormattedClassRoom",
+                    "display": "formattedClassRoom"
                 }
             },
             {
@@ -61,7 +70,7 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="${$base}users/${row.userId}" uid="${row.userId}">View Profile</a>`
+                        + `<a class="dropdown-item" href="${$base}students/${row.studentId}" uid="${row.studentId}">View Profile</a>`
                         + `<div class="dropdown-divider"></div>`
                         + `<a class="dropdown-item remove" href="javascript:void(0)" uid="${data}">Remove</a>`
                         + '</div>'
@@ -85,14 +94,14 @@ $(() => {
             let form = $("form")[0];
             if (validateForm(form)) {
                 let relationshipId = $.trim($('#relationship').val());
-                let userId = $.trim($('#parent').val());
+                let studentId = $.trim($('#student').val());
 
-                if (relationshipId == '' || userId == '') {
+                if (relationshipId == '' || studentId == '') {
                     notify('Fields with asteriks (*) are required', 'warning');
                 } else {
                     $('fieldset').prop('disabled', true);
-                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Adding guardian...');
-                    let url = $base + 'students/AddGuardian';
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Adding ward...');
+                    let url = $base + 'users/AddWard';
                     let data = {
                         studentId,
                         userId,
@@ -104,7 +113,7 @@ $(() => {
                         data: data,
                         success: (response) => {
                             if (response.isSuccess) {
-                                guardiansTable.ajax.reload();
+                                wardsTable.ajax.reload();
                                 notify(response.message + '.', 'success');
 
                                 form.reset();
@@ -141,16 +150,16 @@ $(() => {
     $(document).on('click', '.remove', async (e) => {
         let loader;
         let uid = $(e.currentTarget).attr('uid');
-        bootConfirm('Are you sure you want to remove this guardian?', {
+        bootConfirm('Are you sure you want to remove this ward?', {
             title: 'Confirm Action', size: 'small', callback: async (res) => {
                 if (res) {
                     try {
-                        loader = bootLoaderDialog('Removing guardian...');
-                        let message = await deleteGuardian(uid);
+                        loader = bootLoaderDialog('Removing ward...');
+                        let message = await deleteWard(uid);
                         loader.hide();
 
                         notify(message + '.', 'success');
-                        guardiansTable.ajax.reload();
+                        wardsTable.ajax.reload();
                     } catch (ex) {
                         console.error(ex);
                         if (ex != null) {
@@ -166,9 +175,8 @@ $(() => {
 
 });
 
-
 function initializeParentssDropdown() {
-    var _select = $(".parentsdd").selectize({
+    var _select = $(".studentsdd").selectize({
         valueField: "id",
         searchField: ["email", "username", "firstName", "surname", "middleName", "phoneNumber"],
         placeholder: '- Search parent -',
@@ -185,7 +193,7 @@ function initializeParentssDropdown() {
                             </div>
                         </div>
                         <div class="flex-fill">
-                            <p class="f14 font-weight-bold text-dark mt-1">${capitalize(escape(item.firstName).trim())} ${capitalize(escape(item.surname).trim())}</p>
+                            <p class="f14 font-weight-bold text-dark mt-1">${capitalize(escape(item.firstName).trim())} ${capitalize(escape(item.middleName).trim())} ${capitalize(escape(item.surname).trim())}</p>
                             <p class="f12" style="margin-top:-6px;">${escape(item.email).trim()}</p>
                         </div>
                     </div>`
@@ -200,7 +208,7 @@ function initializeParentssDropdown() {
                             </div>
                         </div>
                         <div class="flex-fill">
-                            <p class="f14 font-weight-bold text-dark mt-1">${capitalize(escape(item.firstName).trim())} ${capitalize(escape(item.surname).trim())}</p>
+                            <p class="f14 font-weight-bold text-dark mt-1">${capitalize(escape(item.firstName).trim())} ${capitalize(escape(item.middleName).trim())} ${capitalize(escape(item.surname).trim())}</p>
                             <p class="f12" style="margin-top:-6px;">${escape(item.email).trim()}</p>
                         </div>
                     </div>`
@@ -210,7 +218,7 @@ function initializeParentssDropdown() {
         load: function (query, callback) {
             if (!query.length) return callback();
             $.ajax({
-                url: $base + 'users/SearchParents?max=50&query=' + encodeURIComponent(query),
+                url: $base + 'students/SearchStudents?max=50&query=' + encodeURIComponent(query),
                 type: "GET",
                 error: function (err) {
                     console.log(err);
@@ -232,13 +240,13 @@ function getInitial(item, escape) {
 }
 
 
-function deleteGuardian(id) {
+function deleteWard(id) {
     var promise = new Promise((resolve, reject) => {
         try {
             if (id == undefined || id == '' || id == 0) {
-                reject('Invalid guardian id');
+                reject('Invalid ward id');
             } else {
-                let url = $base + 'students/RemoveGuardian/' + id;
+                let url = $base + 'users/RemoveWard/' + id;
                 $.ajax({
                     type: 'GET',
                     url: url,
@@ -266,3 +274,4 @@ function deleteGuardian(id) {
     });
     return promise;
 }
+

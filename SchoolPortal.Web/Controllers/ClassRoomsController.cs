@@ -18,14 +18,20 @@ namespace SchoolPortal.Web.Controllers
     {
         private readonly AppSettings appSettings;
         private readonly IClassService classService;
+        private readonly IUserService userService;
+        private readonly IStudentService studentService;
         private readonly ILogger<ClassRoomsController> logger;
 
         public ClassRoomsController(IOptions<AppSettings> appSettings,
             IClassService classService,
+            IUserService  userService,
+            IStudentService studentService,
             ILogger<ClassRoomsController> logger)
         {
             this.appSettings = appSettings.Value;
             this.classService = classService;
+            this.userService = userService;
+            this.studentService = studentService;
             this.logger = logger;
         }
         public IActionResult Index()
@@ -234,6 +240,82 @@ namespace SchoolPortal.Web.Controllers
                 //await loggerService.LogError(ex.GetErrorDetails());
 
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+        
+        [HttpGet("[controller]/{id}")]
+        public async Task<IActionResult> ViewClassRoom(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "Classroom is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    var classRoom = await classService.GetClassRoom(id.Value);
+                    return View(ClassRoomVM.FromClassRoom(classRoom));
+                }
+            }
+            catch (AppException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while fetching a classroom");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("[controller]/{id}/TeachersDataTable")]
+        public async Task<IActionResult> ClassRoomTeachersDataTable(long? id)
+        {
+            if (id == null)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = "Classroom is not found", ErrorItems = new string[] { } });
+            }
+            else
+            {
+                var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+             appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+                var teachers = (await classService.GetClassRoom(id.Value)).ClassRoomTeachers.Select(t => UserVM.FromUser(t.Teacher, clientTimeOffset));
+
+                var parser = new Parser<UserVM>(Request.Form, teachers.AsQueryable())
+                    .SetConverter(x => x.DateOfBirth, x => x.DateOfBirth == null ? "" : x.DateOfBirth.Value.ToString("MMM d, yyyy"))
+                      .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                       .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+                return Ok(parser.Parse());
+            }
+          
+        }
+
+        [HttpPost("[controller]/{id}/StudentsDataTable")]
+        public async Task<IActionResult> ClassRoomStudentsDataTable(long? id)
+        {
+            if (id == null)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = "Classroom is not found", ErrorItems = new string[] { } });
+            }
+            else
+            {
+                var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+             appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+                var students = (await classService.GetClassRoom(id.Value)).ClassRoomStudents.Select(t => StudentVM.FromStudent(t.Student, clientTimeOffset));
+
+                var parser = new Parser<StudentVM>(Request.Form, students.AsQueryable())
+                    .SetConverter(x => x.DateOfBirth, x =>  x.DateOfBirth.ToString("MMM d, yyyy"))
+                      .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                       .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+                return Ok(parser.Parse());
             }
         }
 

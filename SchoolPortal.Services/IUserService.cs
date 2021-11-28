@@ -25,6 +25,8 @@ namespace SchoolPortal.Services
         Task UpdateUserStatus(long userId, bool isActive);
         Task AssignClassRoom(long userId, long? roomId);
         Task ResetPassword(long userId);
+        Task AddParentWard(long studentId, long parentId, long relationshipId);
+        Task RemoveParentWard(long studentGuardianId);
 
         bool ValidateFile(IFormFile file, out List<string> errorItems);
         Task<IEnumerable<User>> ExtractData(IFormFile file);
