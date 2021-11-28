@@ -21,6 +21,9 @@ namespace SchoolPortal.Services.Implementations
     public class StudentService : IStudentService
     {
         private readonly IRepository<Student> studentRepo;
+        private readonly IRepository<User> userRepo;
+        private readonly IRepository<StudentGuardian> guardianRepo;
+        private readonly IRepository<Relationship> relationshipRepo;
         private readonly IRepository<Class> classRepo;
         private readonly IRepository<ClassRoom> classRoomRepo;
         private readonly IRepository<ClassRoomStudent> classRoomStudentRepo;
@@ -35,6 +38,9 @@ namespace SchoolPortal.Services.Implementations
         private string[] headers = new string[] { "SN", "First Name", "Middle Name", "Surname", "Gender", "Date of Birth", "Email", "Phone Number", "Admission No", "Entry Class", "Entry Term", "Entry Session", "Enrollment Date", "Current Class", "Current Room Code" };
 
         public StudentService(IRepository<Student> studentRepo,
+            IRepository<User> userRepo,
+             IRepository<StudentGuardian> guardianRepo,
+            IRepository<Relationship> relationshipRepo,
             IRepository<Class> classRepo,
             IRepository<ClassRoom> classRoomRepo,
              IRepository<ClassRoomStudent> classRoomStudentRepo,
@@ -48,6 +54,9 @@ namespace SchoolPortal.Services.Implementations
             IOptions<AppSettings> appSettings)
         {
             this.studentRepo = studentRepo;
+            this.userRepo = userRepo;
+            this.guardianRepo = guardianRepo;
+            this.relationshipRepo = relationshipRepo;
             this.classRepo = classRepo;
             this.classRoomRepo = classRoomRepo;
             this.classRoomStudentRepo = classRoomStudentRepo;
@@ -196,6 +205,7 @@ namespace SchoolPortal.Services.Implementations
             _student.UpdatedDate = DateTimeOffset.Now;
             _student.UpdatedByType = currentUser.UserType;
 
+            await classRoomStudentRepo.DeleteRange(_student.ClassRoomStudents.Select(cs => cs.Id), true);
             _student.ClassRoomStudents.Clear();
             _student.ClassRoomStudents.AddRange(student.ClassRoomStudents.Select(cs =>
             {
@@ -457,6 +467,56 @@ namespace SchoolPortal.Services.Implementations
                 //     $"Updated class of type '{((Core.classType)((int)_class.classTypeId)).ToString()}' for {_class.FromDate.ToString("dd-MM-yyyy")} to {_class.ToDate.ToString("dd-MM-yyyy")}");
 
             }
+        }
+
+        public async Task AddStudentGuardian(long studentId, long parentId, long relationshipId)
+        {
+            var student = await studentRepo.GetById(studentId);
+            if(student == null)
+            {
+                throw new AppException($"Student is not found");
+            }
+            var parent = await userRepo.GetById(parentId);
+            if (parent == null)
+            {
+                throw new AppException($"Guardian is not found");
+            }
+            var relationship = await relationshipRepo.GetById(relationshipId);
+            if (relationship == null)
+            {
+                throw new AppException($"Relationship is not found");
+            }
+            if(await guardianRepo.Any(g=>g.StudentId==studentId && g.GuardianId == parentId))
+            {
+                throw new AppException($"Guardian already exist");
+            }
+
+            var currentUser = accessor.HttpContext.GetUserSession();
+            var studentGuardian = new StudentGuardian
+            {
+                GuardianId = parentId,
+                StudentId = studentId,
+                RelationshipId = relationshipId,
+                CreatedBy = currentUser.Username,
+                CreatedDate = DateTimeOffset.Now,
+                UpdatedBy = currentUser.Username,
+                UpdatedDate = DateTimeOffset.Now
+            };
+            await guardianRepo.Insert(studentGuardian);
+
+            // log 
+        }
+
+        public async Task RemoveStudentGuardian(long studentGuardianId)
+        {
+            var studentGuardian = await guardianRepo.GetById(studentGuardianId);
+            if (studentGuardian == null)
+            {
+                throw new AppException($"Student guardian is not found");
+            }
+            await guardianRepo.Delete(studentGuardian.Id);
+
+            // log 
         }
 
         //=========== Batch Upload ===========

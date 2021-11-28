@@ -17,6 +17,7 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<Class> classRepo;
         private readonly IRepository<ClassRoom> classRoomRepo;
         private readonly IRepository<RoomCode> roomCodeRepo;
+        private readonly IRepository<Relationship> relationshipRepo;
         private readonly IHttpContextAccessor contextAccessor;
 
         public ListService(IRepository<Term> termRepo,
@@ -26,6 +27,7 @@ namespace SchoolPortal.Services.Implementations
             IRepository<Class> classRepo,
             IRepository<ClassRoom> classRoomRepo,
             IRepository<RoomCode> roomCodeRepo,
+            IRepository<Relationship> relationshipRepo,
             IHttpContextAccessor contextAccessor)
         {
             this.termRepo = termRepo;
@@ -35,6 +37,7 @@ namespace SchoolPortal.Services.Implementations
             this.classRepo = classRepo;
             this.classRoomRepo = classRoomRepo;
             this.roomCodeRepo = roomCodeRepo;
+            this.relationshipRepo = relationshipRepo;
             this.contextAccessor = contextAccessor;
         }
 
@@ -76,6 +79,10 @@ namespace SchoolPortal.Services.Implementations
         public IEnumerable<RoomCode> GetRoomCodes()
         {
             return roomCodeRepo.GetAll().OrderBy(c => c.Code);
+        }
+        public IEnumerable<Relationship> GetRelationships()
+        {
+            return relationshipRepo.GetAll().OrderBy(r => r.Id);
         }
     }
 }

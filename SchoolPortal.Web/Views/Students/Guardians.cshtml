@@ -1,0 +1,238 @@
+﻿@model StudentVM;
+@inject IDropdownService dropdownService
+@{
+    var name = Model.FullName;
+    ViewData["Title"] = $"{name}'s Guardians";
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>@ViewData["Title"]</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Students">Students</a>
+        </li>
+        <li>
+            <a asp-action="@Model.Id" asp-controller="Students">@name</a>
+        </li>
+        <li>Guardians</li>
+
+    </ul>
+</div>
+ <div class="card">
+            <div class="card-header bg-light p-4">
+                <h5 class="mb-0">Guardians</h5>
+            </div>
+            <div class="card-body">
+                <input type="hidden" id="studentId" value="@Model.Id" />
+                <div class="text-right mb-3">
+                    <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Guardian</button>
+                    @*<button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Add Student</button>*@
+                </div>
+                <div class="table-responsive">
+                    <table id="guardiansTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Relationship</th>
+                                <th>Email</th>
+                                <th>Phone&nbsp;Number</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New Guardian <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="relationship" class="f14">* Relationship</label>
+                                    <select id="relationship" class="custom-select form-control" asp-items="@dropdownService.GetRelationships()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="parent" class="f14">* Guardian</label>
+                                    <select id="parent" class="custom-select form-control parentsdd" required>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="createBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Submit</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Student <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname" class="f14">* First Name</label>
+                                    <input id="fname" type="text" class="form-control" placeholder="Enter student first name" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="mname" class="f14">* Middle Name</label>
+                                    <input id="mname" type="text" class="form-control" placeholder="Enter student middle name" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sname" class="f14">* Surname</label>
+                                    <input id="sname" type="text" class="form-control" placeholder="Enter student surname" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="gender" class="f14">* Geder</label>
+                                    <select id="gender" class="custom-select form-control" required>
+                                        <option value="">- Select gender -</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="dob" class="f14">* Date of Birth</label>
+                                    <input id="dob" type="text" class="form-control dob" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="f14">* Email</label>
+                                    <input id="email" type="email" class="form-control" placeholder="Enter student email" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="f14">Phone Number</label>
+                                    <input id="phone" type="text" class="form-control integer" placeholder="Enter student phone number" maxlength="15" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="enrollmentDate" class="f14">* Enrollment Date</label>
+                                    <input id="enrollmentDate" type="text" class="form-control date" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="admissionNo" class="f14">* Admission Number</label>
+                                    <input id="admissionNo" type="text" class="form-control" placeholder="Enter admission number" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="entryClassId" class="f14">* Entry Class</label>
+                                    <select id="entryClassId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="entryTermId" class="f14">* Entry Term</label>
+                                    <select id="entryTermId" class="custom-select form-control" asp-items="@dropdownService.GetTerms()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="entrySession" class="f14">* Entry Session</label>
+                                    <input id="entrySession" type="text" class="form-control" placeholder="YYYY/YYYY" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="classId" class="f14">* Current Class</label>
+                                    <select id="classId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="roomId" class="f14">* Current Classroom &nbsp;<i id="roomLoader" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
+                                    <select id="roomId" class="custom-select form-control" required>
+                                        <option value="">- Select classroom -</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+@section css{
+    <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script>
+
+    </script>
+    <script src="~/js/guardians.js" asp-append-version="true"></script>
+
+}

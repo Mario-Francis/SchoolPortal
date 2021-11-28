@@ -113,9 +113,9 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Profile</a>`
+                        + `<a class="dropdown-item" href="${$base}Students/${row.id}" uid="${row.id}">View Profile</a>`
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>`
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Guardians</a>`
+                        + `<a class="dropdown-item" href="${$base}Students/${row.id}/Guardians" uid="${row.id}">View Guardians</a>`
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
@@ -230,9 +230,9 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Profile</a>`
+                        + `<a class="dropdown-item" href="${$base}Students/${row.id}" uid="${row.id}">View Profile</a>`
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>`
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Guardians</a>`
+                        + `<a class="dropdown-item" href="${$base}Students/${row.id}/Guardians" uid="${row.id}">View Guardians</a>`
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
@@ -347,9 +347,9 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Profile</a>`
+                        + `<a class="dropdown-item" href="${$base}Students/${row.id}" uid="${row.id}">View Profile</a>`
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>`
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Guardians</a>`
+                        + `<a class="dropdown-item" href="${$base}Students/${row.id}/Guardians" uid="${row.id}">View Guardians</a>`
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')

@@ -420,12 +420,12 @@ namespace SchoolPortal.Services.Implementations
             var teacherRoleId = (int)AppRoles.TEACHER;
             if (string.IsNullOrEmpty(searchParam))
             {
-                return userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == teacherRoleId)).Take(max);
+                return userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == teacherRoleId) && u.IsActive).Take(max);
             }
             else
             {
                 searchParam = searchParam.ToLower();
-                var teachers = userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == teacherRoleId) &&
+                var teachers = userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == teacherRoleId) && u.IsActive &&
                 (u.Username.ToLower().Contains(searchParam) || u.Email.ToLower().Contains(searchParam)
                 || u.PhoneNumber.ToLower().Contains(searchParam) || u.FirstName.ToLower().Contains(searchParam)
                 || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam))).Take(max);
@@ -434,6 +434,27 @@ namespace SchoolPortal.Services.Implementations
             }
            
         }
+
+        public IEnumerable<User> SearchParents(string searchParam, int max = 50)
+        {
+            var parentRoleId = (int)AppRoles.PARENT;
+            if (string.IsNullOrEmpty(searchParam))
+            {
+                return userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == parentRoleId) && u.IsActive).Take(max);
+            }
+            else
+            {
+                searchParam = searchParam.ToLower();
+                var teachers = userRepo.GetWhere(u => u.UserRoles.Any(u => u.RoleId == parentRoleId) && u.IsActive && 
+                (u.Username.ToLower().Contains(searchParam) || u.Email.ToLower().Contains(searchParam)
+                || u.PhoneNumber.ToLower().Contains(searchParam) || u.FirstName.ToLower().Contains(searchParam)
+                || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam))).Take(max);
+
+                return teachers;
+            }
+
+        }
+
 
         public async Task UpdateUserStatus(long userId, bool isActive)
         {

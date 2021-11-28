@@ -12,5 +12,6 @@ namespace SchoolPortal.Services
         IEnumerable<Class> GetClasses();
         IEnumerable<ClassRoom> GetClassRooms();
         IEnumerable<RoomCode> GetRoomCodes();
+        IEnumerable<Relationship> GetRelationships();
     }
 }

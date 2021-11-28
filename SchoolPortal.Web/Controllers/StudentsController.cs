@@ -91,6 +91,62 @@ namespace SchoolPortal.Web.Controllers
             return Ok(parser.Parse());
         }
 
+        [HttpGet("[controller]/{studentId}")]
+        public async Task<IActionResult> StudentProfile(long? studentId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            return View(StudentVM.FromStudent(student));
+        }
+
+        [HttpGet("[controller]/{studentId}/Guardians")]
+        public async Task<IActionResult> Guardians(long? studentId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            return View(StudentVM.FromStudent(student));
+        }
+
+        [HttpPost("[controller]/GuardiansDataTable/{studentId}")]
+        public async  Task<IActionResult> GuardiansDataTable(long? studentId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var guardians = student.StudentGuardians.Select(g => GuardianVM.FromStudentGuardian(g, clientTimeOffset));
+
+            var parser = new Parser<GuardianVM>(Request.Form, guardians.AsQueryable());
+
+            return Ok(parser.Parse());
+        }
+
+
+
         [HttpPost]
         public async Task<IActionResult> AddStudent(StudentVM studentVM)
         {
@@ -142,6 +198,39 @@ namespace SchoolPortal.Web.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error was encountered while creating a new student");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddGuardian(GuardianVM guardianVM)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else
+                {
+                    var guardian = guardianVM.ToStudentGuardian();
+
+                    await studentService.AddStudentGuardian(guardian.StudentId, guardian.GuardianId, guardian.RelationshipId);
+                    return Ok(new { IsSuccess = true, Message = "Guardian added succeessfully", ErrorItems = new string[] { } });
+
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while creating a new guardian");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
@@ -232,6 +321,33 @@ namespace SchoolPortal.Web.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error was encountered while deleting a student");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+        public async Task<IActionResult> RemoveGuardian(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "Guardian is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await studentService.RemoveStudentGuardian(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "Guardian removed succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while removing guardian");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 

@@ -21,6 +21,8 @@ namespace SchoolPortal.Services
         Task<bool> AnyStudentExists();
         Task UpdateStudentStatus(long studentId, bool isActive);
         Task UpdateStudentGraduationStatus(long studentId, bool isGraduated);
+        Task AddStudentGuardian(long studentId, long parentId, long relationshipId);
+        Task RemoveStudentGuardian(long studentGuardianId);
         bool ValidateFile(IFormFile file, out List<string> errorItems);
         Task<IEnumerable<Student>> ExtractData(IFormFile file);
         Task BatchCreateStudent(IEnumerable<Student> students);

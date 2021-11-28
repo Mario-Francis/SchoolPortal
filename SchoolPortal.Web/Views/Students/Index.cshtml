@@ -152,7 +152,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="gender" class="f14">* Geder</label>
-                                    <select id="gender" class="custom-select form-control">
+                                    <select id="gender" class="custom-select form-control" required>
                                         <option value="">- Select gender -</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
@@ -192,14 +192,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="entryClassId" class="f14">* Entry Class</label>
-                                    <select id="entryClassId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()">
+                                    <select id="entryClassId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()" required>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="entryTermId" class="f14">* Entry Term</label>
-                                    <select id="entryTermId" class="custom-select form-control" asp-items="@dropdownService.GetTerms()">
+                                    <select id="entryTermId" class="custom-select form-control" asp-items="@dropdownService.GetTerms()" required>
                                     </select>
                                 </div>
                             </div>

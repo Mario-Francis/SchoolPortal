@@ -76,5 +76,13 @@ namespace SchoolPortal.Web.UIServices
             codes.Insert(0, new SelectListItem { Text = "- Select room code -", Value = "" });
             return codes;
         }
+        public IEnumerable<SelectListItem> GetRelationships(string value = null)
+        {
+            List<SelectListItem> relationships = listService.GetRelationships()
+                .Select(c => new SelectListItem { Text = $"{c.Name}", Value = c.Id.ToString(), Selected = c.Id.ToString() == value }).ToList();
+
+            relationships.Insert(0, new SelectListItem { Text = "- Select relationship -", Value = "" });
+            return relationships;
+        }
     }
 }
