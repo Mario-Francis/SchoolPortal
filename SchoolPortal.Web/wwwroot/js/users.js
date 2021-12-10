@@ -113,8 +113,8 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Profile</a>`
-                        + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="#" uid="${row.id}">View Wards</a>` : '')
+                        + `<a class="dropdown-item" href="${$base}users/${row.id}" uid="${row.id}">View Profile</a>`
+                        + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="${$base}users/${row.id}/wards" uid="${row.id}">View Wards</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
@@ -345,8 +345,8 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Profile</a>`
-                        + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="#" uid="${row.id}">View Wards</a>` : '')
+                        + `<a class="dropdown-item" href="${$base}users/${row.id}" uid="${row.id}">View Profile</a>`
+                        + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="${$base}users/${row.id}/wards" uid="${row.id}">View Wards</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
@@ -465,8 +465,8 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Profile</a>`
-                        + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="#" uid="${row.id}">View Wards</a>` : '')
+                        + `<a class="dropdown-item" href="${$base}users/${row.id}" uid="${row.id}">View Profile</a>`
+                        + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="${$base}users/${row.id}/wards" uid="${row.id}">View Wards</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`

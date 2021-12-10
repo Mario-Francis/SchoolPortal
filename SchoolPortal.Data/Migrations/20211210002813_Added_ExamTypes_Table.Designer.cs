@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolPortal.Data;
 
 namespace SchoolPortal.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211210002813_Added_ExamTypes_Table")]
+    partial class Added_ExamTypes_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -380,22 +382,6 @@ namespace SchoolPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExamTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            CreatedBy = "SYSTEM",
-                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
-                            Name = "Mid-Term"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            CreatedBy = "SYSTEM",
-                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
-                            Name = "End-Term"
-                        });
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.Grade", b =>

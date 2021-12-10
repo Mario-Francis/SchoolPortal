@@ -90,7 +90,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already exist");
             }
 
-            if (!ValidateSession(student.EntrySession))
+            if (!AppUtilities.ValidateSession(student.EntrySession))
             {
                 throw new AppException($"Entry session '{student.EntrySession}' is invalid");
             }
@@ -179,7 +179,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already exist");
             }
 
-            if (!ValidateSession(student.EntrySession))
+            if (!AppUtilities.ValidateSession(student.EntrySession))
             {
                 throw new AppException($"Entry session '{student.EntrySession}' is invalid");
             }
@@ -644,7 +644,7 @@ namespace SchoolPortal.Services.Implementations
                 isValid = false;
                 err = $"Invalid value for {headers[11]} at row {index}. Field is required.";
             }
-            else if (!ValidateSession(Convert.ToString(row[11]).Trim())) // entry session
+            else if (!AppUtilities.ValidateSession(Convert.ToString(row[11]).Trim())) // entry session
             {
                 isValid = false;
                 err = $"Invalid value for {headers[11]} at row {index}. Session is invalid.";
@@ -720,37 +720,6 @@ namespace SchoolPortal.Services.Implementations
             var classRoom = await classRoomRepo.GetSingleWhere(r => r.Class.ClassType.Name.ToLower() == arr[0].ToLower() && r.Class.ClassGrade.ToString() == arr[1] && r.RoomCode.ToLower() == roomCode.ToLower());
 
             return classRoom.Id;
-        }
-
-        private bool ValidateSession(string session)
-        {
-            var isValid = true;
-            var maxYear = DateTime.Now.Year + 1;
-            session = session.Trim();
-            var arr = session.Split('/');
-            if (arr.Length != 2 || string.IsNullOrEmpty(arr[0]) || string.IsNullOrEmpty(arr[1]))
-            {
-                isValid = false;
-            }else if (!int.TryParse(arr[0], out _) || !int.TryParse(arr[1], out _))
-            {
-                isValid = false;
-            }
-            else
-            {
-                var year1 = Convert.ToInt32(arr[0]);
-                var year2 = Convert.ToInt32(arr[1]);
-
-                if (year1.ToString().Length != 4 || year1 > maxYear || year2.ToString().Length != 4 || year2 > maxYear)
-                {
-                    isValid = false;
-                }
-                else if (year2 <= year1)
-                {
-                    isValid = false;
-                }
-            }
-
-            return isValid;
         }
 
         public async Task<IEnumerable<Student>> ExtractData(IFormFile file)

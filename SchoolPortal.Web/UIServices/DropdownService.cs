@@ -84,5 +84,14 @@ namespace SchoolPortal.Web.UIServices
             relationships.Insert(0, new SelectListItem { Text = "- Select relationship -", Value = "" });
             return relationships;
         }
+
+        public IEnumerable<SelectListItem> GetExamTypes(string value = null)
+        {
+            List<SelectListItem> examTypes = listService.GetExamTypes()
+                .Select(c => new SelectListItem { Text = $"{c.Name}", Value = c.Id.ToString(), Selected = c.Id.ToString() == value }).ToList();
+
+            examTypes.Insert(0, new SelectListItem { Text = "- Select exam type -", Value = "" });
+            return examTypes;
+        }
     }
 }

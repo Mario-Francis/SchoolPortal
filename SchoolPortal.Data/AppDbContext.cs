@@ -41,6 +41,7 @@ namespace SchoolPortal.Data
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<ClassRoomTeacher> ClassRoomTeachers { get; set; }
         public DbSet<RoomCode> RoomCodes { get; set; }
+        public DbSet<ExamType> ExamTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -154,6 +155,16 @@ namespace SchoolPortal.Data
              .HasMany(x => x.EndTermResults)
              .WithOne(x => x.Subject)
              .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Exam>()
+            .HasOne(x => x.ExamType)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Exam>()
+            .HasOne(x => x.Term)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
 
             //        Audit.Core.Configuration.Setup()
             //.UseEntityFramework()
@@ -290,6 +301,23 @@ namespace SchoolPortal.Data
                      CreatedBy = Constants.SYSTEM_NAME,
                      CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
                  }
+           );
+
+            modelBuilder.Entity<ExamType>().HasData(
+                new ExamType
+                {
+                    Id = 1,
+                    Name = "Mid-Term",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                },
+                new ExamType
+                {
+                    Id = 2,
+                    Name = "End-Term",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2021, 10, 29, 18, 38, 0, TimeSpan.FromMinutes(60))
+                }
            );
 
 

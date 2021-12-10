@@ -16,5 +16,6 @@ namespace SchoolPortal.Web.UIServices
         IEnumerable<SelectListItem> GetClassRooms(string value = null);
         IEnumerable<SelectListItem> GetRoomCodes(string value = null);
         IEnumerable<SelectListItem> GetRelationships(string value = null);
+        IEnumerable<SelectListItem> GetExamTypes(string value = null);
     }
 }
