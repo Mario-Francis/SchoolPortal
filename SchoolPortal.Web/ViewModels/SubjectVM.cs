@@ -17,6 +17,7 @@ namespace SchoolPortal.Web.ViewModels
         public string Code { get; set; }
         public string Description { get; set; }
         public string Class { get; set; }
+        public bool IsActive { get; set; }
         public string UpdatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
         public DateTimeOffset UpdatedDate { get; set; }
@@ -59,6 +60,7 @@ namespace SchoolPortal.Web.ViewModels
                 ClassId = subject.ClassId,
                 Name = subject.Name,
                 Code=subject.Code,
+                IsActive=subject.IsActive,
                 Description=subject.Description,
                 Class = $"{subject.Class.ClassType.Name} {subject.Class.ClassGrade}",
                 UpdatedBy = subject.UpdatedBy,

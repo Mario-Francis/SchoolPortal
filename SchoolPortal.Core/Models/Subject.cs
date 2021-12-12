@@ -12,6 +12,7 @@ namespace SchoolPortal.Core.Models
         public string Code { get; set; }
         public string Description { get; set; }
         public long ClassId { get; set; }
+        public bool IsActive { get; set; }
 
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; } = DateTimeOffset.Now;

@@ -9,6 +9,8 @@ namespace SchoolPortal.Core.Models
     public class EndTermResult:BaseEntity,IUpdatable
     {
         public long ExamId { get; set; }
+        public long ClassId { get; set; }
+        public long ClassRoomId { get; set; }
         public long SubjectId { get; set; }
         public long StudentId { get; set; }
         public decimal ClassWorkScore { get; set; }
@@ -29,5 +31,9 @@ namespace SchoolPortal.Core.Models
         public virtual Subject Subject { get; set; }
         [ForeignKey("StudentId")]
         public virtual Student Student { get; set; }
+        [ForeignKey("ClassId")]
+        public virtual Class Class { get; set; }
+        [ForeignKey("ClassRoomId")]
+        public virtual ClassRoom ClassRoom { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace SchoolPortal.Services
         Task CreateSubject(Subject subject);
         Task DeleteSubject(long SubjectId);
         Task UpdateSubject(Subject subject);
+        Task UpdateSubjectStatus(long subjectId, bool isActive);
         IEnumerable<Subject> GetSubjects();
         IEnumerable<Subject> GetSubjects(long classId);
         Task<Subject> GetSubject(long id);

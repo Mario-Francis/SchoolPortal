@@ -392,7 +392,7 @@ $(() => {
                 notify('Error encountered while fetching classrooms', 'danger')
             }
         } else {
-            $('#roomId').prop('disabled', true);
+            $('#roomId').val('').prop('disabled', true);
         }
     });
 

@@ -3,6 +3,7 @@ using Audit.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using SchoolPortal.Core;
 using SchoolPortal.Core.Models;
+using SchoolPortal.Core.Models.Views;
 using System;
 
 namespace SchoolPortal.Data
@@ -42,6 +43,9 @@ namespace SchoolPortal.Data
         public DbSet<ClassRoomTeacher> ClassRoomTeachers { get; set; }
         public DbSet<RoomCode> RoomCodes { get; set; }
         public DbSet<ExamType> ExamTypes { get; set; }
+
+        // ========== views =========
+        public DbSet<MidTermResultViewObject> midTermResultViewObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -166,10 +170,37 @@ namespace SchoolPortal.Data
             .WithMany()
             .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<MidTermResult>()
+            .HasOne(x => x.ClassRoom)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<MidTermResult>()
+            .HasOne(x => x.Class)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<EndTermResult>()
+            .HasOne(x => x.ClassRoom)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<EndTermResult>()
+            .HasOne(x => x.Class)
+            .WithMany()
+            .OnDelete(DeleteBehavior.NoAction);
+
             //        Audit.Core.Configuration.Setup()
             //.UseEntityFramework()
             //.IgnoreMatchedProperties(true));
 
+            // view
+            modelBuilder.Entity<MidTermResultViewObject>(
+            eb =>
+            {
+                eb.HasNoKey();
+                eb.ToView("MidTermResults_View");
+            });
 
             SeeData(modelBuilder);
         }

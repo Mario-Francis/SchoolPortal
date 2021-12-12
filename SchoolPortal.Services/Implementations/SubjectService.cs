@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services.Implementations
 {
-    public class SubjectService:ISubjectService
+    public class SubjectService : ISubjectService
     {
         private readonly IRepository<Subject> subjectRepo;
         private readonly ILogger<SubjectService> logger;
@@ -35,12 +35,13 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Subject object cannot be null");
             }
 
-            if (await subjectRepo.Any(s=> s.ClassId ==subject.ClassId && s.Name.ToLower() == subject.Name.ToLower()))
+            if (await subjectRepo.Any(s => s.ClassId == subject.ClassId && s.Name.ToLower() == subject.Name.ToLower()))
             {
                 throw new AppException($"A Subject of same class with name '{subject.Name}' already exist");
             }
 
             var currentUser = accessor.HttpContext.GetUserSession();
+            subject.IsActive = true;
             subject.CreatedBy = currentUser.Username;
             subject.CreatedDate = DateTimeOffset.Now;
             subject.UpdatedBy = currentUser.Username;
@@ -116,17 +117,45 @@ namespace SchoolPortal.Services.Implementations
 
             }
         }
+        public async Task UpdateSubjectStatus(long subjectId, bool isActive)
+        {
+            var _subject = await subjectRepo.GetById(subjectId);
+            if (_subject == null)
+            {
+                throw new AppException($"Invalid subject id {subjectId}");
+            }
+            else
+            {
+                var currentUser = accessor.HttpContext.GetUserSession();
+                var _oldSubject = _subject.Clone<Subject>();
+
+
+                _subject.IsActive = isActive;
+                _subject.UpdatedBy = currentUser.Username;
+                _subject.UpdatedDate = DateTimeOffset.Now;
+
+                await subjectRepo.Update(_subject, true);
+
+
+                // log activity
+                //await loggerService.LogActivity(ActivityActionType.UPDATED_class, currentUser.PersonNumber,
+                //    classRepo.TableName, _oldclass, _class,
+                //     $"Updated class of type '{((Core.classType)((int)_class.classTypeId)).ToString()}' for {_class.FromDate.ToString("dd-MM-yyyy")} to {_class.ToDate.ToString("dd-MM-yyyy")}");
+
+            }
+        }
 
         public IEnumerable<Subject> GetSubjects()
         {
             return subjectRepo.GetAll().OrderBy(c => c.ClassId).ThenBy(c => c.Name);
         }
-        // get by Subject id
+
         public IEnumerable<Subject> GetSubjects(long classId)
         {
-            return subjectRepo.GetWhere(s=>s.ClassId == classId).OrderBy(c => c.Name);
+            return subjectRepo.GetWhere(s => s.ClassId == classId).OrderBy(c => c.Name);
         }
 
+        // get by Subject id
         public async Task<Subject> GetSubject(long id)
         {
             return await subjectRepo.GetById(id);

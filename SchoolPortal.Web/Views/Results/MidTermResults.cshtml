@@ -1,0 +1,271 @@
+﻿
+@inject IDropdownService dropdownService
+@{
+    ViewData["Title"] = "Mid-Term Results";
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>Mid-Term Results</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Results">Results</a>
+        </li>
+        <li>Mid-Term</li>
+    </ul>
+</div>
+<!-- Breadcubs Area End Here -->
+
+<div class="card height-auto">
+    <div class="card-body">
+        <div class="text-right mb-3">
+            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Result</button>
+            <button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Uplaod Results</button>
+        </div>
+        <div>
+
+        </div>
+        <div class="table-responsive">
+            <table id="resultsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Student</th>
+                        <th>Admission&nbsp;No</th>
+                        <th>Session</th>
+                        <th>Term</th>
+                        <th>Exam&nbsp;Type</th>
+                        <th>Class</th>
+                        <th>Room&nbsp;Code</th>
+                        <th>Subject</th>
+                        <th>Classwork</th>
+                        <th>Test</th>
+                        <th>Exam</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New Student <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname" class="f14">* First Name</label>
+                                    <input id="fname" type="text" class="form-control" placeholder="Enter student first name" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="mname" class="f14">* Middle Name</label>
+                                    <input id="mname" type="text" class="form-control" placeholder="Enter student middle name" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sname" class="f14">* Surname</label>
+                                    <input id="sname" type="text" class="form-control" placeholder="Enter student surname" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="gender" class="f14">* Geder</label>
+                                    <select id="gender" class="custom-select form-control" required>
+                                        <option value="">- Select gender -</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="dob" class="f14">* Date of Birth</label>
+                                    <input id="dob" type="text" class="form-control dob" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="f14">* Email</label>
+                                    <input id="email" type="email" class="form-control" placeholder="Enter student email" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="f14">Phone Number</label>
+                                    <input id="phone" type="text" class="form-control integer" placeholder="Enter student phone number" maxlength="15" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="enrollmentDate" class="f14">* Enrollment Date</label>
+                                    <input id="enrollmentDate" type="text" class="form-control date" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="admissionNo" class="f14">* Admission Number</label>
+                                    <input id="admissionNo" type="text" class="form-control" placeholder="Enter admission number" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="entryClassId" class="f14">* Entry Class</label>
+                                    <select id="entryClassId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="entryTermId" class="f14">* Entry Term</label>
+                                    <select id="entryTermId" class="custom-select form-control" asp-items="@dropdownService.GetTerms()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="entrySession" class="f14">* Entry Session</label>
+                                    <input id="entrySession" type="text" class="form-control" placeholder="YYYY/YYYY" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="classId" class="f14">Current Class</label>
+                                    <select id="classId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="roomId" class="f14">Current Classroom &nbsp;<i id="roomLoader" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
+                                    <select id="roomId" class="custom-select form-control" disabled>
+                                        <option value="">- Select classroom -</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="createBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Submit</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- upload batch -->
+<div class="modal fade" id="batchUploadModal">
+    <div class="modal-dialog modal-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Batch Upload Mid-Term Results <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="alert alert-info f14">
+                            <h6 class="mb-1 f14 font-weight-bold"><i class="fa fa-info-circle"></i> &nbsp;Important Information</h6>
+                            <p class="m-0">
+                                Kindly ensure the mid-term results excel list you wish to upload complies with the template. To download the excel template, click the download button below.
+                            </p>
+                            <p class="text-right mt-3"><a href="~/templates/Batch Upload Mid-Term Results Template.xlsx" download="Batch Mid-Term Results Template.xlsx" class="btn btn-info f12"><i class="fa fa-download"></i> Download template</a></p>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="b_examId" class="f14">* Exam</label>
+                                    <select class="form-control custom-select" id="b_examId" asp-items="@dropdownService.GetExams()" required>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="b_classId" class="f14">* Class</label>
+                                    <select class="form-control custom-select" id="b_classId" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="b_subjectId" class="f14">* Subject &nbsp;<i id="subjectLoader" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
+                                    <select class="form-control custom-select" id="b_subjectId" required disabled>
+                                       <option value="">- Select subject -</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="file" class="f14">* File</label>
+                                    <div class="input-group mb-3 custom_file">
+                                        <input type="file" class="d-none file" id="file" name="file" file-text-id="file-text" accept=".xls, .xlsx" required />
+                                        <input type="text" class="form-control" style="height: 37px;" id="file-text" disabled placeholder="Choose excel file" />
+                                        <div class="input-group-append">
+                                            <label class="input-group-text btn px-4 f12" title="Browse file" for="file"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline-block"> &nbsp;&nbsp;Browse</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                @* <button type="submit" id="submitBtn" class="btn btn-primary d-block ml-auto px-3"><i class="fa fa-upload"></i> &nbsp; Upload file</button>*@
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="uploadBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-upload"></i> &nbsp;Upload File</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+@section css{
+    <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/choices.js/choices.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/lib/choices.js/choices.js"></script>
+    <script>
+
+    </script>
+    <script src="~/js/mid_term_results.js" asp-append-version="true"></script>
+
+}

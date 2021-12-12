@@ -93,5 +93,14 @@ namespace SchoolPortal.Web.UIServices
             examTypes.Insert(0, new SelectListItem { Text = "- Select exam type -", Value = "" });
             return examTypes;
         }
+
+        public IEnumerable<SelectListItem> GetExams(string value = null)
+        {
+            List<SelectListItem> exams = listService.GetExams()
+                .Select(e => new SelectListItem { Text = $"{e.ExamType.Name} ({e.StartDate.ToString("MMM d, yyyy")} - {e.EndDate.ToString("MMM d, yyyy")})", Value = e.Id.ToString(), Selected = e.Id.ToString() == value }).ToList();
+
+            exams.Insert(0, new SelectListItem { Text = "- Select exam -", Value = "" });
+            return exams;
+        }
     }
 }

@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
-using System.Text.Json.Serialization;
 
-namespace SchoolPortal.Core.Models
+namespace SchoolPortal.Core.Models.Views
 {
-    public class MidTermResult:BaseEntity,IUpdatable
+    public class MidTermResultViewObject:BaseEntity
     {
         public long ExamId { get; set; }
         public long ClassId { get; set; }
@@ -18,22 +17,31 @@ namespace SchoolPortal.Core.Models
         public decimal ExamScore { get; set; }
         public decimal Total { get; set; }
 
+        public string StudentName { get; set; }
+        public string AdmissionNo { get; set; }
+        public string Session { get; set; }
+        public string Term { get; set; }
+        public long ExamTypeId { get; set; }
+        public string ExamType { get; set; }
+        public string ClassName { get; set; }
+        public string RoomCode { get; set; }
+        public string SubjectName { get; set; }
+
         public string UpdatedBy { get; set; }
         public DateTimeOffset UpdatedDate { get; set; } = DateTimeOffset.Now;
 
         //Navigation Properties
-        [JsonIgnore]
         [NotMapped]
         public virtual User UpdatedByUser { get; set; }
-        [ForeignKey("ExamId")]
+        [NotMapped]
         public virtual Exam Exam { get; set; }
-        [ForeignKey("SubjectId")]
+        [NotMapped]
         public virtual Subject Subject { get; set; }
-        [ForeignKey("StudentId")]
+        [NotMapped]
         public virtual Student Student { get; set; }
-        [ForeignKey("ClassId")]
+        [NotMapped]
         public virtual Class Class { get; set; }
-        [ForeignKey("ClassRoomId")]
+        [NotMapped]
         public virtual ClassRoom ClassRoom { get; set; }
     }
 }

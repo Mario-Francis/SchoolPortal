@@ -18,14 +18,17 @@ namespace SchoolPortal.Web.Controllers
     {
         private readonly AppSettings appSettings;
         private readonly ISubjectService subjectService;
+        private readonly IClassService classService;
         private readonly ILogger<SubjectsController> logger;
 
         public SubjectsController(IOptions<AppSettings> appSettings,
             ISubjectService subjectService,
+             IClassService classService,
             ILogger<SubjectsController> logger)
         {
             this.appSettings = appSettings.Value;
             this.subjectService = subjectService;
+            this.classService = classService;
             this.logger = logger;
         }
 
@@ -76,7 +79,7 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while creating a new subjectroom");
+                logger.LogError(ex, "An error was encountered while creating a new subject");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
@@ -116,7 +119,35 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while updating a subjectroom");
+                logger.LogError(ex, "An error was encountered while updating a subject");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSubjectStatus(long? id, bool isActive)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "Subject is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await subjectService.UpdateSubjectStatus(id.Value, isActive);
+                    return Ok(new { IsSuccess = true, Message = "Subject status updated succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while updating a subject status");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
@@ -145,7 +176,7 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while deleting a subjectroom");
+                logger.LogError(ex, "An error was encountered while deleting a subject");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
@@ -173,7 +204,40 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while fetching a subjectroom");
+                logger.LogError(ex, "An error was encountered while fetching a subject");
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+        [HttpGet("[controller]/GetSubjects/{classId}")]
+        public async Task<IActionResult> GetSubjects(long? classId)
+        {
+            try
+            {
+                if (classId == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "Class is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    var @class = await classService.GetClass(classId.Value);
+                    if (@class == null)
+                    {
+                        return StatusCode(400, new { IsSuccess = false, Message = "Class is not found", ErrorItems = new string[] { } });
+                    }
+                    var subjects = subjectService.GetSubjects(classId.Value).Select(s => SubjectVM.FromSubject(s));
+                    return Ok(new { IsSuccess = true, Message = "Subjects retrieved succeessfully", Data = subjects });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error was encountered while fetching class subjects");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 

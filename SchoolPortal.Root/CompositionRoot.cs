@@ -39,6 +39,7 @@ namespace SchoolPortal.Root
             services.AddScoped<IMailService, MailService>();
             services.AddScoped<IStudentService, StudentService>();
             services.AddScoped<IExamService, ExamService>();
+            services.AddScoped<IResultService, ResultService>();
             //services.AddTransient(typeof(ILoggerService<>), typeof(LoggerService<>));
             //services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             //services.AddScoped<IMyHRService, MyHRService>();
