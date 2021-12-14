@@ -514,15 +514,7 @@ namespace SchoolPortal.Web.Controllers
         {
             try
             {
-                var students = studentService.SearchStudents(query, max).Select(t => new UserItemVM
-                {
-                    Id = t.Id,
-                    FirstName = t.FirstName,
-                    MiddleName = t.MiddleName,
-                    Surname = t.Surname,
-                    Username = t.Username,
-                    Email = t.Email
-                });
+                var students = studentService.SearchStudents(query, max).Select(s => StudentItemVM.FromStudent(s));
                 return Ok(new { IsSuccess = true, Message = "Success", Data = students });
 
             }
@@ -532,7 +524,7 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"An error was encountered while searching parents");
+                logger.LogError(ex, $"An error was encountered while searching students");
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 

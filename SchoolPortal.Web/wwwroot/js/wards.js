@@ -179,7 +179,7 @@ function initializeParentssDropdown() {
     var _select = $(".studentsdd").selectize({
         valueField: "id",
         searchField: ["email", "username", "firstName", "surname", "middleName", "phoneNumber"],
-        placeholder: '- Search parent -',
+        placeholder: '- Search student -',
         dropdownParent: 'body',
         create: false,
         preload: 'focus',

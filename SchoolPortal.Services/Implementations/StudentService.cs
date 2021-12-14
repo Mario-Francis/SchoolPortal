@@ -965,10 +965,12 @@ namespace SchoolPortal.Services.Implementations
             else
             {
                 searchParam = searchParam.ToLower();
-                var students = studentRepo.GetWhere(u => u.IsActive &&
+                var students = studentRepo.GetWhere(u => u.IsActive && !u.IsGraduated &&
                 (u.Username.ToLower().Contains(searchParam) || u.Email.ToLower().Contains(searchParam)
                 || u.PhoneNumber.ToLower().Contains(searchParam) || u.FirstName.ToLower().Contains(searchParam)
-                || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam))).Take(max);
+                || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam) 
+                || u.AdmissionNo.ToLower().Contains(searchParam))).Take(max);
+
 
                 return students;
             }

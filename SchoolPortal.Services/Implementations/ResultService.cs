@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services.Implementations
 {
-    public class ResultService:IResultService
+    public class ResultService : IResultService
     {
         private readonly IRepository<Exam> examRepo;
         private readonly IRepository<MidTermResult> midTermResultRepo;
@@ -59,9 +59,177 @@ namespace SchoolPortal.Services.Implementations
             this.appSettingsDelegate = appSettingsDelegate;
         }
 
+        // add result
+        public async Task CreateMidTermResult(MidTermResult result)
+        {
+            if (result == null)
+            {
+                throw new AppException("Result object cannot be null");
+            }
+
+            if (!await subjectRepo.Any(s => s.Id == result.SubjectId))
+            {
+                throw new AppException("Subject id is invalid");
+            }
+
+            if (!await examRepo.Any(e => e.Id == result.ExamId))
+            {
+                throw new AppException("Exam id is invalid");
+            }
+            if (!await classRepo.Any(c => c.Id == result.ClassId))
+            {
+                throw new AppException("Class id is invalid");
+            }
+            var student = await studentRepo.GetById(result.StudentId);
+            if (student == null)
+            {
+                throw new AppException("Student id is invalid");
+            }
+            var total = result.ClassWorkScore + result.TestScore + result.ExamScore;
+            if(result.Total  != total)
+            {
+                throw new AppException("Total score is invalid");
+            }
+
+            if (student.ClassRoomStudents.FirstOrDefault().ClassRoom.ClassId != result.ClassId)
+            {
+                throw new AppException($"A student with admission number '{student.AdmissionNo}' does not belong to specified class");
+            }
+            if (await midTermResultRepo.Any(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId))
+            {
+                throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
+            }
+
+            var currentUser = accessor.HttpContext.GetUserSession();
+            result.ClassRoomId = student.ClassRoomStudents.FirstOrDefault().ClassRoom.Id;
+            result.CreatedBy = currentUser.Username;
+            result.CreatedDate = DateTimeOffset.Now;
+            result.UpdatedBy = currentUser.Username;
+            result.UpdatedDate = DateTimeOffset.Now;
+
+            await midTermResultRepo.Insert(result, true);
+
+            //log action
+            //await loggerService.LogActivity(ActivityActionType.CREATED_ASSESSMENT,
+            //    currentUser.PersonNumber,
+            //    $"Created new assessment of type '{((Core.AssessmentType)((int)assessment.AssessmentTypeId)).ToString()}' for {assessment.FromDate.ToString("dd-MM-yyyy")} to {assessment.ToDate.ToString("dd-MM-yyyy")}");
+        }
+
+        // delete class - without class rooms
+        public async Task DeleteMidTermResult(long resultId)
+        {
+            var result = await midTermResultRepo.GetById(resultId);
+            if (result == null)
+            {
+                throw new AppException($"Invalid result id {resultId}");
+            }
+            else
+            {
+                if (await endTermResultRepo.Any(r => r.Exam.Session == result.Exam.Session && r.Exam.TermId == result.Exam.TermId
+                && r.ClassId == result.ClassId && r.SubjectId == result.SubjectId && r.StudentId == result.StudentId))
+                {
+                    throw new AppException("End-term result cannot be deleted as it is already assocciated with a corresponding end-term result");
+                }
+                else
+                {
+                    var _result = result.Clone<MidTermResult>();
+                    await midTermResultRepo.Delete(resultId, true);
+
+                    var currentUser = accessor.HttpContext.GetUserSession();
+                    // log activity
+                    //await loggerService.LogActivity(ActivityActionType.DELETED_ASSESSMENT, currentUser.PersonNumber,
+                    //    $"Deleted assessment of type '{((Core.AssessmentType)((int)_assessment.AssessmentTypeId)).ToString()}' for {_assessment.FromDate.ToString("dd-MM-yyyy")} to {_assessment.ToDate.ToString("dd-MM-yyyy")}");
+                }
+            }
+        }
+
+        // update class
+        public async Task UpdateMidTermResult(MidTermResult result)
+        {
+            var _result = await midTermResultRepo.GetById(result.Id);
+            if (_result == null)
+            {
+                throw new AppException($"Invalid result id {result.Id}");
+            }
+
+            if (!await subjectRepo.Any(s => s.Id == result.SubjectId))
+            {
+                throw new AppException("Subject id is invalid");
+            }
+
+            if (!await examRepo.Any(e => e.Id == result.ExamId))
+            {
+                throw new AppException("Exam id is invalid");
+            }
+            if (!await classRepo.Any(c => c.Id == result.ClassId))
+            {
+                throw new AppException("Class id is invalid");
+            }
+            var student = await studentRepo.GetById(result.StudentId);
+            if (student == null)
+            {
+                throw new AppException("Student id is invalid");
+            }
+
+            var total = result.ClassWorkScore + result.TestScore + result.ExamScore;
+            if (result.Total != total)
+            {
+                throw new AppException("Total score is invalid");
+            }
+
+            if (student.ClassRoomStudents.FirstOrDefault().ClassRoom.ClassId != result.ClassId)
+            {
+                throw new AppException($"A student with admission number '{student.AdmissionNo}' does not belong to specified class");
+            }
+
+            if (await midTermResultRepo.Any(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId &&
+            !(_result.ExamId == result.ExamId && _result.SubjectId == result.SubjectId && _result.StudentId == result.StudentId)))
+            {
+                throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
+            }
+            var currentUser = accessor.HttpContext.GetUserSession();
+            var _oldresult = _result.Clone<MidTermResult>();
+
+            _result.ExamId = result.ExamId;
+            _result.SubjectId = result.SubjectId;
+            _result.StudentId = result.StudentId;
+            _result.ClassId = result.ClassId;
+            _result.ClassRoomId= student.ClassRoomStudents.FirstOrDefault().ClassRoom.Id;
+            _result.ClassWorkScore = result.ClassWorkScore;
+            _result.TestScore = result.TestScore;
+            _result.ExamScore = result.ExamScore;
+            _result.Total = result.Total;
+            _result.UpdatedBy = currentUser.Username;
+            _result.UpdatedDate = DateTimeOffset.Now;
+
+            await midTermResultRepo.Update(_result, true);
+
+
+            // log activity
+            //await loggerService.LogActivity(ActivityActionType.UPDATED_result, currentUser.PersonNumber,
+            //    resultRepo.TableName, _oldresult, _result,
+            //     $"Updated result of type '{((Core.resultType)((int)_result.resultTypeId)).ToString()}' for {_result.FromDate.ToString("dd-MM-yyyy")} to {_result.ToDate.ToString("dd-MM-yyyy")}");
+
+
+        }
+
+        public IEnumerable<MidTermResult> GetMidTermResults()
+        {
+            return midTermResultRepo.GetAll().OrderByDescending(r => r.ExamId);
+        }
         public IEnumerable<MidTermResultViewObject> GetMidTermResultViewObjects()
         {
-            return midTermResultViewObjectRepo.GetAll();
+            return midTermResultViewObjectRepo.GetAll().OrderByDescending(r => r.ExamId);
+        }
+
+        public async Task<MidTermResult> GetMidTermResult(long id)
+        {
+            return await midTermResultRepo.GetById(id);
+        }
+
+        public async Task<MidTermResultViewObject> GetMidTermResultViewObject(long id)
+        {
+            return await midTermResultViewObjectRepo.GetSingleWhere(r => r.Id == id);
         }
 
         //=========== Batch Upload ===========

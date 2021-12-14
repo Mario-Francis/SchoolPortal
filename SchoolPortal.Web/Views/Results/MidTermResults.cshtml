@@ -55,6 +55,30 @@
                 </thead>
                 <tbody>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Student</th>
+                        <th>Admission&nbsp;No</th>
+                        <th>Session</th>
+                        <th>Term</th>
+                        <th>Exam&nbsp;Type</th>
+                        <th>Class</th>
+                        <th>Room&nbsp;Code</th>
+                        <th>Subject</th>
+                        <th>Classwork</th>
+                        <th>Test</th>
+                        <th>Exam</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
@@ -68,7 +92,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">New Student <span></span></h4>
+                <h4 class="modal-title">New Mid-Term Result <span></span></h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
@@ -77,100 +101,60 @@
                     <!-- Modal body -->
                     <div class="modal-body">
                         <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="examId" class="f14">* Exam</label>
+                                    <select class="form-control custom-select" id="examId" asp-items="@dropdownService.GetExams()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="classId" class="f14">* Class</label>
+                                    <select class="form-control custom-select classdd" id="classId" subjectdd="subjectId" loader="subjectLoader2" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subjectId" class="f14">* Subject &nbsp;<i id="subjectLoader2" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
+                                    <select class="form-control custom-select" id="subjectId" required disabled>
+                                        <option value="">- Select subject -</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="studentId" class="f14">* Student</label>
+                                    <select class="form-control custom-select studentsdd" id="studentId" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="classwork" class="f14">* Classwork</label>
+                                    <input id="classwork" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter classwork score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="test" class="f14">* Test</label>
+                                    <input id="test" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter test score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="exam" class="f14">* Exam</label>
+                                    <input id="exam" type="number" class="form-control integer" maxlength="2" min="0" max="20" placeholder="Enter exam score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="total" class="f14">* Total</label>
+                                    <input id="total" type="number" class="form-control integer" maxlength="2" min="0" max="40" placeholder="Enter total score" required readonly />
+                                </div>
+                            </div>
 
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname" class="f14">* First Name</label>
-                                    <input id="fname" type="text" class="form-control" placeholder="Enter student first name" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="mname" class="f14">* Middle Name</label>
-                                    <input id="mname" type="text" class="form-control" placeholder="Enter student middle name" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="sname" class="f14">* Surname</label>
-                                    <input id="sname" type="text" class="form-control" placeholder="Enter student surname" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="gender" class="f14">* Geder</label>
-                                    <select id="gender" class="custom-select form-control" required>
-                                        <option value="">- Select gender -</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="dob" class="f14">* Date of Birth</label>
-                                    <input id="dob" type="text" class="form-control dob" placeholder="YYYY-MM-DD" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="email" class="f14">* Email</label>
-                                    <input id="email" type="email" class="form-control" placeholder="Enter student email" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="phone" class="f14">Phone Number</label>
-                                    <input id="phone" type="text" class="form-control integer" placeholder="Enter student phone number" maxlength="15" />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="enrollmentDate" class="f14">* Enrollment Date</label>
-                                    <input id="enrollmentDate" type="text" class="form-control date" placeholder="YYYY-MM-DD" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="admissionNo" class="f14">* Admission Number</label>
-                                    <input id="admissionNo" type="text" class="form-control" placeholder="Enter admission number" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="entryClassId" class="f14">* Entry Class</label>
-                                    <select id="entryClassId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()" required>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="entryTermId" class="f14">* Entry Term</label>
-                                    <select id="entryTermId" class="custom-select form-control" asp-items="@dropdownService.GetTerms()" required>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="entrySession" class="f14">* Entry Session</label>
-                                    <input id="entrySession" type="text" class="form-control" placeholder="YYYY/YYYY" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="classId" class="f14">Current Class</label>
-                                    <select id="classId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()">
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="roomId" class="f14">Current Classroom &nbsp;<i id="roomLoader" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
-                                    <select id="roomId" class="custom-select form-control" disabled>
-                                        <option value="">- Select classroom -</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <!-- Modal footer -->
@@ -184,6 +168,91 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Mid-Term Result <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_examId" class="f14">* Exam</label>
+                                    <select class="form-control custom-select" id="e_examId" asp-items="@dropdownService.GetExams()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_classId" class="f14">* Class</label>
+                                    <select class="form-control custom-select classdd" id="e_classId" subjectdd="e_subjectId" loader="e_subjectLoader2" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_subjectId" class="f14">* Subject &nbsp;<i id="e_subjectLoader2" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
+                                    <select class="form-control custom-select" id="e_subjectId" required disabled>
+                                        <option value="">- Select subject -</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_studentId" class="f14">* Student</label>
+                                    <select class="form-control custom-select studentsdd" id="e_studentId" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_classwork" class="f14">* Classwork</label>
+                                    <input id="e_classwork" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter classwork score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_test" class="f14">* Test</label>
+                                    <input id="e_test" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter test score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_exam" class="f14">* Exam</label>
+                                    <input id="e_exam" type="number" class="form-control integer" maxlength="2" min="0" max="20" placeholder="Enter exam score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_total" class="f14">* Total</label>
+                                    <input id="e_total" type="number" class="form-control integer" maxlength="2" min="0" max="40" placeholder="Enter total score" required readonly />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
 
 <!-- upload batch -->
 <div class="modal fade" id="batchUploadModal">
@@ -215,13 +284,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="b_classId" class="f14">* Class</label>
-                                    <select class="form-control custom-select" id="b_classId" asp-items="@dropdownService.GetClasses()" required>
+                                    <select class="form-control custom-select classdd" id="b_classId" subjectdd="b_subjectId" loader="subjectLoader" asp-items="@dropdownService.GetClasses()" required>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="b_subjectId" class="f14">* Subject &nbsp;<i id="subjectLoader" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
                                     <select class="form-control custom-select" id="b_subjectId" required disabled>
-                                       <option value="">- Select subject -</option>
+                                        <option value="">- Select subject -</option>
                                     </select>
                                 </div>
 

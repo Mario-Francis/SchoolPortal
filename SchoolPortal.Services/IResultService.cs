@@ -10,7 +10,13 @@ namespace SchoolPortal.Services
 {
     public interface IResultService
     {
+        Task CreateMidTermResult(MidTermResult result);
+        Task DeleteMidTermResult(long resultId);
+        Task UpdateMidTermResult(MidTermResult result);
+        IEnumerable<MidTermResult> GetMidTermResults();
         IEnumerable<MidTermResultViewObject> GetMidTermResultViewObjects();
+        Task<MidTermResult> GetMidTermResult(long id);
+        Task<MidTermResultViewObject> GetMidTermResultViewObject(long id);
 
         bool ValidateFile(IFormFile file, out List<string> errorItems);
         Task<IEnumerable<MidTermResult>> ExtractMidTermData(IFormFile file);
