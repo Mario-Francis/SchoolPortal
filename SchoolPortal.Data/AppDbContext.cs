@@ -3,6 +3,7 @@ using Audit.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using SchoolPortal.Core;
 using SchoolPortal.Core.Models;
+using SchoolPortal.Core.Models.Audit;
 using SchoolPortal.Core.Models.Views;
 using System;
 
@@ -43,6 +44,11 @@ namespace SchoolPortal.Data
         public DbSet<ClassRoomTeacher> ClassRoomTeachers { get; set; }
         public DbSet<RoomCode> RoomCodes { get; set; }
         public DbSet<ExamType> ExamTypes { get; set; }
+
+        // Audit Table
+        public DbSet<ActivityLog> ActivityLogs { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<AuditLogChange> AuditLogChanges { get; set; }
 
         // ========== views =========
         public DbSet<MidTermResultViewObject> midTermResultViewObjects { get; set; }

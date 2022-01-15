@@ -26,6 +26,13 @@ namespace SchoolPortal.Core
         SECOND_HALF
     }
 
+    public enum ActivityActionType
+    {
+        OTHER,
+        LOGIN,
+        LOGIN_ATTEMPT
+    }
+
     public class Constants
     {
         public const string SESSION_COOKIE_ID = ".CIS.Session";
@@ -44,5 +51,6 @@ namespace SchoolPortal.Core
         public const string USER_TYPE_STUDENT = "Student";
 
         public const string CLIENT_TIMEOFFSET_COOKIE_ID = "clientTimeZoneOffset";
+        public static string[] IGNORED_COLUMNS = new string[] { "Id", "CreatedBy", "CreatedDate" };
     }
 }

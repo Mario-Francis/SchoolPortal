@@ -9,7 +9,10 @@ namespace SchoolPortal.Core.Extensions
         {
             return $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/";
         }
-
+        public static string GetIPAddress(this HttpContext context)
+        {
+            return context?.Connection?.RemoteIpAddress?.ToString();
+        }
         public static void SetUserSession(this HttpContext context, SessionObject userSession)
         {
             context.Items[Constants.CONTEXT_USER_KEY] = userSession;
