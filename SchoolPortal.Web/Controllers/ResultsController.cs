@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+
     public class ResultsController : Controller
     {
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
@@ -222,7 +223,6 @@ namespace SchoolPortal.Web.Controllers
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
         }
-
 
 
         #endregion Mid-term results

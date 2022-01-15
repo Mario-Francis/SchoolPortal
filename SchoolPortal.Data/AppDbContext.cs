@@ -51,7 +51,8 @@ namespace SchoolPortal.Data
         public DbSet<AuditLogChange> AuditLogChanges { get; set; }
 
         // ========== views =========
-        public DbSet<MidTermResultViewObject> midTermResultViewObjects { get; set; }
+        public DbSet<MidTermResultViewObject> MidTermResultViewObjects { get; set; }
+        public DbSet<EndTermResultViewObject> EndTermResultViewObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -196,16 +197,19 @@ namespace SchoolPortal.Data
             .WithMany()
             .OnDelete(DeleteBehavior.NoAction);
 
-            //        Audit.Core.Configuration.Setup()
-            //.UseEntityFramework()
-            //.IgnoreMatchedProperties(true));
-
             // view
             modelBuilder.Entity<MidTermResultViewObject>(
-            eb =>
+            x =>
             {
-                eb.HasNoKey();
-                eb.ToView("MidTermResults_View");
+                x.HasNoKey();
+                x.ToView("MidTermResults_View");
+            });
+
+            modelBuilder.Entity<EndTermResultViewObject>(
+            x =>
+            {
+                x.HasNoKey();
+                x.ToView("EndTermResults_View");
             });
 
             SeeData(modelBuilder);

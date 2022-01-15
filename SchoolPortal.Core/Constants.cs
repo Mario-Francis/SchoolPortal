@@ -30,7 +30,12 @@ namespace SchoolPortal.Core
     {
         OTHER,
         LOGIN,
-        LOGIN_ATTEMPT
+        LOGIN_ATTEMPT,
+
+        ADDED_END_TERM_RESULT,
+        BATCH_ADDED_END_TERM_RESULT,
+        UPDATED_END_TERM_RESULT,
+        DELETED_END_TERM_RESULT
     }
 
     public class Constants
