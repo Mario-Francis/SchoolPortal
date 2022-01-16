@@ -20,11 +20,11 @@ namespace SchoolPortal.Web.Controllers
     {
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly IResultService resultService;
-        private readonly ILogger<ResultsController> logger;
+        private readonly ILoggerService<ResultsController> logger;
 
         public ResultsController(IOptionsSnapshot<AppSettings> appSettingsDelegate,
             IResultService resultService,
-            ILogger<ResultsController> logger)
+            ILoggerService<ResultsController> logger)
         {
             this.appSettingsDelegate = appSettingsDelegate;
             this.resultService = resultService;
@@ -94,9 +94,8 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while adding mid-term results in batch");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while adding mid-term results in batch");
 
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
@@ -124,9 +123,8 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while creating a new mid-term result");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while creating a new mid-term result");
 
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
@@ -159,9 +157,8 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while updating a mid-term result");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while updating a mid-term result");
 
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
@@ -188,9 +185,8 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while deleting a mid-term result");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while deleting a mid-term result");
 
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
@@ -216,15 +212,201 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while fetching a mid-term result");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while fetching a mid-term result");
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        #endregion Mid-term results
+
+
+        #region End-term results
+
+        public IActionResult EndTermResults()
+        {
+            return View();
+        }
+
+        [HttpPost("[controller]/endterm/ResultsDataTable")]
+        public IActionResult EndTermResultsDataTable()
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var results = resultService.GetEndTermResultViewObjects().Select(r => EndTermResultViewObjectVM.FromEndTermResultViewObject(r, clientTimeOffset));
+
+            var parser = new Parser<EndTermResultViewObjectVM>(Request.Form, results.AsQueryable())
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost("[controller]/endterm/BatchUploadResults")]
+        public async Task<IActionResult> BatchUploadEndTermResults(BatchUploadResultVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else if (model.File == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "No file uploaded!", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    if (!resultService.ValidateFile(model.File, out List<string> errItems))
+                    {
+                        return StatusCode(400, new { IsSuccess = false, Message = "Invalid file uploaded.", ErrorItems = errItems });
+                    }
+                    else
+                    {
+                        var results = await resultService.ExtractEndTermData(model.File);
+
+                        await resultService.BatchCreateEndTermResults(results, model.ExamId, model.SubjectId, model.ClassId);
+
+                        return Ok(new { IsSuccess = true, Message = "File uploaded and read successfully", ErrorItems = new string[] { } });
+
+                    }
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("An error was encountered while adding end-term results in batch");
+                logger.LogException(ex);
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        [HttpPost("[controller]/endterm/AddResult")]
+        public async Task<IActionResult> AddEndTermResult(EndTermResultVM resultVM)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else
+                {
+                    await resultService.CreateEndTermResult(resultVM.ToEndTermResult());
+                    return Ok(new { IsSuccess = true, Message = "End-term result added succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while creating a new end-term result");
 
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
         }
 
 
-        #endregion Mid-term results
+        [HttpPost("[controller]/endterm/UpdateResult")]
+        public async Task<IActionResult> UpdateEndTermResult(EndTermResultVM resultVM)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else if (resultVM.Id == 0)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = $"Invalid result id {resultVM.Id}", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await resultService.UpdateEndTermResult(resultVM.ToEndTermResult());
+                    return Ok(new { IsSuccess = true, Message = "End-term result updated succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while updating a end-term result");
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        [HttpGet("[controller]/endterm/DeleteResult/{id}")]
+        public async Task<IActionResult> DeleteEndTermResult(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "End-term result is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    await resultService.DeleteEndTermResult(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "End-term result deleted succeessfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while deleting a end-term result");
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+        [HttpGet("[controller]/endterm/GetResult/{id}")]
+        public async Task<IActionResult> GetEndTermResult(long? id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "Mend-term result is not found", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    var result = await resultService.GetEndTermResult(id.Value);
+                    return Ok(new { IsSuccess = true, Message = "Result retrieved succeessfully", Data = EndTermResultVM.FromEndTermResult(result) });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while fetching a end-term result");
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+            }
+        }
+
+        #endregion End-term results
+
     }
 }

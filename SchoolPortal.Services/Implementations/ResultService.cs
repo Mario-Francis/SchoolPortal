@@ -545,11 +545,21 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' does not belong to specified class");
             }
 
+
             if (await endTermResultRepo.Any(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId &&
             !(_result.ExamId == result.ExamId && _result.SubjectId == result.SubjectId && _result.StudentId == result.StudentId)))
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
             }
+
+            var exam = await examRepo.GetById(result.ExamId);
+            if (!await midTermResultRepo.Any(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
+            && er.ClassId == result.ClassId && er.SubjectId == result.SubjectId && er.StudentId == result.StudentId))
+            {
+                throw new AppException($"There is no corresponding mid-term result for this end-term result (admission number: {student.AdmissionNo}). Please upload the mid-term result first");
+            }
+
+
             var currentUser = accessor.HttpContext.GetUserSession();
             var _oldresult = _result.Clone<EndTermResult>();
 
@@ -631,20 +641,20 @@ namespace SchoolPortal.Services.Implementations
                 isValid = false;
                 err = $"Invalid value for {midTermHeaders[4]} at row {index}. Field is required.";
             }
-            else if (!(int.TryParse(Convert.ToString(row[4]).Trim(), out int _) && Convert.ToInt32(Convert.ToString(row[4]).Trim()) >= 0 && Convert.ToInt32(Convert.ToString(row[4]).Trim()) <= 20))
+            else if (!(int.TryParse(Convert.ToString(row[4]).Trim(), out int _) && Convert.ToInt32(Convert.ToString(row[4]).Trim()) >= 0 && Convert.ToInt32(Convert.ToString(row[4]).Trim()) <= 40))
             {
                 isValid = false;
-                err = $"Invalid value for {midTermHeaders[4]} at row {index}. Field should be a value ranging from 0 to 20.";
+                err = $"Invalid value for {midTermHeaders[4]} at row {index}. Field should be a value ranging from 0 to 40.";
             }
             else if (row[5] == null || Convert.ToString(row[5]).Trim() == "")
             {
                 isValid = false;
                 err = $"Invalid value for {midTermHeaders[5]} at row {index}. Field is required.";
             }
-            else if (!(int.TryParse(Convert.ToString(row[5]).Trim(), out int _) && Convert.ToInt32(Convert.ToString(row[5]).Trim()) >= 0 && Convert.ToInt32(Convert.ToString(row[5]).Trim()) <= 40))
+            else if (!(int.TryParse(Convert.ToString(row[5]).Trim(), out int _) && Convert.ToInt32(Convert.ToString(row[5]).Trim()) >= 0 && Convert.ToInt32(Convert.ToString(row[5]).Trim()) <= 60))
             {
                 isValid = false;
-                err = $"Invalid value for {midTermHeaders[5]} at row {index}. Field should be a value ranging from 0 to 40.";
+                err = $"Invalid value for {midTermHeaders[5]} at row {index}. Field should be a value ranging from 0 to 60.";
             }
             else if (Math.Round((double)(Convert.ToInt32(Convert.ToString(row[2]).Trim()) + Convert.ToInt32(Convert.ToString(row[3]).Trim()) + Convert.ToInt32(Convert.ToString(row[4]).Trim())), MidpointRounding.AwayFromZero) != Convert.ToInt32(Convert.ToString(row[5]).Trim()))
             {
@@ -754,7 +764,15 @@ namespace SchoolPortal.Services.Implementations
                 {
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result on excel");
                 }
-                if (await midTermResultRepo.Any(mr => mr.ExamId == examId && mr.SubjectId == subjectId && mr.StudentId == r.StudentId))
+
+                var exam = await examRepo.GetById(r.ExamId);
+                if (!await midTermResultRepo.Any(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
+                && er.ClassId == r.ClassId && er.SubjectId == r.SubjectId && er.StudentId == r.StudentId))
+                {
+                    throw new AppException($"There is no corresponding mid-term result for this end-term result (admission number: {student.AdmissionNo}). Please upload the mid-term result first");
+                }
+
+                if (await endTermResultRepo.Any(mr => mr.ExamId == examId && mr.SubjectId == subjectId && mr.StudentId == r.StudentId))
                 {
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
                 }

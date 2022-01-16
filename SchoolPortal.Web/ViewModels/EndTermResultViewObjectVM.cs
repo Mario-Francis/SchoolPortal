@@ -20,6 +20,7 @@ namespace SchoolPortal.Web.ViewModels
         public decimal TestScore { get; set; }
         public decimal ExamScore { get; set; }
         public decimal Total { get; set; }
+        public decimal TermTotal { get; set; }
 
         public string Student { get; set; }
         public string AdmissionNo { get; set; }
@@ -60,27 +61,28 @@ namespace SchoolPortal.Web.ViewModels
                 return new EndTermResultViewObjectVM
                 {
                     Id = result.Id,
-                    AdmissionNo= result.AdmissionNo,
-                    Class= result.ClassName,
-                    ClassId= result.ClassId,
-                    ClassRoomId= result.ClassRoomId,
-                    ClassWorkScore=result.ClassWorkScore,
-                    ExamId= result.ExamId,
-                    ExamScore= result.ExamScore,
-                    ExamType=result.ExamType,
-                    ExamTypeId= result.ExamTypeId,
-                    RoomCode= result.RoomCode,
-                    Session= result.Session,
-                    Student= result.StudentName,
-                    StudentId= result.StudentId,
-                    Subject= result.SubjectName,
-                    SubjectId= result.SubjectId,
-                    Term= result.Term,
-                    TestScore= result.TestScore,
-                    Total= result.Total,
-                    MidTermTotal=result.MidTermTotal,
-                    MidTermResultId=result.MidTermResultId,
-                    UpdatedBy= result.UpdatedBy,
+                    AdmissionNo = result.AdmissionNo,
+                    Class = result.ClassName,
+                    ClassId = result.ClassId,
+                    ClassRoomId = result.ClassRoomId,
+                    ClassWorkScore = result.ClassWorkScore,
+                    ExamId = result.ExamId,
+                    ExamScore = result.ExamScore,
+                    ExamType = result.ExamType,
+                    ExamTypeId = result.ExamTypeId,
+                    RoomCode = result.RoomCode,
+                    Session = result.Session,
+                    Student = result.StudentName,
+                    StudentId = result.StudentId,
+                    Subject = result.SubjectName,
+                    SubjectId = result.SubjectId,
+                    Term = result.Term,
+                    TestScore = result.TestScore,
+                    Total = result.Total,
+                    MidTermTotal = result.MidTermTotal,
+                    MidTermResultId = result.MidTermResultId,
+                    TermTotal = result.MidTermTotal + result.Total,
+                    UpdatedBy = result.UpdatedBy,
                     CreatedDate = clientTimeOffset == null ? result.CreatedDate : result.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
                     UpdatedDate = clientTimeOffset == null ? result.UpdatedDate : result.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
                 };

@@ -1,0 +1,342 @@
+﻿
+@inject IDropdownService dropdownService
+@{
+    ViewData["Title"] = "End-Term Results";
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>End-Term Results</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Results">Results</a>
+        </li>
+        <li>End-Term</li>
+    </ul>
+</div>
+<!-- Breadcubs Area End Here -->
+
+<div class="card height-auto">
+    <div class="card-body">
+        <div class="text-right mb-3">
+            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Result</button>
+            <button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Uplaod Results</button>
+        </div>
+        <div>
+
+        </div>
+        <div class="table-responsive">
+            <table id="resultsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Student</th>
+                        <th>Admission&nbsp;No</th>
+                        <th>Session</th>
+                        <th>Term</th>
+                        <th>Exam&nbsp;Type</th>
+                        <th>Class</th>
+                        <th>Room&nbsp;Code</th>
+                        <th>Subject</th>
+                        <th>Mid-Term</th>
+                        <th>Classwork</th>
+                        <th>Test</th>
+                        <th>Exam</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Student</th>
+                        <th>Admission&nbsp;No</th>
+                        <th>Session</th>
+                        <th>Term</th>
+                        <th>Exam&nbsp;Type</th>
+                        <th>Class</th>
+                        <th>Room&nbsp;Code</th>
+                        <th>Subject</th>
+                        <th>Mid-Term</th>
+                        <th>Classwork</th>
+                        <th>Test</th>
+                        <th>Exam</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New End-Term Result <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="examId" class="f14">* Exam</label>
+                                    <select class="form-control custom-select" id="examId" asp-items="@dropdownService.GetExams()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="classId" class="f14">* Class</label>
+                                    <select class="form-control custom-select classdd" id="classId" subjectdd="subjectId" loader="subjectLoader2" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subjectId" class="f14">* Subject &nbsp;<i id="subjectLoader2" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
+                                    <select class="form-control custom-select" id="subjectId" required disabled>
+                                        <option value="">- Select subject -</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="studentId" class="f14">* Student</label>
+                                    <select class="form-control custom-select studentsdd" id="studentId" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="classwork" class="f14">* Classwork</label>
+                                    <input id="classwork" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter classwork score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="test" class="f14">* Test</label>
+                                    <input id="test" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter test score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="exam" class="f14">* Exam</label>
+                                    <input id="exam" type="number" class="form-control integer" maxlength="2" min="0" max="40" placeholder="Enter exam score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="total" class="f14">* Total</label>
+                                    <input id="total" type="number" class="form-control integer" maxlength="2" min="0" max="60" placeholder="Enter total score" required readonly />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="createBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Submit</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit End-Term Result <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_examId" class="f14">* Exam</label>
+                                    <select class="form-control custom-select" id="e_examId" asp-items="@dropdownService.GetExams()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_classId" class="f14">* Class</label>
+                                    <select class="form-control custom-select classdd" id="e_classId" subjectdd="e_subjectId" loader="e_subjectLoader2" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_subjectId" class="f14">* Subject &nbsp;<i id="e_subjectLoader2" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
+                                    <select class="form-control custom-select" id="e_subjectId" required disabled>
+                                        <option value="">- Select subject -</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_studentId" class="f14">* Student</label>
+                                    <select class="form-control custom-select studentsdd" id="e_studentId" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_classwork" class="f14">* Classwork</label>
+                                    <input id="e_classwork" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter classwork score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_test" class="f14">* Test</label>
+                                    <input id="e_test" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter test score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_exam" class="f14">* Exam</label>
+                                    <input id="e_exam" type="number" class="form-control integer" maxlength="2" min="0" max="40" placeholder="Enter exam score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_total" class="f14">* Total</label>
+                                    <input id="e_total" type="number" class="form-control integer" maxlength="2" min="0" max="60" placeholder="Enter total score" required readonly />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- upload batch -->
+<div class="modal fade" id="batchUploadModal">
+    <div class="modal-dialog modal-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Batch Upload End-Term Results <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="alert alert-info f14">
+                            <h6 class="mb-1 f14 font-weight-bold"><i class="fa fa-info-circle"></i> &nbsp;Important Information</h6>
+                            <p class="m-0">
+                                Kindly ensure the end-term results excel list you wish to upload complies with the template. To download the excel template, click the download button below.
+                            </p>
+                            <p class="text-right mt-3"><a href="~/templates/Batch Upload End-Term Results Template.xlsx" download="Batch End-Term Results Template.xlsx" class="btn btn-info f12"><i class="fa fa-download"></i> Download template</a></p>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="b_examId" class="f14">* Exam</label>
+                                    <select class="form-control custom-select" id="b_examId" asp-items="@dropdownService.GetExams()" required>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="b_classId" class="f14">* Class</label>
+                                    <select class="form-control custom-select classdd" id="b_classId" subjectdd="b_subjectId" loader="subjectLoader" asp-items="@dropdownService.GetClasses()" required>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="b_subjectId" class="f14">* Subject &nbsp;<i id="subjectLoader" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
+                                    <select class="form-control custom-select" id="b_subjectId" required disabled>
+                                        <option value="">- Select subject -</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="file" class="f14">* File</label>
+                                    <div class="input-group mb-3 custom_file">
+                                        <input type="file" class="d-none file" id="file" name="file" file-text-id="file-text" accept=".xls, .xlsx" required />
+                                        <input type="text" class="form-control" style="height: 37px;" id="file-text" disabled placeholder="Choose excel file" />
+                                        <div class="input-group-append">
+                                            <label class="input-group-text btn px-4 f12" title="Browse file" for="file"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline-block"> &nbsp;&nbsp;Browse</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                @* <button type="submit" id="submitBtn" class="btn btn-primary d-block ml-auto px-3"><i class="fa fa-upload"></i> &nbsp; Upload file</button>*@
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="uploadBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-upload"></i> &nbsp;Upload File</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+@section css{
+    <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/choices.js/choices.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/lib/choices.js/choices.js"></script>
+    <script>
+
+    </script>
+    <script src="~/js/end_term_results.js" asp-append-version="true"></script>
+
+}
