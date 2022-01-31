@@ -53,6 +53,7 @@ namespace SchoolPortal.Data
         // ========== views =========
         public DbSet<MidTermResultViewObject> MidTermResultViewObjects { get; set; }
         public DbSet<EndTermResultViewObject> EndTermResultViewObjects { get; set; }
+        public DbSet<EndOfSessionResultViewObject> EndOfSessionResultViewObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -212,6 +213,13 @@ namespace SchoolPortal.Data
                 x.ToView("EndTermResults_View");
             });
 
+            modelBuilder.Entity<EndOfSessionResultViewObject>(
+           x =>
+           {
+               x.HasNoKey();
+               x.ToView("EndOfSessionResults_View");
+           });
+
             SeeData(modelBuilder);
         }
 
@@ -361,6 +369,153 @@ namespace SchoolPortal.Data
                 }
            );
 
+            modelBuilder.Entity<BehaviouralRating>().HasData(
+               new BehaviouralRating
+               {
+                   Id = 1,
+                   Name = "Punctuality",
+                   Category="Affective",
+                   CreatedBy = Constants.SYSTEM_NAME,
+                   CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+               },
+                new BehaviouralRating
+                {
+                    Id = 2,
+                    Name = "Neatness",
+                    Category = "Affective",
+                    CreatedBy = Constants.SYSTEM_NAME,
+                    CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                },
+                 new BehaviouralRating
+                 {
+                     Id = 3,
+                     Name = "Politeness",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 4,
+                     Name = "Leadership",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 5,
+                     Name = "Obedience",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 6,
+                     Name = "Poise",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 7,
+                     Name = "Helping Others",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 8,
+                     Name = "Emotional Stability",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 9,
+                     Name = "Health",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 10,
+                     Name = "Attentiveness",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 11,
+                     Name = "Honesty",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 12,
+                     Name = "Orderliness",
+                     Category = "Affective",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 13,
+                     Name = "Handwriting",
+                     Category = "Psychomotor",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 14,
+                     Name = "Sports",
+                     Category = "Psychomotor",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 15,
+                     Name = "Musical Skills",
+                     Category = "Psychomotor",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 16,
+                     Name = "Drawing/Painting",
+                     Category = "Psychomotor",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 17,
+                     Name = "Verbal Fluency",
+                     Category = "Psychomotor",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 },
+                 new BehaviouralRating
+                 {
+                     Id = 18,
+                     Name = "Handling Tools",
+                     Category = "Psychomotor",
+                     CreatedBy = Constants.SYSTEM_NAME,
+                     CreatedDate = new DateTimeOffset(2022, 01, 23, 23, 43, 0, TimeSpan.FromMinutes(60))
+                 }
+
+          );
 
         }
     }

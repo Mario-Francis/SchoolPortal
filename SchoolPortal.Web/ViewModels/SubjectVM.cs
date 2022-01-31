@@ -54,7 +54,7 @@ namespace SchoolPortal.Web.ViewModels
 
         public static SubjectVM FromSubject(Subject subject, int? clientTimeOffset = null)
         {
-            return new SubjectVM
+            return subject==null?null: new SubjectVM
             {
                 Id = subject.Id,
                 ClassId = subject.ClassId,

@@ -26,6 +26,13 @@ namespace SchoolPortal.Core
         SECOND_HALF
     }
 
+    public enum ExamTypes
+    {
+        NONE=0,
+        MID_TERM=1,
+        END_TERM
+    }
+
     public enum ActivityActionType
     {
         OTHER,

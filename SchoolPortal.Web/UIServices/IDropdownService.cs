@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using SchoolPortal.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace SchoolPortal.Web.UIServices
         IEnumerable<SelectListItem> GetRoomCodes(string value = null);
         IEnumerable<SelectListItem> GetRelationships(string value = null);
         IEnumerable<SelectListItem> GetExamTypes(string value = null);
-        IEnumerable<SelectListItem> GetExams(string value = null);
+        IEnumerable<SelectListItem> GetExams(ExamTypes examType = ExamTypes.NONE, string value = null);
+        IEnumerable<SelectListItem> GetStudentSessions(long studentId, string value = null);
     }
 }

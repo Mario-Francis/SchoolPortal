@@ -48,7 +48,7 @@ $(() => {
         e.preventDefault();
         let btn = $(e.currentTarget);
         try {
-            let form = $("form")[1];
+            let form = $("form")[0];
             if (validateForm(form)) {
                 let firstName = $.trim($('#fname').val());
                 let middleName = $.trim($('#mname').val());

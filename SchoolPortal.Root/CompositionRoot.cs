@@ -41,10 +41,9 @@ namespace SchoolPortal.Root
             services.AddScoped<IExamService, ExamService>();
             services.AddScoped<IResultService, ResultService>();
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
-            //services.AddScoped<IMyHRService, MyHRService>();
-            //services.AddScoped<IUAMService, UAMServiceMock>();
-            //services.AddScoped<IEmployeeService, EmployeeService>();
-            //services.AddScoped<IReviewerMapperService, ReviewerMapperService>();
+            services.AddScoped<IStudentResultService, StudentResultService>();
+            services.AddScoped<IBehaviouralRatingService, BehaviouralRatingService>();
+
 
 
             //services.AddSingleton<IBackgroundTaskQueue>(ctx => {

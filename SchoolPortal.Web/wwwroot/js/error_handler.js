@@ -1,4 +1,5 @@
 ﻿function ajaxErrorHandler(req, status, err, { callback = null }) {
+    console.error(req);
     let res = req.responseJSON;
     if (req.status == 401) {
         notify(res.message, 'danger', "Unauthorized");
@@ -18,11 +19,14 @@
         }
         
     } else if (req.status == 500) {
-        notify(res.message, 'danger');
-        console.log(res.errorDetail)
+        if (res != undefined) {
+            notify(res.message, 'danger');
+            console.log(res.errorDetail)
+        } else {
+            notify('Something wet wrong');
+        }
     } else {
         notify('Something went wrong while submitting your request. Please refresh your browser and try again.', 'danger');
-        console.error(req);
     }
     if (callback != null)
         callback();

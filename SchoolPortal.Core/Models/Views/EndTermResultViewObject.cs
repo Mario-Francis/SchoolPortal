@@ -23,6 +23,7 @@ namespace SchoolPortal.Core.Models.Views
         public string AdmissionNo { get; set; }
         public string Session { get; set; }
         public string Term { get; set; }
+        public long TermId { get; set; }
         public long ExamTypeId { get; set; }
         public string ExamType { get; set; }
         public string ClassName { get; set; }

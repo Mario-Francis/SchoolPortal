@@ -438,6 +438,28 @@ button.Zebra_DatePicker_Icon{
 .bg-light {
     background-color: #f8f9fa !important;
 }
+.control-sm{
+    height: 35px !important;
+}
+select{
+    cursor:pointer;
+}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link{
+    background-color: var(--claret) !important;
+}
+.nav-pills .nav-link, .nav-pills .show > .nav-link {
+    color: var(--claret);
+    padding-left: 20px;
+    padding-right:20px;
+    font-size: 14px;
+}
+
+.nav-pills .nav-link.disabled, .nav-pills .show > .nav-link.disabled {
+    color: var(--secondary);
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 14px;
+}
 
 
 
@@ -471,6 +493,9 @@ button.Zebra_DatePicker_Icon{
   }
     #scrollUp {
         bottom:40px;
+    }
+    .tab-table{
+        width:10px; /*allows table stick to width inn flex boxx  flex fill*/
     }
 }
 

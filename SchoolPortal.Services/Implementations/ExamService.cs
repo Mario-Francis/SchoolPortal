@@ -57,7 +57,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Start date should be earlier than end date");
             }
 
-            if (await examRepo.Any(e => e.ExamTypeId == exam.ExamTypeId && e.Session == exam.Session && e.TermId==e.TermId))
+            if (await examRepo.Any(e => e.ExamTypeId == exam.ExamTypeId && e.Session == exam.Session && e.TermId==exam.TermId))
             {
                 throw new AppException($"An exam for same term and session already exist");
             }
@@ -152,7 +152,7 @@ namespace SchoolPortal.Services.Implementations
 
         public IEnumerable<Exam> GetExams()
         {
-            return examRepo.GetAll().OrderBy(e => e.Session).ThenBy(e => e.Term).ThenBy(e => e.ExamTypeId);
+            return examRepo.GetAll().OrderByDescending(e => e.Session).ThenByDescending(e => e.TermId).ThenByDescending(e => e.ExamTypeId);
         }
 
         public async Task<Exam> GetExam(long id)

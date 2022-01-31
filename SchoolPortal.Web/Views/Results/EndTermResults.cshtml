@@ -106,7 +106,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="examId" class="f14">* Exam</label>
-                                    <select class="form-control custom-select" id="examId" asp-items="@dropdownService.GetExams()" required>
+                                    <select class="form-control custom-select" id="examId" asp-items="@dropdownService.GetExams(ExamTypes.END_TERM)" required>
                                     </select>
                                 </div>
                             </div>
@@ -190,7 +190,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="e_examId" class="f14">* Exam</label>
-                                    <select class="form-control custom-select" id="e_examId" asp-items="@dropdownService.GetExams()" required>
+                                    <select class="form-control custom-select" id="e_examId" asp-items="@dropdownService.GetExams(ExamTypes.END_TERM)" required>
                                     </select>
                                 </div>
                             </div>
@@ -281,7 +281,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="b_examId" class="f14">* Exam</label>
-                                    <select class="form-control custom-select" id="b_examId" asp-items="@dropdownService.GetExams()" required>
+                                    <select class="form-control custom-select" id="b_examId" asp-items="@dropdownService.GetExams(ExamTypes.END_TERM)" required>
                                     </select>
                                 </div>
                                 <div class="form-group">

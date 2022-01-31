@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using SchoolPortal.Core;
 using SchoolPortal.Core.Extensions;
 using SchoolPortal.Services;
 using System.Collections.Generic;
@@ -9,10 +10,12 @@ namespace SchoolPortal.Web.UIServices
     public class DropdownService:IDropdownService
     {
         private readonly IListService listService;
+        private readonly IStudentResultService studentResultService;
 
-        public DropdownService(IListService listService)
+        public DropdownService(IListService listService, IStudentResultService studentResultService)
         {
             this.listService = listService;
+            this.studentResultService = studentResultService;
         }
 
         public IEnumerable<SelectListItem> GetTerms(string value=null)
@@ -94,13 +97,28 @@ namespace SchoolPortal.Web.UIServices
             return examTypes;
         }
 
-        public IEnumerable<SelectListItem> GetExams(string value = null)
+        public IEnumerable<SelectListItem> GetExams(ExamTypes examType = ExamTypes.NONE, string value = null)
         {
-            List<SelectListItem> exams = listService.GetExams()
-                .Select(e => new SelectListItem { Text = $"{e.ExamType.Name} ({e.StartDate.ToString("MMM d, yyyy")} - {e.EndDate.ToString("MMM d, yyyy")})", Value = e.Id.ToString(), Selected = e.Id.ToString() == value }).ToList();
+            var _exams = listService.GetExams();
+            if(examType!= ExamTypes.NONE)
+            {
+                _exams = _exams.Where(e => e.ExamType.Id == (int)examType).OrderByDescending(e=>e.Session).ThenByDescending(e=>e.TermId);
+            }
+            List<SelectListItem> exams = _exams
+                .Select(e => new SelectListItem { Text = $"{e.Session} {e.Term.Name} Term | {e.ExamType.Name} Exam | ({e.StartDate.ToString("MMM d, yyyy")} - {e.EndDate.ToString("MMM d, yyyy")})", Value = e.Id.ToString(), Selected = e.Id.ToString() == value }).ToList();
 
             exams.Insert(0, new SelectListItem { Text = "- Select exam -", Value = "" });
             return exams;
         }
+
+        public IEnumerable<SelectListItem> GetStudentSessions(long studentId, string value = null)
+        {
+            List<SelectListItem> sessions = studentResultService.GetResultSessions(studentId)
+                .Select(c => new SelectListItem { Text = c, Value = c, Selected = c == value }).ToList();
+
+            sessions.Insert(0, new SelectListItem { Text = "- Select session -", Value = "" });
+            return sessions;
+        }
+
     }
 }

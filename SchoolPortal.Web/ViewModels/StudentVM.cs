@@ -112,37 +112,44 @@ namespace SchoolPortal.Web.ViewModels
 
         public static StudentVM FromStudent(Student student, int? clientTimeOffset = null)
         {
-            var classRoom = student.ClassRoomStudents.FirstOrDefault().ClassRoom;
-            return new StudentVM
+            if (student == null)
             {
-                Id = student.Id,
-                FirstName = student.FirstName,
-                MiddleName = student.MiddleName,
-                Surname = student.Surname,
-                Email = student.Email,
-                PhoneNumber = student.PhoneNumber,
-                Gender = student.Gender,
-                PhotoPath = student.PhotoPath,
-                EnrollmentDate = clientTimeOffset == null ? student.EnrollmentDate : student.EnrollmentDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-                AdmissionNo = student.AdmissionNo,
-                EntryTermId = student.EntryTermId,
-                EntryTerm = student.EntryTerm.Name,
-                EntryClassId = student.EntryClassId,
-                EntryClass = $"{student.EntryClass.ClassType.Name} {student.EntryClass.ClassGrade}",
-                EntrySession = student.EntrySession,
-                IsGraduated = student.IsGraduated,
-                ClassId = classRoom.ClassId,
-                ClassRoomId = classRoom.Id,
-                ClassRoom = ClassRoomVM.FromClassRoom(classRoom),
-                IsActive = student.IsActive,
-                IsPasswordChanged = student.IsPasswordChanged,
-                Username = student.Username,
-                FormattedClassRoom = $"{classRoom?.Class.ClassType.Name} {classRoom?.Class.ClassGrade} {classRoom?.RoomCode}".Trim(),
-                DateOfBirth = clientTimeOffset == null ? student.DateOfBirth : student.DateOfBirth.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-                UpdatedBy = student.UpdatedBy,
-                CreatedDate = clientTimeOffset == null ? student.CreatedDate : student.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-                UpdatedDate = clientTimeOffset == null ? student.UpdatedDate : student.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-            };
+                return null;
+            }
+            else
+            {
+                var classRoom = student.ClassRoomStudents.FirstOrDefault().ClassRoom;
+                return new StudentVM
+                {
+                    Id = student.Id,
+                    FirstName = student.FirstName,
+                    MiddleName = student.MiddleName,
+                    Surname = student.Surname,
+                    Email = student.Email,
+                    PhoneNumber = student.PhoneNumber,
+                    Gender = student.Gender,
+                    PhotoPath = student.PhotoPath,
+                    EnrollmentDate = clientTimeOffset == null ? student.EnrollmentDate : student.EnrollmentDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                    AdmissionNo = student.AdmissionNo,
+                    EntryTermId = student.EntryTermId,
+                    EntryTerm = student.EntryTerm.Name,
+                    EntryClassId = student.EntryClassId,
+                    EntryClass = $"{student.EntryClass.ClassType.Name} {student.EntryClass.ClassGrade}",
+                    EntrySession = student.EntrySession,
+                    IsGraduated = student.IsGraduated,
+                    ClassId = classRoom.ClassId,
+                    ClassRoomId = classRoom.Id,
+                    ClassRoom = ClassRoomVM.FromClassRoom(classRoom),
+                    IsActive = student.IsActive,
+                    IsPasswordChanged = student.IsPasswordChanged,
+                    Username = student.Username,
+                    FormattedClassRoom = $"{classRoom?.Class.ClassType.Name} {classRoom?.Class.ClassGrade} {classRoom?.RoomCode}".Trim(),
+                    DateOfBirth = clientTimeOffset == null ? student.DateOfBirth : student.DateOfBirth.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                    UpdatedBy = student.UpdatedBy,
+                    CreatedDate = clientTimeOffset == null ? student.CreatedDate : student.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                    UpdatedDate = clientTimeOffset == null ? student.UpdatedDate : student.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                };
+            }
         }
     }
 }
