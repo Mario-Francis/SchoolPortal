@@ -43,6 +43,8 @@ namespace SchoolPortal.Root
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<IStudentResultService, StudentResultService>();
             services.AddScoped<IBehaviouralRatingService, BehaviouralRatingService>();
+            services.AddScoped<IPerformanceRemarkService, PerformanceRemarkService>();
+            services.AddScoped<IHealthRecordService, HealthRecordService>();
 
 
 

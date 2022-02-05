@@ -81,11 +81,11 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Email '{student.Email}' is not valid");
             }
-            if (await studentRepo.Any(u => u.Email == student.Email))
+            if (await studentRepo.AnyAsync(u => u.Email == student.Email))
             {
                 throw new AppException($"A student with email '{student.Email}' already exist");
             }
-            if (await studentRepo.Any(u => u.AdmissionNo == student.AdmissionNo))
+            if (await studentRepo.AnyAsync(u => u.AdmissionNo == student.AdmissionNo))
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already exist");
             }
@@ -170,11 +170,11 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Email '{student.Email}' is not valid");
             }
-            if (await studentRepo.Any(u => u.Email == student.Email) && student.Email != _student.Email)
+            if (await studentRepo.AnyAsync(u => u.Email == student.Email) && student.Email != _student.Email)
             {
                 throw new AppException($"A student with email '{student.Email}' already exist");
             }
-            if (await studentRepo.Any(u => u.AdmissionNo == student.AdmissionNo) && student.AdmissionNo != _student.AdmissionNo)
+            if (await studentRepo.AnyAsync(u => u.AdmissionNo == student.AdmissionNo) && student.AdmissionNo != _student.AdmissionNo)
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already exist");
             }
@@ -396,7 +396,7 @@ namespace SchoolPortal.Services.Implementations
         {
             var uname = $"{firstName.ToLower()}.{lastName.ToLower()}";
             var cnt = 1;
-            while (await studentRepo.Any(u => u.Username == uname))
+            while (await studentRepo.AnyAsync(u => u.Username == uname))
             {
                 uname += cnt.ToString();
                 cnt++;
@@ -486,7 +486,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Relationship is not found");
             }
-            if(await guardianRepo.Any(g=>g.StudentId==studentId && g.GuardianId == parentId))
+            if(await guardianRepo.AnyAsync(g=>g.StudentId==studentId && g.GuardianId == parentId))
             {
                 throw new AppException($"Guardian already exist");
             }
@@ -683,7 +683,7 @@ namespace SchoolPortal.Services.Implementations
                 isValid = false;
             }
 
-            if (!(await classRepo.Any(c => c.ClassType.Name.ToLower() == arr[0].ToLower() && c.ClassGrade.ToString() == arr[1])))
+            if (!(await classRepo.AnyAsync(c => c.ClassType.Name.ToLower() == arr[0].ToLower() && c.ClassGrade.ToString() == arr[1])))
             {
                 isValid = false;
             }
@@ -840,11 +840,11 @@ namespace SchoolPortal.Services.Implementations
                 {
                     throw new AppException($"A student with admission number '{u.AdmissionNo}' already exists on excel");
                 }
-                if (await studentRepo.Any(usr => usr.Email == u.Email))
+                if (await studentRepo.AnyAsync(usr => usr.Email == u.Email))
                 {
                     throw new AppException($"A student with email '{u.Email}' already exists");
                 }
-                if (await studentRepo.Any(usr => usr.AdmissionNo == u.AdmissionNo))
+                if (await studentRepo.AnyAsync(usr => usr.AdmissionNo == u.AdmissionNo))
                 {
                     throw new AppException($"A student with admission number '{u.AdmissionNo}' already exist");
                 }

@@ -73,16 +73,16 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Result object cannot be null");
             }
 
-            if (!await subjectRepo.Any(s => s.Id == result.SubjectId))
+            if (!await subjectRepo.AnyAsync(s => s.Id == result.SubjectId))
             {
                 throw new AppException("Subject id is invalid");
             }
 
-            if (!await examRepo.Any(e => e.Id == result.ExamId))
+            if (!await examRepo.AnyAsync(e => e.Id == result.ExamId))
             {
                 throw new AppException("Exam id is invalid");
             }
-            if (!await classRepo.Any(c => c.Id == result.ClassId))
+            if (!await classRepo.AnyAsync(c => c.Id == result.ClassId))
             {
                 throw new AppException("Class id is invalid");
             }
@@ -101,7 +101,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' does not belong to specified class");
             }
-            if (await midTermResultRepo.Any(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId))
+            if (await midTermResultRepo.AnyAsync(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId))
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
             }
@@ -131,7 +131,7 @@ namespace SchoolPortal.Services.Implementations
             }
             else
             {
-                if (await endTermResultRepo.Any(r => r.Exam.Session == result.Exam.Session && r.Exam.TermId == result.Exam.TermId
+                if (await endTermResultRepo.AnyAsync(r => r.Exam.Session == result.Exam.Session && r.Exam.TermId == result.Exam.TermId
                 && r.ClassId == result.ClassId && r.SubjectId == result.SubjectId && r.StudentId == result.StudentId))
                 {
                     throw new AppException("End-term result cannot be deleted as it is already assocciated with a corresponding end-term result");
@@ -158,16 +158,16 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"Invalid result id {result.Id}");
             }
 
-            if (!await subjectRepo.Any(s => s.Id == result.SubjectId))
+            if (!await subjectRepo.AnyAsync(s => s.Id == result.SubjectId))
             {
                 throw new AppException("Subject id is invalid");
             }
 
-            if (!await examRepo.Any(e => e.Id == result.ExamId))
+            if (!await examRepo.AnyAsync(e => e.Id == result.ExamId))
             {
                 throw new AppException("Exam id is invalid");
             }
-            if (!await classRepo.Any(c => c.Id == result.ClassId))
+            if (!await classRepo.AnyAsync(c => c.Id == result.ClassId))
             {
                 throw new AppException("Class id is invalid");
             }
@@ -188,7 +188,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' does not belong to specified class");
             }
 
-            if (await midTermResultRepo.Any(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId &&
+            if (await midTermResultRepo.AnyAsync(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId &&
             !(_result.ExamId == result.ExamId && _result.SubjectId == result.SubjectId && _result.StudentId == result.StudentId)))
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
@@ -248,7 +248,7 @@ namespace SchoolPortal.Services.Implementations
                 isValid = false;
                 err = $"Invalid value for {midTermHeaders[1]} at row {index}. Field is required.";
             }
-            if (!await studentRepo.Any(s => s.AdmissionNo == Convert.ToString(row[1]).Trim()))
+            if (!await studentRepo.AnyAsync(s => s.AdmissionNo == Convert.ToString(row[1]).Trim()))
             {
                 isValid = false;
                 err = $"Invalid value for {midTermHeaders[1]} at row {index}. No student exist with {midTermHeaders[1]} '{Convert.ToString(row[1]).Trim()}'.";
@@ -361,15 +361,15 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task BatchCreateMidTermResults(IEnumerable<MidTermResult> results, long examId, long subjectId, long classId)
         {
-            if (!await subjectRepo.Any(s => s.Id == subjectId))
+            if (!await subjectRepo.AnyAsync(s => s.Id == subjectId))
             {
                 throw new AppException("Subject id is invalid");
             }
-            if (!await examRepo.Any(e => e.Id == examId))
+            if (!await examRepo.AnyAsync(e => e.Id == examId))
             {
                 throw new AppException("Exam id is invalid");
             }
-            if (!await classRepo.Any(c => c.Id == classId))
+            if (!await classRepo.AnyAsync(c => c.Id == classId))
             {
                 throw new AppException("Class id is invalid");
             }
@@ -401,7 +401,7 @@ namespace SchoolPortal.Services.Implementations
                 {
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result on excel");
                 }
-                if (await midTermResultRepo.Any(mr => mr.ExamId == examId && mr.SubjectId == subjectId && mr.StudentId == r.StudentId))
+                if (await midTermResultRepo.AnyAsync(mr => mr.ExamId == examId && mr.SubjectId == subjectId && mr.StudentId == r.StudentId))
                 {
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
                 }
@@ -430,16 +430,16 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Result object cannot be null");
             }
 
-            if (!await subjectRepo.Any(s => s.Id == result.SubjectId))
+            if (!await subjectRepo.AnyAsync(s => s.Id == result.SubjectId))
             {
                 throw new AppException("Subject id is invalid");
             }
 
-            if (!await examRepo.Any(e => e.Id == result.ExamId))
+            if (!await examRepo.AnyAsync(e => e.Id == result.ExamId))
             {
                 throw new AppException("Exam id is invalid");
             }
-            if (!await classRepo.Any(c => c.Id == result.ClassId))
+            if (!await classRepo.AnyAsync(c => c.Id == result.ClassId))
             {
                 throw new AppException("Class id is invalid");
             }
@@ -460,13 +460,13 @@ namespace SchoolPortal.Services.Implementations
             }
 
             var exam = await examRepo.GetById(result.ExamId);
-            if (!await midTermResultRepo.Any(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
+            if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
             && er.ClassId == result.ClassId && er.SubjectId == result.SubjectId && er.StudentId == result.StudentId))
             {
                 throw new AppException($"There is no corresponding mid-term result for this end-term result. Please upload the mid-term result first");
             }
 
-            if (await endTermResultRepo.Any(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId))
+            if (await endTermResultRepo.AnyAsync(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId))
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
             }
@@ -515,16 +515,16 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"Invalid result id {result.Id}");
             }
 
-            if (!await subjectRepo.Any(s => s.Id == result.SubjectId))
+            if (!await subjectRepo.AnyAsync(s => s.Id == result.SubjectId))
             {
                 throw new AppException("Subject id is invalid");
             }
 
-            if (!await examRepo.Any(e => e.Id == result.ExamId))
+            if (!await examRepo.AnyAsync(e => e.Id == result.ExamId))
             {
                 throw new AppException("Exam id is invalid");
             }
-            if (!await classRepo.Any(c => c.Id == result.ClassId))
+            if (!await classRepo.AnyAsync(c => c.Id == result.ClassId))
             {
                 throw new AppException("Class id is invalid");
             }
@@ -546,14 +546,14 @@ namespace SchoolPortal.Services.Implementations
             }
 
 
-            if (await endTermResultRepo.Any(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId &&
+            if (await endTermResultRepo.AnyAsync(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId &&
             !(_result.ExamId == result.ExamId && _result.SubjectId == result.SubjectId && _result.StudentId == result.StudentId)))
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
             }
 
             var exam = await examRepo.GetById(result.ExamId);
-            if (!await midTermResultRepo.Any(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
+            if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
             && er.ClassId == result.ClassId && er.SubjectId == result.SubjectId && er.StudentId == result.StudentId))
             {
                 throw new AppException($"There is no corresponding mid-term result for this end-term result (admission number: {student.AdmissionNo}). Please upload the mid-term result first");
@@ -611,7 +611,7 @@ namespace SchoolPortal.Services.Implementations
                 isValid = false;
                 err = $"Invalid value for {midTermHeaders[1]} at row {index}. Field is required.";
             }
-            if (!await studentRepo.Any(s => s.AdmissionNo == Convert.ToString(row[1]).Trim()))
+            if (!await studentRepo.AnyAsync(s => s.AdmissionNo == Convert.ToString(row[1]).Trim()))
             {
                 isValid = false;
                 err = $"Invalid value for {midTermHeaders[1]} at row {index}. No student exist with {midTermHeaders[1]} '{Convert.ToString(row[1]).Trim()}'.";
@@ -724,15 +724,15 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task BatchCreateEndTermResults(IEnumerable<EndTermResult> results, long examId, long subjectId, long classId)
         {
-            if (!await subjectRepo.Any(s => s.Id == subjectId))
+            if (!await subjectRepo.AnyAsync(s => s.Id == subjectId))
             {
                 throw new AppException("Subject id is invalid");
             }
-            if (!await examRepo.Any(e => e.Id == examId))
+            if (!await examRepo.AnyAsync(e => e.Id == examId))
             {
                 throw new AppException("Exam id is invalid");
             }
-            if (!await classRepo.Any(c => c.Id == classId))
+            if (!await classRepo.AnyAsync(c => c.Id == classId))
             {
                 throw new AppException("Class id is invalid");
             }
@@ -766,13 +766,13 @@ namespace SchoolPortal.Services.Implementations
                 }
 
                 var exam = await examRepo.GetById(r.ExamId);
-                if (!await midTermResultRepo.Any(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
+                if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
                 && er.ClassId == r.ClassId && er.SubjectId == r.SubjectId && er.StudentId == r.StudentId))
                 {
                     throw new AppException($"There is no corresponding mid-term result for this end-term result (admission number: {student.AdmissionNo}). Please upload the mid-term result first");
                 }
 
-                if (await endTermResultRepo.Any(mr => mr.ExamId == examId && mr.SubjectId == subjectId && mr.StudentId == r.StudentId))
+                if (await endTermResultRepo.AnyAsync(mr => mr.ExamId == examId && mr.SubjectId == subjectId && mr.StudentId == r.StudentId))
                 {
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
                 }

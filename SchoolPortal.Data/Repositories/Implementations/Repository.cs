@@ -193,11 +193,14 @@ namespace SchoolPortal.Data.Repositories.Implementations
             }
         }
 
-        public async Task<bool> Any(Expression<Func<T, bool>> expression)
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> expression)
         {
             return await entities.AnyAsync(expression);
         }
-
+        public bool Any(Expression<Func<T, bool>> expression)
+        {
+            return entities.Any(expression);
+        }
         public async Task<int> Count()
         {
             return await entities.Select(e => e.Id).CountAsync();

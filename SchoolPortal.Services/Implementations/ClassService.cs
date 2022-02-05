@@ -38,7 +38,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Class object cannot be null");
             }
 
-            if(await classRepo.Any(c=>c.ClassTypeId == @class.ClassTypeId && c.ClassGrade == @class.ClassGrade))
+            if(await classRepo.AnyAsync(c=>c.ClassTypeId == @class.ClassTypeId && c.ClassGrade == @class.ClassGrade))
             {
                 throw new AppException($"A class of same type and grade already exist");
             }
@@ -92,7 +92,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Invalid class id {@class.Id}");
             }
-            else if (await classRepo.Any(c => (c.ClassTypeId == @class.ClassTypeId && c.ClassGrade == @class.ClassGrade) &&
+            else if (await classRepo.AnyAsync(c => (c.ClassTypeId == @class.ClassTypeId && c.ClassGrade == @class.ClassGrade) &&
             !(_class.ClassTypeId == @class.ClassTypeId && _class.ClassGrade == @class.ClassGrade)))
             {
                 throw new AppException($"A class of same type and grade already exist");
@@ -137,7 +137,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Classroom object cannot be null");
             }
 
-            if (await classRoomRepo.Any(c => c.ClassId == classRoom.ClassId && c.RoomCode == classRoom.RoomCode))
+            if (await classRoomRepo.AnyAsync(c => c.ClassId == classRoom.ClassId && c.RoomCode == classRoom.RoomCode))
             {
                 throw new AppException($"A classroom of same class already exist with same room code");
             }
@@ -192,7 +192,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Invalid classroom id {classRoom.Id}");
             }
-            else if (await classRoomRepo.Any(c => (c.ClassId == classRoom.ClassId && c.RoomCode == classRoom.RoomCode) &&
+            else if (await classRoomRepo.AnyAsync(c => (c.ClassId == classRoom.ClassId && c.RoomCode == classRoom.RoomCode) &&
             !(_classRoom.ClassId == classRoom.ClassId && _classRoom.RoomCode == classRoom.RoomCode)))
             {
                 throw new AppException($"A classroom of same class already exist with same room code");

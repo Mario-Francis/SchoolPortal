@@ -292,6 +292,210 @@ $(() => {
         }
     });
 
+    $('#midSaveComment').on('click', async (e) => {
+        e.preventDefault();
+        let btn = $(e.currentTarget);
+        let id = $('#midCommentId').val();
+        let examId = $('#midExamId').val();
+        try {
+            let form = $("form")[1];
+            if (validateForm(form)) {
+                let tcomment = $.trim($('#midTeacherComment').val());
+                let htcomment = $.trim($('#midHeadTeacherComment').val());
+
+                if (tcomment == '' && htcomment == '') {
+                    notify('At least one field must be filled', 'warning');
+                } else {
+                    $('fieldset').prop('disabled', true);
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Saving comment...');
+                    
+                    let data = {
+                        id,
+                        examId,
+                        studentId,
+                        teacherRemark: tcomment,
+                        headTeacherRemark: htcomment
+                    };
+                    let message = await saveComment(data, id == '0' ? 'add' : 'update');
+                    notify(message + '.', 'success');
+                    form.reset();
+
+                    btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Comments');
+                    $('fieldset').prop('disabled', false);
+
+                    $('#searchBtn').trigger('click');
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+            if (ex != null) {
+                if (typeof (ex) == 'string') {
+                    notify(ex, 'danger');
+                } else {
+                    notify(ex.message, 'danger');
+                }
+            }
+            
+            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Comments');
+            $('fieldset').prop('disabled', false);
+        }
+    });
+
+    $('#endSaveComment').on('click', async (e) => {
+        e.preventDefault();
+        let btn = $(e.currentTarget);
+        let id = $('#endCommentId').val();
+        let examId = $('#endExamId').val();
+        try {
+            let form = $("form")[4];
+            if (validateForm(form)) {
+                let tcomment = $.trim($('#endTeacherComment').val());
+                let htcomment = $.trim($('#endHeadTeacherComment').val());
+
+                if (tcomment == '' && htcomment == '') {
+                    notify('At least one field must be filled', 'warning');
+                } else {
+                    $('fieldset').prop('disabled', true);
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Saving comment...');
+
+                    let data = {
+                        id,
+                        examId,
+                        studentId,
+                        teacherRemark: tcomment,
+                        headTeacherRemark: htcomment
+                    };
+                    let message = await saveComment(data, id == '0' ? 'add' : 'update');
+                    notify(message + '.', 'success');
+                    form.reset();
+
+                    btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Comments');
+                    $('fieldset').prop('disabled', false);
+
+                    $('#searchBtn').trigger('click');
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+            if (ex != null) {
+                if (typeof (ex) == 'string') {
+                    notify(ex, 'danger');
+                } else {
+                    notify(ex.message, 'danger');
+                }
+            }
+
+            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Comments');
+            $('fieldset').prop('disabled', false);
+        }
+    });
+
+    $('#endSaveRecord').on('click', async (e) => {
+        e.preventDefault();
+        let btn = $(e.currentTarget);
+        let id = $('#endRecordId').val();
+        let session = lastSearchedSession;
+        let termId = lastSearchedTermId;
+        try {
+            let form = $("form")[3];
+            if (validateForm(form)) {
+                let startHeight = $.trim($('#startHeight').val());
+                let endHeight = $.trim($('#endHeight').val());
+                let startWeight = $.trim($('#startWeight').val());
+                let endWeight = $.trim($('#endWeight').val());
+
+                if (startHeight == '' || endHeight == '' || startWeight == '' || endWeight=='') {
+                    notify('All fields are required', 'warning');
+                } else {
+                    $('fieldset').prop('disabled', true);
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Saving records...');
+
+                    let data = {
+                        id,
+                        session,
+                        termId,
+                        studentId,
+                        startHeight,
+                        endHeight,
+                        startWeight,
+                        endWeight
+                    };
+                    let message = await saveHealthRecords(data, id == '0' ? 'add' : 'update');
+                    notify(message + '.', 'success');
+                    form.reset();
+
+                    btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Records');
+                    $('fieldset').prop('disabled', false);
+
+                    $('#searchBtn').trigger('click');
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+            if (ex != null) {
+                if (typeof (ex) == 'string') {
+                    notify(ex, 'danger');
+                } else {
+                    notify(ex.message, 'danger');
+                }
+            }
+
+            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Records');
+            $('fieldset').prop('disabled', false);
+        }
+    });
+
+    $('#endSaveRatings').on('click', async (e) => {
+        e.preventDefault();
+        let btn = $(e.currentTarget);
+        let session = lastSearchedSession;
+        let termId = lastSearchedTermId;
+        try {
+            let form = $("form")[2];
+            if (validateForm(form)) {
+
+                let ratings = Array.from($('select[name="ratings[]"]')).map(e => ({
+                    id: $(e).attr('resid'),
+                    ratingId: $(e).attr('rid'),
+                    score: $(e).val()
+                }));
+
+                if (ratings.some(r => r.score.trim() === '')) {
+                    notify('All fields are required', 'warning');
+                }else {
+                    $('fieldset').prop('disabled', true);
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Saving ratings...');
+
+                    let data = {
+                        session,
+                        termId,
+                        studentId,
+                        ratings
+                    };
+                    let message = await saveBehaviouralRatings(data);
+                    notify(message + '.', 'success');
+                    form.reset();
+
+                    btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Ratings');
+                    $('fieldset').prop('disabled', false);
+
+                    $('#searchBtn').trigger('click');
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+            if (ex != null) {
+                if (typeof (ex) == 'string') {
+                    notify(ex, 'danger');
+                } else {
+                    notify(ex.message, 'danger');
+                }
+            }
+
+            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Ratings');
+            $('fieldset').prop('disabled', false);
+        }
+    });
 
 });
 
@@ -502,9 +706,9 @@ function populateMidTerm(data) {
 
     // comment
     if (data.resultComment != null) {
-        $('#midCommentId').val(resultComment.id);
-        $('#midTeacherComment').val(resultComment.teacherComment);
-        $('#midHeadTeacherComment').val(resultComment.headTeacherComment);
+        $('#midCommentId').val(data.resultComment.id);
+        $('#midTeacherComment').val(data.resultComment.teacherComment);
+        $('#midHeadTeacherComment').val(data.resultComment.headTeacherComment);
     } else {
         $('#midCommentId').val('0');
     }
@@ -756,20 +960,20 @@ function populateEndTerm(data) {
 
         // end term comment
         if (data.resultComment != null) {
-            $('#endCommentId').val(resultComment.id);
-            $('#endTeacherComment').val(resultComment.teacherComment);
-            $('#endHeadTeacherComment').val(resultComment.headTeacherComment);
+            $('#endCommentId').val(data.resultComment.id);
+            $('#endTeacherComment').val(data.resultComment.teacherComment);
+            $('#endHeadTeacherComment').val(data.resultComment.headTeacherComment);
         } else {
             $('#endCommentId').val('0');
         }
 
         // health record
         if (data.healthRecord != null) {
-            $('#endRecordId').val(healthRecord.id);
-            $('#startHeight').val(healthRecord.startHeight);
-            $('#endHeight').val(healthRecord.endHeight);
-            $('#startWeight').val(healthRecord.startWeight);
-            $('#endWeight').val(healthRecord.endWeight);
+            $('#endRecordId').val(data.healthRecord.id);
+            $('#startHeight').val(data.healthRecord.startHeight);
+            $('#endHeight').val(data.healthRecord.endHeight);
+            $('#startWeight').val(data.healthRecord.startWeight);
+            $('#endWeight').val(data.healthRecord.endWeight);
         } else {
             $('#endRecordId').val('0');
         }
@@ -838,26 +1042,104 @@ function clearResult() {
 
 
 
-function updateMidTermResult() {
 
+function saveComment(comment=null, type='update') {
+    var promise = new Promise((resolve, reject) => {
+        try {
+            if (comment==null) {
+                reject('Comment object is required');
+            } else {
+                let url = $base + (type == 'update' ? 'remarks/updateRemark' :'remarks/addRemark');
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data:comment,
+                    success: (response) => {
+                        if (response.isSuccess) {
+                            resolve(response.message);
+                        } else {
+                            reject(response.message);
+                        }
+                    },
+                    error: (req, status, err) => {
+                        ajaxErrorHandler(req, status, err, {});
+                    }
+                });
+            }
+
+        } catch (ex) {
+            console.error(ex);
+            //notify(ex.message, 'danger');
+            reject(ex.message);
+        }
+    });
+    return promise;
 }
 
+function saveBehaviouralRatings(ratings = null, type = 'update') {
+    var promise = new Promise((resolve, reject) => {
+        try {
+            if (ratings == null) {
+                reject('Ratings object is required');
+            } else {
+                let url = $base + (type == 'update' ? 'behaviouralRatings/UpdateBehaviouralResults' : 'behaviouralRatings/AddBehaviouralResults');
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: ratings,
+                    success: (response) => {
+                        if (response.isSuccess) {
+                            resolve(response.message);
+                        } else {
+                            reject(response.message);
+                        }
+                    },
+                    error: (req, status, err) => {
+                        ajaxErrorHandler(req, status, err, {});
+                    }
+                });
+            }
 
-
-function updateEndTermResult() {
-
+        } catch (ex) {
+            console.error(ex);
+            //notify(ex.message, 'danger');
+            reject(ex.message);
+        }
+    });
+    return promise;
 }
 
-function saveComment() {
+function saveHealthRecords(record = null, type = 'update') {
+    var promise = new Promise((resolve, reject) => {
+        try {
+            if (record == null) {
+                reject('Record object is required');
+            } else {
+                let url = $base + (type == 'update' ? 'healthRecords/updateRecord' : 'healthRecords/addRecord');
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: record,
+                    success: (response) => {
+                        if (response.isSuccess) {
+                            resolve(response.message);
+                        } else {
+                            reject(response.message);
+                        }
+                    },
+                    error: (req, status, err) => {
+                        ajaxErrorHandler(req, status, err, {});
+                    }
+                });
+            }
 
-}
-
-function saveBehaviouralRatings() {
-
-}
-
-function saveHealthRecords() {
-
+        } catch (ex) {
+            console.error(ex);
+            //notify(ex.message, 'danger');
+            reject(ex.message);
+        }
+    });
+    return promise;
 }
 function getMidTermResult(id) {
     var promise = new Promise((resolve, reject) => {

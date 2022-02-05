@@ -125,7 +125,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Email '{user.Email}' is not valid");
             }
-            if (await userRepo.Any(u => u.Email == user.Email))
+            if (await userRepo.AnyAsync(u => u.Email == user.Email))
             {
                 throw new AppException($"A user with email '{user.Email}' already exist");
             }
@@ -193,7 +193,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Email '{user.Email}' is not valid");
             }
-            if (await userRepo.Any(u => u.Email == user.Email) && user.Email != _user.Email)
+            if (await userRepo.AnyAsync(u => u.Email == user.Email) && user.Email != _user.Email)
             {
                 throw new AppException($"A user with email '{user.Email}' already exist");
             }
@@ -410,7 +410,7 @@ namespace SchoolPortal.Services.Implementations
         {
             var uname = $"{firstName.ToLower()}.{lastName.ToLower()}";
             var cnt = 1;
-            while (await userRepo.Any(u => u.Username == uname))
+            while (await userRepo.AnyAsync(u => u.Username == uname))
             {
                 uname += cnt.ToString();
                 cnt++;
@@ -553,7 +553,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Relationship is not found");
             }
-            if (await guardianRepo.Any(g => g.StudentId == studentId && g.GuardianId == parentId))
+            if (await guardianRepo.AnyAsync(g => g.StudentId == studentId && g.GuardianId == parentId))
             {
                 throw new AppException($"Ward already exist");
             }
@@ -768,7 +768,7 @@ namespace SchoolPortal.Services.Implementations
                 {
                     throw new AppException($"A user with email '{u.Email}' already exists on excel");
                 }
-                if (await userRepo.Any(usr => usr.Email == u.Email))
+                if (await userRepo.AnyAsync(usr => usr.Email == u.Email))
                 {
                     throw new AppException($"A user with email '{u.Email}' already exists");
                 }

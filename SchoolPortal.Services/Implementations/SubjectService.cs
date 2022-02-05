@@ -35,7 +35,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Subject object cannot be null");
             }
 
-            if (await subjectRepo.Any(s => s.ClassId == subject.ClassId && s.Name.ToLower() == subject.Name.ToLower()))
+            if (await subjectRepo.AnyAsync(s => s.ClassId == subject.ClassId && s.Name.ToLower() == subject.Name.ToLower()))
             {
                 throw new AppException($"A Subject of same class with name '{subject.Name}' already exist");
             }
@@ -90,7 +90,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Invalid Subject id {subject.Id}");
             }
-            else if (await subjectRepo.Any(c => (c.ClassId == subject.ClassId && c.Name.ToLower() == subject.Name.ToLower()) &&
+            else if (await subjectRepo.AnyAsync(c => (c.ClassId == subject.ClassId && c.Name.ToLower() == subject.Name.ToLower()) &&
             !(_subject.ClassId == subject.ClassId && _subject.Name.ToLower() == subject.Name.ToLower())))
             {
                 throw new AppException($"A Subject of same class with name '{subject.Name}' already exist");

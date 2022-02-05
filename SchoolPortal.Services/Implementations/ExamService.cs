@@ -57,7 +57,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Start date should be earlier than end date");
             }
 
-            if (await examRepo.Any(e => e.ExamTypeId == exam.ExamTypeId && e.Session == exam.Session && e.TermId==exam.TermId))
+            if (await examRepo.AnyAsync(e => e.ExamTypeId == exam.ExamTypeId && e.Session == exam.Session && e.TermId==exam.TermId))
             {
                 throw new AppException($"An exam for same term and session already exist");
             }
@@ -121,7 +121,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException("Start date should be earlier than end date");
             }
-            else if (await examRepo.Any(e => (e.ExamTypeId == exam.ExamTypeId && e.Session == exam.Session && e.TermId == e.TermId) &&
+            else if (await examRepo.AnyAsync(e => (e.ExamTypeId == exam.ExamTypeId && e.Session == exam.Session && e.TermId == e.TermId) &&
             !(_exam.ExamTypeId == exam.ExamTypeId && _exam.Session == exam.Session && _exam.TermId == exam.TermId)))
             {
                 throw new AppException($"An exam for same term and session already exist");
