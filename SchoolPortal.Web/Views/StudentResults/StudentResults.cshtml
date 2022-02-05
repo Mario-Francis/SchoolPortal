@@ -57,8 +57,8 @@
                     <h5 class="m-0 flex-fill" id="resultTitle">2021/2022 First Term Results</h5>
                     <button id="closeBtn" class="btn float-right f14 text-secondary" title="close"><i class="fa fa-times"></i></button>
                 </div>
-                
-                
+
+
                 <hr class="my-3" />
                 <!--Results Tab-->
                 <div>
@@ -327,19 +327,19 @@
                                                         <div class="row">
                                                             @foreach (var r in g)
                                                             {
-                                                            <div class="col-lg-6">
-                                                                <div class="form-group">
-                                                                    <label for="rating_@r.Id" class="f14">* @r.Name</label>
-                                                                    <select id="rating_@r.Id" name="ratings[]" rid="@r.Id" rcat="@r.Category" resid="0" class="form-control custom-select" required>
-                                                                        <option value="">- Select rating -</option>
-                                                                        <option value="Very Good">Very Good</option>
-                                                                        <option value="Good">Good</option>
-                                                                        <option value="Fair">Fair</option>
-                                                                        <option value="Poor">Poor</option>
-                                                                        <option value="Very Poor">Very Poor</option>
-                                                                    </select>
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group">
+                                                                        <label for="rating_@r.Id" class="f14">* @r.Name</label>
+                                                                        <select id="rating_@r.Id" name="ratings[]" rid="@r.Id" rcat="@r.Category" resid="0" class="form-control custom-select" required>
+                                                                            <option value="">- Select rating -</option>
+                                                                            <option value="Very Good">Very Good</option>
+                                                                            <option value="Good">Good</option>
+                                                                            <option value="Fair">Fair</option>
+                                                                            <option value="Poor">Poor</option>
+                                                                            <option value="Very Poor">Very Poor</option>
+                                                                        </select>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
                                                             }
                                                         </div>
                                                     }
@@ -428,6 +428,134 @@
 
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit MidTerm Modal -->
+<div class="modal fade" id="editMidTermModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Mid-Term Result <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <input type="hidden" id="m_examId" />
+                            <input type="hidden" id="m_classId" />
+                            <input type="hidden" id="m_subjectId" />
+                            <input type="hidden" id="m_studentId" />
+                            <div class="col-md-12">
+                                <h5 class="m-0 f18">@Model.FullName</h5>
+                                <h6 class="m-0 subject f12 text-secondary"></h6>
+                                <hr class="my-2" />
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="m_classwork" class="f14">* Classwork</label>
+                                    <input id="m_classwork" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter classwork score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="m_test" class="f14">* Test</label>
+                                    <input id="m_test" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter test score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="m_exam" class="f14">* Exam</label>
+                                    <input id="m_exam" type="number" class="form-control integer" maxlength="2" min="0" max="20" placeholder="Enter exam score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="m_total" class="f14">* Total</label>
+                                    <input id="m_total" type="number" class="form-control integer" maxlength="2" min="0" max="40" placeholder="Enter total score" required readonly />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateMidTermResultBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Edit EndTerm Modal -->
+<div class="modal fade" id="editEndTermModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit End-Term Result <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <input type="hidden" id="e_examId" />
+                            <input type="hidden" id="e_classId" />
+                            <input type="hidden" id="e_subjectId" />
+                            <input type="hidden" id="e_studentId" />
+                            <div class="col-md-12">
+                                <h5 class="m-0 f18">@Model.FullName</h5>
+                                <h6 class="m-0 subject f12 text-secondary"></h6>
+                                <hr class="my-2" />
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_classwork" class="f14">* Classwork</label>
+                                    <input id="e_classwork" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter classwork score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_test" class="f14">* Test</label>
+                                    <input id="e_test" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter test score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_exam" class="f14">* Exam</label>
+                                    <input id="e_exam" type="number" class="form-control integer" maxlength="2" min="0" max="40" placeholder="Enter exam score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_total" class="f14">* Total</label>
+                                    <input id="e_total" type="number" class="form-control integer" maxlength="2" min="0" max="60" placeholder="Enter total score" required readonly />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateEndTermResultBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
         </div>
     </div>
 </div>

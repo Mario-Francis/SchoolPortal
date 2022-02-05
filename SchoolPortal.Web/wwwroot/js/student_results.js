@@ -59,6 +59,240 @@ $(() => {
     $('#closeBtn').on('click', (e) => {
         clearResult();
     });
+
+    $('#m_classwork, #m_test, #m_exam').on('keyup change', (e) => {
+        let classwork = $('#m_classwork').val() == '' ? 0 : parseInt($('#m_classwork').val());
+        let test = $('#m_test').val() == '' ? 0 : parseInt($('#m_test').val());
+        let exam = $('#m_exam').val() == '' ? 0 : parseInt($('#m_exam').val());
+        $('#m_total').val(classwork + test + exam);
+    });
+
+    $('#e_classwork, #e_test, #e_exam').on('keyup change', (e) => {
+        let classwork = $('#e_classwork').val() == '' ? 0 : parseInt($('#e_classwork').val());
+        let test = $('#e_test').val() == '' ? 0 : parseInt($('#e_test').val());
+        let exam = $('#e_exam').val() == '' ? 0 : parseInt($('#e_exam').val());
+        $('#e_total').val(classwork + test + exam);
+    });
+
+    // mid term edit
+    $(document).on('click', '.m_edit', async (e) => {
+        let rid = $(e.currentTarget).attr('rid');
+        let loader = bootLoaderDialog('Fetching result...');
+        try {
+            let result = await getMidTermResult(rid);
+            loader.hide();
+
+            $('#m_examId').val(result.examId);
+            $('#m_classId').val(result.classId);
+            $('#m_subjectId').val(result.subjectId);
+            $('#m_studentId').val(result.studentId);
+            $('#m_classwork').val(result.classWorkScore);
+            $('#m_test').val(result.testScore);
+            $('#m_exam').val(result.examScore);
+            $('#m_total').val(result.total);
+            $('.subject').html(result.subjectName);
+
+            $('#updateMidTermResultBtn').attr('rid', rid);
+
+            setTimeout(() => {
+                $('#editMidTermModal').modal({ backdrop: 'static', keyboard: false }, 'show');
+            }, 700);
+        } catch (ex) {
+            console.error(ex);
+            notify(ex.message, 'danger');
+            loader.hide();
+        }
+    });
+
+    // end term edit
+    $(document).on('click', '.e_edit', async (e) => {
+        let rid = $(e.currentTarget).attr('rid');
+        let loader = bootLoaderDialog('Fetching result...');
+        try {
+            let result = await getEndTermResult(rid);
+            loader.hide();
+
+            $('#e_examId').val(result.examId);
+            $('#e_classId').val(result.classId);
+            $('#e_subjectId').val(result.subjectId);
+            $('#e_studentId').val(result.studentId);
+            $('#e_classwork').val(result.classWorkScore);
+            $('#e_test').val(result.testScore);
+            $('#e_exam').val(result.examScore);
+            $('#e_total').val(result.total);
+            $('.subject').html(result.subjectName);
+
+            $('#updateEndTermResultBtn').attr('rid', rid);
+
+            setTimeout(() => {
+                $('#editEndTermModal').modal({ backdrop: 'static', keyboard: false }, 'show');
+            }, 700);
+        } catch (ex) {
+            console.error(ex);
+            notify(ex.message, 'danger');
+            loader.hide();
+        }
+    });
+
+
+    // update midterm result
+    $('#updateMidTermResultBtn').on('click', (e) => {
+        e.preventDefault();
+        let btn = $(e.currentTarget);
+        let id = btn.attr('rid');
+        try {
+            let form = $("form")[5];
+            if (validateForm(form)) {
+                let examId = $.trim($('#m_examId').val());
+                let classId = $.trim($('#m_classId').val());
+                let subjectId = $.trim($('#m_subjectId').val());
+                let studentId = $.trim($('#m_studentId').val());
+                let classwork = $.trim($('#m_classwork').val());
+                let test = $.trim($('#m_test').val());
+                let exam = $.trim($('#m_exam').val());
+                let total = $.trim($('#m_total').val());
+
+                if (examId == '' || classId == '' || subjectId == '' || studentId == '' || classwork == ''
+                    || test == '' || exam == '' || total == ''
+                ) {
+                    notify('Fields with asteriks (*) are required', 'warning');
+                } else {
+                    $('fieldset').prop('disabled', true);
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating result...');
+                    let url = $base + 'results/midterm/UpdateResult';
+                    let data = {
+                        id,
+                        examId,
+                        classId,
+                        subjectId,
+                        studentId,
+                        classWorkScore: classwork,
+                        testScore: test,
+                        examScore: exam,
+                        total
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: data,
+                        success: (response) => {
+                            if (response.isSuccess) {
+                                notify(response.message + '.', 'success');
+                                midTermResultsTable.ajax.reload();
+                                //endTermResultsTable.ajax.reload();
+                                if ($.fn.DataTable.isDataTable('#endTermResultsTable')) {
+                                    endTermResultsTable.ajax.reload();
+                                }
+                                if ($.fn.DataTable.isDataTable('#sEndTermResultsTable')) {
+                                    sEndTermResultsTable.ajax.reload();
+                                }
+                                form.reset();
+
+                                $('#editMidTermModal').modal('hide');
+
+                            } else {
+                                notify(response.message, 'danger');
+                            }
+                            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Update');
+                            $('fieldset').prop('disabled', false);
+                        },
+                        error: (req, status, err) => {
+                            ajaxErrorHandler(req, status, err, {
+                                callback: () => {
+                                    btn.html('<i class="fa fa-check-circle"></i> &nbsp;Update');
+                                    $('fieldset').prop('disabled', false);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+            notify(ex.message, 'danger');
+            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Update');
+            $('fieldset').prop('disabled', false);
+        }
+    });
+
+    // update end term result
+    $('#updateEndTermResultBtn').on('click', (e) => {
+        e.preventDefault();
+        let btn = $(e.currentTarget);
+        let id = btn.attr('rid');
+        try {
+            let form = $("form")[6];
+            if (validateForm(form)) {
+                let examId = $.trim($('#e_examId').val());
+                let classId = $.trim($('#e_classId').val());
+                let subjectId = $.trim($('#e_subjectId').val());
+                let studentId = $.trim($('#e_studentId').val());
+                let classwork = $.trim($('#e_classwork').val());
+                let test = $.trim($('#e_test').val());
+                let exam = $.trim($('#e_exam').val());
+                let total = $.trim($('#e_total').val());
+
+                if (examId == '' || classId == '' || subjectId == '' || studentId == '' || classwork == ''
+                    || test == '' || exam == '' || total == ''
+                ) {
+                    notify('Fields with asteriks (*) are required', 'warning');
+                } else {
+                    $('fieldset').prop('disabled', true);
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating result...');
+                    let url = $base + 'results/endterm/UpdateResult';
+                    let data = {
+                        id,
+                        examId,
+                        classId,
+                        subjectId,
+                        studentId,
+                        classWorkScore: classwork,
+                        testScore: test,
+                        examScore: exam,
+                        total
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: data,
+                        success: (response) => {
+                            if (response.isSuccess) {
+                                notify(response.message + '.', 'success');
+                                endTermResultsTable.ajax.reload();
+                                if ($.fn.DataTable.isDataTable('#sEndTermResultsTable')) {
+                                    sEndTermResultsTable.ajax.reload();
+                                }
+                                
+                                form.reset();
+
+                                $('#editEndTermModal').modal('hide');
+
+                            } else {
+                                notify(response.message, 'danger');
+                            }
+                            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Update');
+                            $('fieldset').prop('disabled', false);
+                        },
+                        error: (req, status, err) => {
+                            ajaxErrorHandler(req, status, err, {
+                                callback: () => {
+                                    btn.html('<i class="fa fa-check-circle"></i> &nbsp;Update');
+                                    $('fieldset').prop('disabled', false);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+            notify(ex.message, 'danger');
+            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Update');
+            $('fieldset').prop('disabled', false);
+        }
+    });
+
+
 });
 
 
@@ -202,8 +436,8 @@ function initializeMidTermDataTable() {
                             + '<div class="dropdown-menu f14">'
                            // + `<a class="dropdown-item" href="#" cid="${row.id}">View Classrooms</a>`
                            // + `<div class="dropdown-divider"></div>`
-                            + `<a class="dropdown-item edit" href="javascript:void(0)" cid="${row.id}">Edit</a>`
-                            + `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
+                            + `<a class="dropdown-item m_edit" href="javascript:void(0)" rid="${row.id}">Edit</a>`
+                            //+ `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
                             + '</div>'
                             + '</div>';
                     }
@@ -314,8 +548,8 @@ function initializeEndTermDataTable() {
                         + '<div class="dropdown-menu f14">'
                         // + `<a class="dropdown-item" href="#" cid="${row.id}">View Classrooms</a>`
                         // + `<div class="dropdown-divider"></div>`
-                        + `<a class="dropdown-item edit" href="javascript:void(0)" cid="${row.id}">Edit</a>`
-                        + `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
+                        + `<a class="dropdown-item e_edit" href="javascript:void(0)" rid="${row.id}">Edit</a>`
+                        //+ `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
                         + '</div>'
                         + '</div>';
                 }
@@ -602,17 +836,13 @@ function clearResult() {
     $('#resultsCard').slideUp(300);
 }
 
-function getMidTermResult() {
 
-}
 
 function updateMidTermResult() {
 
 }
 
-function getEndTermResult() {
 
-}
 
 function updateEndTermResult() {
 
@@ -628,4 +858,67 @@ function saveBehaviouralRatings() {
 
 function saveHealthRecords() {
 
+}
+function getMidTermResult(id) {
+    var promise = new Promise((resolve, reject) => {
+        try {
+            if (id == undefined || id == '' || id == 0) {
+                reject('Invalid result id');
+            } else {
+                let url = $base + 'results/midterm/GetResult/' + id;
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (response) => {
+                        if (response.isSuccess) {
+                            resolve(response.data);
+                        } else {
+                            reject(response.message);
+                        }
+                    },
+                    error: (req, status, err) => {
+                        ajaxErrorHandler(req, status, err, {});
+                    }
+                });
+            }
+
+        } catch (ex) {
+            console.error(ex);
+            //notify(ex.message, 'danger');
+            reject(ex.message);
+        }
+    });
+    return promise;
+}
+
+function getEndTermResult(id) {
+    var promise = new Promise((resolve, reject) => {
+        try {
+            if (id == undefined || id == '' || id == 0) {
+                reject('Invalid result id');
+            } else {
+                let url = $base + 'results/endterm/GetResult/' + id;
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: (response) => {
+                        if (response.isSuccess) {
+                            resolve(response.data);
+                        } else {
+                            reject(response.message);
+                        }
+                    },
+                    error: (req, status, err) => {
+                        ajaxErrorHandler(req, status, err, {});
+                    }
+                });
+            }
+
+        } catch (ex) {
+            console.error(ex);
+            //notify(ex.message, 'danger');
+            reject(ex.message);
+        }
+    });
+    return promise;
 }
