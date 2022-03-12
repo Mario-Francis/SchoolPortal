@@ -73,7 +73,7 @@
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" cid="${row.id}">View Classrooms</a>`
+                        + `<a class="dropdown-item disabled" href="#" cid="${row.id}">View Classrooms</a>`
                         + `<div class="dropdown-divider"></div>`
                         + `<a class="dropdown-item edit" href="javascript:void(0)" cid="${row.id}">Edit</a>`
                         + `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`

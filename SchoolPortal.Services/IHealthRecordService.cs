@@ -1,4 +1,5 @@
-﻿using SchoolPortal.Core.Models;
+﻿using Microsoft.AspNetCore.Http;
+using SchoolPortal.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,5 +15,8 @@ namespace SchoolPortal.Services
         IEnumerable<HealthRecord> GetRecords();
         Task<HealthRecord> GetRecord(long id);
         Task<HealthRecord> GetRecord(string session, long termId, long studentId);
+        Task<IEnumerable<HealthRecord>> ExtractData(IFormFile file);
+        Task BatchCreateRecords(IEnumerable<HealthRecord> records, string session, long termId);
+
     }
 }

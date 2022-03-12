@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
 using SchoolPortal.Core.DTOs;
+using SchoolPortal.Core.Extensions;
 using SchoolPortal.Services;
 using SchoolPortal.Web.ViewModels;
 using System;
@@ -12,12 +14,14 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Route("[controller]")]
     public class BehaviouralRatingsController : Controller
     {
         private readonly IBehaviouralRatingService ratingService;
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly ILoggerService<BehaviouralRatingsController> logger;
 
+       
         public BehaviouralRatingsController(
             IBehaviouralRatingService ratingService,
             IOptionsSnapshot<AppSettings> appSettingsDelegate,
@@ -327,6 +331,41 @@ namespace SchoolPortal.Web.Controllers
                 });
             }
         }
+
+        [HttpGet("DownloadBehaviouralResultsTemplate")]
+        public IActionResult DownloadBehaviouralResultsTemplate()
+        {
+            try
+            {
+                var file = ratingService.GenerateBatchUploadTemaplate();
+                var fileName = "Batch Upload Behavioural Results Template.xlsx";
+                new FileExtensionContentTypeProvider().TryGetContentType(fileName, out string contentType);
+
+                return File(file, contentType, fileName);
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new
+                {
+                    IsSuccess = false,
+                    Message = ex.Message,
+                    ErrorDetail = ex.GetErrorDetails()
+                });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while generating behavioural results template");
+
+                return StatusCode(500, new
+                {
+                    IsSuccess = false,
+                    Message = ex.Message,
+                    ErrorDetail = ex.GetErrorDetails()
+                });
+            }
+        }
+
 
     }
 }

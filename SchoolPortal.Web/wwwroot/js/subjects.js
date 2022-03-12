@@ -88,9 +88,9 @@
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" cid="${row.id}">View Mid-Term Results</a>`
-                        + `<a class="dropdown-item" href="#" cid="${row.id}">View End-Term Results</a>`
-                        + `<div class="dropdown-divider"></div>`
+                       // + `<a class="dropdown-item" href="#" cid="${row.id}">View Mid-Term Results</a>`
+                        //+ `<a class="dropdown-item" href="#" cid="${row.id}">View End-Term Results</a>`
+                       // + `<div class="dropdown-divider"></div>`
                         + `<a class="dropdown-item edit" href="javascript:void(0)" sid="${row.id}">Edit</a>`
                         + `<a class="dropdown-item delete" href="javascript:void(0)" sid="${row.id}">Delete</a>`
                         + '</div>'

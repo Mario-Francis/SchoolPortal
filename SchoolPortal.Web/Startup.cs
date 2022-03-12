@@ -104,9 +104,13 @@ namespace SchoolPortal.Web
 
             app.UseEndpoints(endpoints =>
             {
+                
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Auth}/{action=Index}/{id?}");
+                //endpoints.MapControllerRoute(
+                //    name: "default1",
+                //    pattern: "{controller=Auth}/{id?}");
             });
         }
     }

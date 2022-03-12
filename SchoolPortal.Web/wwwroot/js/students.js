@@ -5,6 +5,7 @@ var underGraduatesTable;
 var graduatesTable;
 
 $(() => {
+    switchTab();
     entryClassdd = $('#entryClassId').selectize({
         dropdownParent: 'body'
     });
@@ -116,7 +117,8 @@ $(() => {
                         + `<a class="dropdown-item" href="${$base}Students/${row.id}" uid="${row.id}">View Profile</a>`
                         + `<a class="dropdown-item" href="${$base}classrooms/${row.classRoom.id}" uid="${row.id}">View ClassRoom</a>`
                         + `<a class="dropdown-item" href="${$base}Students/${row.id}/Guardians" uid="${row.id}">View Guardians</a>`
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
+                        + `<a class="dropdown-item" href="${$base}StudentResults/${row.id}" uid="${row.id}">View Results</a>`
+                        + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
@@ -231,9 +233,10 @@ $(() => {
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
                         + `<a class="dropdown-item" href="${$base}Students/${row.id}" uid="${row.id}">View Profile</a>`
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>`
+                        + `<a class="dropdown-item" href="${$base}classrooms/${row.classRoom.id}" uid="${row.id}">View ClassRoom</a>`
                         + `<a class="dropdown-item" href="${$base}Students/${row.id}/Guardians" uid="${row.id}">View Guardians</a>`
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
+                        + `<a class="dropdown-item" href="${$base}StudentResults/${row.id}" uid="${row.id}">View Results</a>`
+                        + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
@@ -350,7 +353,8 @@ $(() => {
                         + `<a class="dropdown-item" href="${$base}Students/${row.id}" uid="${row.id}">View Profile</a>`
                         + `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>`
                         + `<a class="dropdown-item" href="${$base}Students/${row.id}/Guardians" uid="${row.id}">View Guardians</a>`
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
+                        + `<a class="dropdown-item" href="${$base}StudentResults/${row.id}" uid="${row.id}">View Results</a>`
+                        + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
@@ -864,4 +868,23 @@ function refreshTables() {
     studentsTable.ajax.reload();
     underGraduatesTable.ajax.reload();
     graduatesTable.ajax.reload();
+}
+
+function switchTab() {
+    var tab = getQueryString('tab');
+    tab = tab != null ? tab.toLowerCase() : tab;
+    switch (tab) {
+        case 'all':
+            $('#nav-all-tab').tab('show');
+            break;
+        case 'ugraduates':
+            $('#nav-under-graduates-tab').tab('show');
+            break;
+        case 'graduates':
+            $('#nav-graduates-tab').tab('show');
+            break;
+       
+        default:
+            break;
+    }
 }

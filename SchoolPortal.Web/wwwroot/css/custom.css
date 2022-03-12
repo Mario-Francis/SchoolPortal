@@ -461,6 +461,14 @@ select{
     font-size: 14px;
 }
 
+.nav-item a.disabled span,
+.nav-item a.disabled i:before,
+.nav-item a.disabled::after
+{
+    color: #999 !important;
+}
+
+
 
 
 

@@ -30,7 +30,7 @@
                 <h2 class="text-center mb-0">@name</h2>
                 <p class="text-center text-secondary f14">@Model.Email</p>
                 <p class="text-center text-secondary f14">@Model.Username</p>
-                <p class="text-center f16"><a href="#"><span class="badge bg-claret text-white rounded-pill px-5 py-3">@Model.FormattedClassRoom <i class="fa fa-external-link-alt"></i></span></a></p>
+                <p class="text-center f16"><a href="/Classrooms/@Model.ClassRoomId" target="_blank"><span class="badge bg-claret text-white rounded-pill px-5 py-3">@Model.FormattedClassRoom <i class="fa fa-external-link-alt"></i></span></a></p>
                 @if (Model.IsGraduated)
                 {
                 <p class="text-center f16"><span class="badge bg-success text-white rounded-pill px-5 py-3 mt-2">Graduated <i class="fa fa-check-circle"></i></span></p>

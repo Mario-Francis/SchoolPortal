@@ -238,6 +238,10 @@ function capitalize(word) {
     return word;
 }
 
+function getQueryString(str) {
+    return (new URLSearchParams(window.location.search)).get(str);
+}
+
 // on document ready
 $(() => {
     // initialize dropdowns

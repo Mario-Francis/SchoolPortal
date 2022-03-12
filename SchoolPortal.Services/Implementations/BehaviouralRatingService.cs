@@ -1,10 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ClosedXML.Excel;
+using ExcelDataReader;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
+using SchoolPortal.Core.DTOs;
 using SchoolPortal.Core.Extensions;
 using SchoolPortal.Core.Models;
 using SchoolPortal.Data.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +25,9 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<Student> studentRepo;
         private readonly ILoggerService<BehaviouralRatingService> logger;
         private readonly IHttpContextAccessor accessor;
+        private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
+        private List<string> headers = new List<string>() { "SN", "Student Admission No" };
+        private string[] validRatings = new string[] { "Very Good", "Good", "Fair", "Poor", "Very Poor" };
 
         public BehaviouralRatingService(
             IRepository<BehaviouralRating> behaviouralRatingRepo,
@@ -26,7 +35,8 @@ namespace SchoolPortal.Services.Implementations
             IRepository<Term> termRepo,
             IRepository<Student> studentRepo,
             ILoggerService<BehaviouralRatingService> logger,
-             IHttpContextAccessor accessor)
+             IHttpContextAccessor accessor,
+             IOptionsSnapshot<AppSettings> appSettingsDelegate)
         {
             this.behaviouralRatingRepo = behaviouralRatingRepo;
             this.behaviouralResultRepo = behaviouralResultRepo;
@@ -34,6 +44,10 @@ namespace SchoolPortal.Services.Implementations
             this.studentRepo = studentRepo;
             this.logger = logger;
             this.accessor = accessor;
+            this.appSettingsDelegate = appSettingsDelegate;
+
+            var ratings = behaviouralRatingRepo.GetAll().Select(r => r.Name);
+            headers.AddRange(ratings);
         }
 
         // get ratings
@@ -42,6 +56,11 @@ namespace SchoolPortal.Services.Implementations
             return behaviouralRatingRepo.GetAll().OrderBy(r => r.Category).ThenBy(r => r.Id);
         }
 
+        public async Task<BehaviouralRating> GetBehaviouralRatingByName(string name)
+        {
+            var rating = await behaviouralRatingRepo.GetSingleWhere(r => r.Name == name);
+            return rating;
+        }
         // add
         public async Task CreateBehaviouralResult(BehaviouralResult behaviouralResult)
         {
@@ -320,6 +339,197 @@ namespace SchoolPortal.Services.Implementations
         {
             return behaviouralResultRepo.GetWhere(r => r.Session == session
             && r.TermId == termId && r.StudentId == studentId);
+        }
+
+        // generate batch upload template
+        public byte[] GenerateBatchUploadTemaplate()
+        {
+            var ratings = behaviouralRatingRepo.GetAll().Select(x => x.Name).ToList();
+
+            // create excel
+            var workbook = new XLWorkbook(ClosedXML.Excel.XLEventTracking.Disabled);
+            // using data table
+            var table = new DataTable("Behavioural Results");
+            table.Columns.Add("SN", typeof(string));
+            table.Columns.Add("Student Admission No", typeof(string));
+            
+            foreach (var r in ratings)
+            {
+                table.Columns.Add(r, typeof(string));
+            }
+
+            var count = 1;
+            for(var i=0;i<2;i++)
+            {
+                var row = table.NewRow();
+
+                row[0] = count.ToString();
+                row[1] = count.ToString().PadLeft(3, '0');
+                for(int j = 2; j < (ratings.Count + 2); j++)
+                {
+                    row[j] = "Good";
+                }
+                table.Rows.Add(row);
+                count++;
+            }
+            
+            workbook.AddWorksheet(table);
+
+            byte[] byteFile = null;
+            using (var stream = new MemoryStream())
+            {
+                workbook.SaveAs(stream);
+                byteFile = stream.ToArray();
+            }
+
+            return byteFile;
+        }
+
+        //=========== Batch Upload ===========
+       
+        private async Task<(bool isValid, string errorMessage)> ValidateDataRow(int index, DataRow row)
+        {
+            var err = "";
+            var isValid = true;
+            if (row[1] == null || Convert.ToString(row[1]).Trim() == "")
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[1]} at row {index}. Field is required.";
+            }
+            else if (!await studentRepo.AnyAsync(s => s.AdmissionNo == Convert.ToString(row[1]).Trim()))
+            {
+                isValid = false;
+                err = $"Invalid value for {headers[1]} at row {index}. No student exist with {headers[1]} '{Convert.ToString(row[1]).Trim()}'.";
+            }
+            else
+            {
+
+                for (int i = 2; i < headers.Count; i++)
+                {
+                    if (row[i] == null || Convert.ToString(row[i]).Trim() == "" || !validRatings.Contains(Convert.ToString(row[i]).Trim().Capitalize()))
+                    {
+                        isValid = false;
+                        err = $"Invalid value for {headers[i]} at row {index}. Valid values includes.";
+                    }
+                    if (!isValid)
+                        break;
+                }
+            }
+
+            return (isValid, err);
+        }
+
+        public async Task<IEnumerable<IEnumerable<BehaviouralResult>>> ExtractData(IFormFile file)
+        {
+            List<List<BehaviouralResult>> behaviouralResults = new List<List<BehaviouralResult>>();
+            IExcelDataReader excelReader = null;
+            DataSet dataSet = new DataSet();
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            var fileStream = file.OpenReadStream();
+
+            if (file.FileName.EndsWith(".xls"))
+                excelReader = ExcelReaderFactory.CreateBinaryReader(fileStream);
+            else if (file.FileName.EndsWith(".xlsx"))
+                excelReader = ExcelReaderFactory.CreateReader(fileStream);
+            else
+                throw new AppException($"Invalid file '{file.FileName}'");
+
+            dataSet = excelReader.AsDataSet();
+            excelReader.Close();
+
+            if (dataSet == null || dataSet.Tables.Count == 0)
+                throw new AppException($"Unable to read file. Ensure file complies with the specified template.");
+
+            var table = dataSet.Tables[0];
+            var header = table.Rows[0];
+            if (!AppUtilities.ValidateHeader(header, headers.ToArray(), out string error))
+            {
+                throw new AppException(error);
+            }
+            else
+            {
+                //validate and load data
+                var rows = table.Rows;
+                for (int i = 1; i < rows.Count; i++)
+                {
+                    var validationResult = await ValidateDataRow(i, rows[i]);
+                    if (!validationResult.isValid)
+                    {
+                        throw new AppException(validationResult.errorMessage);
+                    }
+                    else
+                    {
+                        var ratings = GetBehaviouralRatings().ToList();
+                        var results = new List<BehaviouralResult>();
+                        var studentId = (await studentRepo.GetSingleWhere(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
+
+                        for(int j = 2; j < headers.Count; j++)
+                        {
+
+                            var result = new BehaviouralResult
+                            {
+                                BehaviouralRatingId = ratings.FirstOrDefault(r => r.Name == headers[j]).Id,
+                                Score = Convert.ToString(rows[i][j]),
+                                StudentId = studentId
+                            };
+                            results.Add(result);
+                        }
+
+                        behaviouralResults.Add(results);
+                    }
+                }
+            }
+            fileStream.Dispose();
+            return behaviouralResults;
+        }
+
+        public async Task BatchCreateBehaviouralResults(IEnumerable<List<BehaviouralResult>> results, string session, long termId)
+        {
+            if (!AppUtilities.ValidateSession(session))
+            {
+                throw new AppException($"Session '{session}' is invalid");
+            }
+            if (!await termRepo.AnyAsync(t => t.Id == termId))
+            {
+                throw new AppException("Term id is invalid");
+            }
+
+            var currentUser = accessor.HttpContext.GetUserSession();
+
+            var _results = new List<BehaviouralResult>();
+
+            foreach (var r in results)
+            {
+                r.ForEach(v =>
+                {
+                    v.Session = session;
+                    v.TermId = termId;
+                    v.CreatedBy = currentUser.Username;
+                    v.CreatedDate = DateTimeOffset.Now;
+                    v.UpdatedBy = currentUser.Username;
+                    v.UpdatedDate = DateTimeOffset.Now;
+                });
+
+                // check for duplicate
+                var student = await studentRepo.GetById(r.First().StudentId);
+                if(_results.Any(re=> re.StudentId == r.First().StudentId)){
+                    throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing behavioural result on excel");
+                }
+               
+                if (await behaviouralResultRepo.AnyAsync(br => br.Session == session && br.TermId == termId && br.StudentId == student.Id))
+                {
+                    throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing behavioural result");
+                }
+
+                _results.AddRange(r);
+            }
+
+            await behaviouralResultRepo.InsertBulk(_results);
+
+            // log action
+            await logger.LogActivity(ActivityActionType.BATCH_ADDED_BEHAVIOURAL_RESULT,
+                currentUser.Username, $"Added behavioural results in batch'");
         }
 
     }

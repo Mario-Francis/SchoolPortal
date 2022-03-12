@@ -7,6 +7,7 @@ var teachersTable;
 var parentsTable;
 
 $(() => {
+    switchTab();
     roleChoices = new Choices($('#roles')[0], {
         removeItemButton: true,
     });
@@ -115,9 +116,9 @@ $(() => {
                         + '<div class="dropdown-menu f14">'
                         + `<a class="dropdown-item" href="${$base}users/${row.id}" uid="${row.id}">View Profile</a>`
                         + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="${$base}users/${row.id}/wards" uid="${row.id}">View Wards</a>` : '')
-                        + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>` : '')
+                        + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="${$base}classrooms/${row.classRoom?.id}" uid="${row.id}">View ClassRoom</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
+                        + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
@@ -225,11 +226,11 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Profile</a>`
+                        + `<a class="dropdown-item" href="${$base}users/${row.id}" uid="${row.id}">View Profile</a>`
                         + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="#" uid="${row.id}">View Wards</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
+                        + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
@@ -347,9 +348,9 @@ $(() => {
                         + '<div class="dropdown-menu f14">'
                         + `<a class="dropdown-item" href="${$base}users/${row.id}" uid="${row.id}">View Profile</a>`
                         + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="${$base}users/${row.id}/wards" uid="${row.id}">View Wards</a>` : '')
-                        + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>` : '')
+                        + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="${$base}classrooms/${row.classRoom?.id}" uid="${row.id}">View ClassRoom</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
+                        + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
@@ -469,7 +470,7 @@ $(() => {
                         + (row.roles.map(r => r.id).includes(Parent) ? `<a class="dropdown-item" href="${$base}users/${row.id}/wards" uid="${row.id}">View Wards</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item" href="#" uid="${row.id}">View ClassRoom</a>` : '')
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
-                        + `<a class="dropdown-item" href="#" uid="${row.id}">View Login History</a>`
+                        + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
@@ -1090,4 +1091,25 @@ function refreshTables() {
     adminsTable.ajax.reload();
     teachersTable.ajax.reload();
     parentsTable.ajax.reload();
+}
+
+function switchTab() {
+    var tab = getQueryString('tab');
+    tab = tab != null ? tab.toLowerCase() : tab;
+    switch (tab) {
+        case 'all':
+            $('#nav-all-tab').tab('show');
+            break;
+        case 'admins':
+            $('#nav-admins-tab').tab('show');
+            break;
+        case 'teachers':
+            $('#nav-teachers-tab').tab('show');
+            break;
+        case 'parents':
+            $('#nav-parents-tab').tab('show');
+            break;
+        default:
+            break;
+    }
 }
