@@ -32,6 +32,10 @@ namespace SchoolPortal.Web.ViewModels
 
         public ItemVM Term { get; set; }
         public StudentVM Student { get; set; }
+        public string AdmissionNo { get; set; }
+        public string Class { get; set; }
+        public string StudentName { get; set; }
+        public string TermName { get; set; }
 
         public string FormattedCreatedDate
         {
@@ -81,22 +85,34 @@ namespace SchoolPortal.Web.ViewModels
 
         public static HealthRecordVM FromHealthRecord(HealthRecord record, int? clientTimeOffset = null)
         {
-            return record == null ? null : new HealthRecordVM
+            if (record == null)
             {
-                Id = record.Id,
-                StartHeight = record.StartHeight,
-                EndHeight = record.EndHeight,
-                StartWeight = record.StartWeight,
-                EndWeight = record.EndWeight,
-                Session=record.Session,
-                TermId=record.TermId,
-                Term=new ItemVM { Id=record.Term.Id, Name=record.Term.Name},
-                StudentId=record.StudentId,
-                Student=StudentVM.FromStudent(record.Student),
-                UpdatedBy = record.UpdatedBy,
-                CreatedDate = clientTimeOffset == null ? record.CreatedDate : record.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-                UpdatedDate = clientTimeOffset == null ? record.UpdatedDate : record.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value))
-            };
+                return null;
+            }
+            else
+            {
+                var student = StudentVM.FromStudent(record.Student);
+                return new HealthRecordVM
+                {
+                    Id = record.Id,
+                    StartHeight = record.StartHeight,
+                    EndHeight = record.EndHeight,
+                    StartWeight = record.StartWeight,
+                    EndWeight = record.EndWeight,
+                    Session = record.Session,
+                    TermId = record.TermId,
+                    Term = new ItemVM { Id = record.Term.Id, Name = record.Term.Name },
+                    TermName = record.Term.Name,
+                    StudentId = record.StudentId,
+                    Student = student,
+                    StudentName = student.FullName,
+                    AdmissionNo = student.AdmissionNo,
+                    Class = student.ClassRoom.Class + " " + student.ClassRoom.RoomCode,
+                    UpdatedBy = record.UpdatedBy,
+                    CreatedDate = clientTimeOffset == null ? record.CreatedDate : record.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                    UpdatedDate = clientTimeOffset == null ? record.UpdatedDate : record.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value))
+                };
+            }
         }
     }
 }

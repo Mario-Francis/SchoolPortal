@@ -24,6 +24,6 @@ namespace SchoolPortal.Services
 
         byte[] GenerateBatchUploadTemaplate();
         Task<IEnumerable<IEnumerable<BehaviouralResult>>> ExtractData(IFormFile file);
-        Task BatchCreateBehaviouralResults(IEnumerable<List<BehaviouralResult>> results, string session, long termId);
+        Task BatchCreateBehaviouralResults(IEnumerable<IEnumerable<BehaviouralResult>> results, string session, long termId);
     }
 }

@@ -300,7 +300,7 @@ $(() => {
         let rid = $(e.currentTarget).attr('rid');
         let loader = bootLoaderDialog('Fetching result...');
         try {
-            let result = await getResult(rid);
+            let result = await getRemark(rid);
             loader.hide();
 
             $('#e_examId').val(result.examId);
@@ -525,7 +525,7 @@ async function updateSubjectdd(classdd) {
     }
 }
 
-function getResult(id) {
+function getRemark(id) {
     var promise = new Promise((resolve, reject) => {
         try {
             if (id == undefined || id == '' || id == 0) {

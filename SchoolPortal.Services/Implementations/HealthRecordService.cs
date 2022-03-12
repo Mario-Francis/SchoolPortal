@@ -20,6 +20,7 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<Student> studentRepo;
         private readonly ILoggerService<HealthRecordService> logger;
         private readonly IHttpContextAccessor accessor;
+        private readonly IRepository<EndTermResult> endTermResultRepo;
         private string[] headers = new string[] { "SN", "Student Admission No", "Start Height (mtrs)", "End Height (mtrs)", "Start Weight (kg)", "End Weight (kg)" };
 
         public HealthRecordService(
@@ -27,13 +28,15 @@ namespace SchoolPortal.Services.Implementations
            IRepository<Term> termRepo,
            IRepository<Student> studentRepo,
            ILoggerService<HealthRecordService> logger,
-           IHttpContextAccessor accessor)
+           IHttpContextAccessor accessor,
+           IRepository<EndTermResult> endTermResultRepo)
         {
             this.healthRecordRepo = healthRecordRepo;
             this.termRepo = termRepo;
             this.studentRepo = studentRepo;
             this.logger = logger;
             this.accessor = accessor;
+            this.endTermResultRepo = endTermResultRepo;
         }
 
         // add
@@ -280,6 +283,10 @@ namespace SchoolPortal.Services.Implementations
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing health record on excel");
                 }
 
+                if (!await endTermResultRepo.AnyAsync(er => er.Exam.Session == session && er.Exam.TermId == termId && er.StudentId == student.Id))
+                {
+                    throw new AppException($"A student with admission number '{student.AdmissionNo}' have no end-term result for specified session and term");
+                }
 
                 if (await healthRecordRepo.AnyAsync(hr => hr.Session == session && hr.TermId == termId && hr.StudentId == r.StudentId))
                 {

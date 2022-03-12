@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DataTablesParser;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
 using SchoolPortal.Core.DTOs;
+using SchoolPortal.Core.Extensions;
 using SchoolPortal.Services;
 using SchoolPortal.Web.ViewModels;
 using System;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Route("[controller]")]
     public class HealthRecordsController : Controller
     {
         private readonly IHealthRecordService recordService;
@@ -33,7 +36,67 @@ namespace SchoolPortal.Web.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("RecordsDataTable")]
+        public IActionResult RecordsDataTable()
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var records = recordService.GetRecords().Select(r => HealthRecordVM.FromHealthRecord(r, clientTimeOffset));
+
+            var parser = new Parser<HealthRecordVM>(Request.Form, records.AsQueryable())
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost("BatchUploadRecords")]
+        public async Task<IActionResult> BatchUploadRecords(BatchUploadHealthRecordVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else if (model.File == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "No file uploaded!", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    if (!AppUtilities.ValidateFile(model.File, out List<string> errItems, appSettingsDelegate.Value.MaxUploadSize))
+                    {
+                        return StatusCode(400, new { IsSuccess = false, Message = "Invalid file uploaded.", ErrorItems = errItems });
+                    }
+                    else
+                    {
+                        var records = await recordService.ExtractData(model.File);
+
+                        await recordService.BatchCreateRecords(records, model.Session, model.TermId);
+
+                        return Ok(new { IsSuccess = true, Message = "File uploaded and read successfully", ErrorItems = new string[] { } });
+
+                    }
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while adding health records in batch");
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
+            }
+        }
+
+
+        [HttpPost("AddRecord")]
         public async Task<IActionResult> AddRecord(HealthRecordVM recordVM)
         {
             try
@@ -72,7 +135,7 @@ namespace SchoolPortal.Web.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost("UpdateRecord")]
         public async Task<IActionResult> UpdateRecord(HealthRecordVM recordVM)
         {
             try
@@ -114,7 +177,7 @@ namespace SchoolPortal.Web.Controllers
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
             }
         }
-
+        [HttpGet("DeleteRecord/{id}")]
         public async Task<IActionResult> DeleteRecord(long? id)
         {
             try

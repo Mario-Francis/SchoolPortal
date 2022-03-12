@@ -23,7 +23,11 @@ namespace SchoolPortal.Web.ViewModels
 
         public  ExamVM Exam { get; set; }
         public StudentVM Student { get; set; }
-        
+        public string AdmissionNo { get; set; }
+        public string Class { get; set; }
+        public string StudentName { get; set; }
+        public string ExamName { get; set; }
+
         public string FormattedCreatedDate
         {
             get
@@ -61,13 +65,19 @@ namespace SchoolPortal.Web.ViewModels
             }
             else
             {
+                var student = StudentVM.FromStudent(remark.Student);
+                var exam = ExamVM.FromExam(remark.Exam);
                 return new PerformanceRemarkVM
                 {
                     Id = remark.Id,
                     ExamId = remark.ExamId,
-                    Exam = ExamVM.FromExam(remark.Exam),
+                    Exam = exam,
+                    ExamName = $"{exam.Session} {exam.Term} Term ({exam.ExamType})",
                     StudentId = remark.StudentId,
-                    Student = StudentVM.FromStudent(remark.Student),
+                    Student = student,
+                    StudentName = student.FullName,
+                    AdmissionNo = student.AdmissionNo,
+                    Class = student.ClassRoom.Class + " " + student.ClassRoom.RoomCode,
                     TeacherRemark = remark.TeacherRemark,
                     HeadTeacherRemark = remark.HeadTeacherRemark,
                     UpdatedBy = remark.UpdatedBy,

@@ -26,6 +26,7 @@ namespace SchoolPortal.Services.Implementations
         private readonly ILoggerService<BehaviouralRatingService> logger;
         private readonly IHttpContextAccessor accessor;
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
+        private readonly IRepository<EndTermResult> endTermResultRepo;
         private List<string> headers = new List<string>() { "SN", "Student Admission No" };
         private string[] validRatings = new string[] { "Very Good", "Good", "Fair", "Poor", "Very Poor" };
 
@@ -36,7 +37,8 @@ namespace SchoolPortal.Services.Implementations
             IRepository<Student> studentRepo,
             ILoggerService<BehaviouralRatingService> logger,
              IHttpContextAccessor accessor,
-             IOptionsSnapshot<AppSettings> appSettingsDelegate)
+             IOptionsSnapshot<AppSettings> appSettingsDelegate,
+             IRepository<EndTermResult> endTermResultRepo)
         {
             this.behaviouralRatingRepo = behaviouralRatingRepo;
             this.behaviouralResultRepo = behaviouralResultRepo;
@@ -45,7 +47,7 @@ namespace SchoolPortal.Services.Implementations
             this.logger = logger;
             this.accessor = accessor;
             this.appSettingsDelegate = appSettingsDelegate;
-
+            this.endTermResultRepo = endTermResultRepo;
             var ratings = behaviouralRatingRepo.GetAll().Select(r => r.Name);
             headers.AddRange(ratings);
         }
@@ -484,7 +486,7 @@ namespace SchoolPortal.Services.Implementations
             return behaviouralResults;
         }
 
-        public async Task BatchCreateBehaviouralResults(IEnumerable<List<BehaviouralResult>> results, string session, long termId)
+        public async Task BatchCreateBehaviouralResults(IEnumerable<IEnumerable<BehaviouralResult>> results, string session, long termId)
         {
             if (!AppUtilities.ValidateSession(session))
             {
@@ -499,8 +501,9 @@ namespace SchoolPortal.Services.Implementations
 
             var _results = new List<BehaviouralResult>();
 
-            foreach (var r in results)
+            foreach (var _r in results)
             {
+                var r = _r.ToList();
                 r.ForEach(v =>
                 {
                     v.Session = session;
@@ -517,6 +520,11 @@ namespace SchoolPortal.Services.Implementations
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing behavioural result on excel");
                 }
                
+                if(!await endTermResultRepo.AnyAsync(er=> er.Exam.Session==session && er.Exam.TermId==termId && er.StudentId == student.Id))
+                {
+                    throw new AppException($"A student with admission number '{student.AdmissionNo}' have no end-term result for specified session and term");
+                }
+
                 if (await behaviouralResultRepo.AnyAsync(br => br.Session == session && br.TermId == termId && br.StudentId == student.Id))
                 {
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing behavioural result");

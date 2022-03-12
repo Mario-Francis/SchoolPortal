@@ -28,6 +28,11 @@ namespace SchoolPortal.Web.ViewModels
         public ItemVM Term { get; set; }
         public StudentVM Student { get; set; }
         public ItemVM BehaviouralRating { get; set; }
+        public string AdmissionNo { get; set; }
+        public string Class { get; set; }
+        public string StudentName { get; set; }
+        public string TermName { get; set; }
+        public string Rating { get; set; }
 
         public string FormattedCreatedDate
         {
@@ -61,21 +66,35 @@ namespace SchoolPortal.Web.ViewModels
 
         public static BehaviouralResultVM FromBehaviouralResult(BehaviouralResult result, int? clientTimeOffset = null)
         {
-            return result==null?null: new BehaviouralResultVM
+            if (result == null)
             {
-                Id = result.Id,
-                BehaviouralRatingId = result.BehaviouralRatingId,
-                Score = result.Score,
-                Session = result.Session,
-                TermId = result.TermId,
-                StudentId = result.StudentId,
-                Student = StudentVM.FromStudent(result.Student),
-                Term = new ItemVM { Id = result.Term.Id, Name = result.Term.Name },
-                BehaviouralRating = new ItemVM { Id = result.BehaviouralRating.Id, Name = result.BehaviouralRating.Name },
-                UpdatedBy = result.UpdatedBy,
-                CreatedDate = clientTimeOffset == null ? result.CreatedDate : result.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-                UpdatedDate = clientTimeOffset == null ? result.UpdatedDate : result.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value))
-            };
+                return null;
+            }
+            else
+            {
+                var student = StudentVM.FromStudent(result.Student);
+                return new BehaviouralResultVM
+                {
+                    Id = result.Id,
+                    BehaviouralRatingId = result.BehaviouralRatingId,
+                    Rating=result.BehaviouralRating.Name,
+                    Score = result.Score,
+                    Session = result.Session,
+                    TermId = result.TermId,
+                    StudentId = result.StudentId,
+                    Student = student,
+                    StudentName=student.FullName,
+                    AdmissionNo=student.AdmissionNo,
+                    Class=student.ClassRoom.Class+" "+ student.ClassRoom.RoomCode,
+                    Term = new ItemVM { Id = result.Term.Id, Name = result.Term.Name },
+                    TermName=result.Term.Name,
+                    BehaviouralRating = new ItemVM { Id = result.BehaviouralRating.Id, Name = result.BehaviouralRating.Name },
+                    UpdatedBy = result.UpdatedBy,
+                    CreatedDate = clientTimeOffset == null ? result.CreatedDate : result.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                    UpdatedDate = clientTimeOffset == null ? result.UpdatedDate : result.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value))
+                };
+            }
+           
         }
     }
 }

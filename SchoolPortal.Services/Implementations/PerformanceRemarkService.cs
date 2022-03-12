@@ -19,6 +19,8 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<Student> studentRepo;
         private readonly ILoggerService<PerformanceRemarkService> logger;
         private readonly IHttpContextAccessor accessor;
+        private readonly IRepository<MidTermResult> midTermResultRepo;
+        private readonly IRepository<EndTermResult> endTermResultRepo;
         private string[] headers = new string[] { "SN", "Student Admission No", "Teacher's Remark", "Head Teacher's Remark" };
 
         public PerformanceRemarkService(
@@ -26,13 +28,17 @@ namespace SchoolPortal.Services.Implementations
             IRepository<Exam> examRepo,
             IRepository<Student> studentRepo,
             ILoggerService<PerformanceRemarkService> logger,
-            IHttpContextAccessor accessor)
+            IHttpContextAccessor accessor,
+            IRepository<MidTermResult> midTermResultRepo,
+            IRepository<EndTermResult> endTermResultRepo)
         {
             this.remarkRepo = remarkRepo;
             this.examRepo = examRepo;
             this.studentRepo = studentRepo;
             this.logger = logger;
             this.accessor = accessor;
+            this.midTermResultRepo = midTermResultRepo;
+            this.endTermResultRepo = endTermResultRepo;
         }
 
         // add
@@ -261,6 +267,20 @@ namespace SchoolPortal.Services.Implementations
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing performance remark on excel");
                 }
 
+                if(await midTermResultRepo.AnyAsync(m=> m.ExamId == examId))
+                {
+                    if (!await midTermResultRepo.AnyAsync(mr => mr.ExamId == examId && mr.StudentId == student.Id))
+                    {
+                        throw new AppException($"A student with admission number '{student.AdmissionNo}' have no mid-term result for specified session and term");
+                    }
+                }
+                else if (await endTermResultRepo.AnyAsync(m => m.ExamId == examId))
+                {
+                    if (!await endTermResultRepo.AnyAsync(er => er.ExamId == examId && er.StudentId == student.Id))
+                    {
+                        throw new AppException($"A student with admission number '{student.AdmissionNo}' have no end-term result for specified session and term");
+                    }
+                }
 
                 if (await remarkRepo.AnyAsync(pr => pr.ExamId == examId && pr.StudentId == r.StudentId))
                 {
