@@ -185,7 +185,7 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                        + `<a class="dropdown-item" href="${$base}Students/${row.id}" rid="${row.id}">View Exam Details</a>`
+                        + `<a class="dropdown-item view-exam" href="javascript:void(0)" rid="${row.id}">View Exam Details</a>`
                         + `<div class="dropdown-divider"></div>`
                         + `<a class="dropdown-item edit" href="javascript:void(0)" rid="${row.id}">Edit</a>`
                         + `<a class="dropdown-item delete" href="javascript:void(0)" rid="${row.id}">Delete</a>`
@@ -300,7 +300,7 @@ $(() => {
         let rid = $(e.currentTarget).attr('rid');
         let loader = bootLoaderDialog('Fetching result...');
         try {
-            let result = await getRemark(rid);
+            let result = await getResult(rid);
             loader.hide();
 
             $('#e_examId').val(result.examId);
@@ -499,6 +499,29 @@ $(() => {
         }
     });
 
+    // edit
+    $(document).on('click', '.view-exam', async (e) => {
+        let rid = $(e.currentTarget).attr('rid');
+        let loader = bootLoaderDialog('Fetching exam details...');
+        try {
+            let result = await getResult(rid);
+            loader.hide();
+            $('#eType').html(result.exam.examType);
+            $('#eTerm').html(result.exam.term + ' Term');
+            $('#eSession').html(result.exam.session);
+            $('#eStartDate').html(result.exam.formattedStartDate);
+            $('#eEndDate').html(result.exam.formattedEndDate);
+
+            setTimeout(() => {
+                $('#examModal').modal({ backdrop: 'static', keyboard: false }, 'show');
+            }, 700);
+        } catch (ex) {
+            console.error(ex);
+            notify(ex.message, 'danger');
+            loader.hide();
+        }
+    });
+
 });
 
 async function updateSubjectdd(classdd) {
@@ -525,7 +548,7 @@ async function updateSubjectdd(classdd) {
     }
 }
 
-function getRemark(id) {
+function getResult(id) {
     var promise = new Promise((resolve, reject) => {
         try {
             if (id == undefined || id == '' || id == 0) {

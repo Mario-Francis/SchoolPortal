@@ -44,6 +44,7 @@ namespace SchoolPortal.Data
         public DbSet<ClassRoomTeacher> ClassRoomTeachers { get; set; }
         public DbSet<RoomCode> RoomCodes { get; set; }
         public DbSet<ExamType> ExamTypes { get; set; }
+        public DbSet<CourseWork> CourseWorks { get; set; }
 
         // Audit Table
         public DbSet<ActivityLog> ActivityLogs { get; set; }

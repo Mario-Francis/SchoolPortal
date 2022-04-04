@@ -30,28 +30,30 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<Term> termRepo;
         private readonly IEmailService emailService;
         private readonly IPasswordService passwordService;
-        private readonly ILogger<StudentService> logger;
+        private readonly ILoggerService<StudentService> logger;
         private readonly IHttpContextAccessor accessor;
         private readonly ITokenService tokenService;
         private readonly IMailService mailService;
-        private readonly AppSettings appSettings;
+        private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
+        private readonly IFileService fileService;
         private string[] headers = new string[] { "SN", "First Name", "Middle Name", "Surname", "Gender", "Date of Birth", "Email", "Phone Number", "Admission No", "Entry Class", "Entry Term", "Entry Session", "Enrollment Date", "Current Class", "Current Room Code" };
 
         public StudentService(IRepository<Student> studentRepo,
             IRepository<User> userRepo,
-             IRepository<StudentGuardian> guardianRepo,
+            IRepository<StudentGuardian> guardianRepo,
             IRepository<Relationship> relationshipRepo,
             IRepository<Class> classRepo,
             IRepository<ClassRoom> classRoomRepo,
-             IRepository<ClassRoomStudent> classRoomStudentRepo,
+            IRepository<ClassRoomStudent> classRoomStudentRepo,
             IRepository<Term> termRepo,
             IEmailService emailService,
             IPasswordService passwordService,
-            ILogger<StudentService> logger,
+            ILoggerService<StudentService> logger,
             IHttpContextAccessor accessor,
             ITokenService tokenService,
             IMailService mailService,
-            IOptions<AppSettings> appSettings)
+            IOptionsSnapshot<AppSettings> appSettingsDelegate,
+            IFileService fileService)
         {
             this.studentRepo = studentRepo;
             this.userRepo = userRepo;
@@ -67,7 +69,8 @@ namespace SchoolPortal.Services.Implementations
             this.accessor = accessor;
             this.tokenService = tokenService;
             this.mailService = mailService;
-            this.appSettings = appSettings.Value;
+            this.appSettingsDelegate = appSettingsDelegate;
+            this.fileService = fileService;
         }
 
         // create student
@@ -386,7 +389,7 @@ namespace SchoolPortal.Services.Implementations
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, ex.Message);
+                logger.LogException(ex);
                 throw new AppException($"Student cannot be deleted as student is still associated with one or more entities");
             }
         }
@@ -519,12 +522,82 @@ namespace SchoolPortal.Services.Implementations
             // log 
         }
 
+        public async Task<string> UploadPhoto(long studentId, IFormFile file)
+        {
+            var allowedExtensions = new string[] { ".jpeg", ".jpg", ".png" };
+            if (!fileService.ValidateFile(file, allowedExtensions, out List<string> errorItems, appSettingsDelegate.Value.MaxUploadSize))
+            {
+                throw new AppException($"File upload error", errorItems: errorItems);
+            }
+
+            var student = await studentRepo.GetById(studentId);
+            if (student == null)
+            {
+                throw new AppException($"Invalid student id");
+            }
+
+            var photoPath = fileService.SaveFile(file, "uploads/student_photos");
+            var currentStudent = accessor.HttpContext.GetUserSession();
+
+            var oldStudent = student.Clone<Student>();
+
+            student.PhotoPath = photoPath;
+            student.UpdatedBy = currentStudent.Username;
+            student.UpdatedDate = DateTimeOffset.Now;
+
+            await studentRepo.Update(student, false);
+            // log action
+            await logger.LogActivity(
+                ActivityActionType.UPDATED_STUDENT_PHOTO,
+                currentStudent.Username, studentRepo.TableName,
+                 oldStudent, student, $"Updated photo");
+
+            if (!string.IsNullOrEmpty(oldStudent.PhotoPath))
+            {
+                fileService.DeleteFile(oldStudent.PhotoPath);
+            }
+
+            // update student photo in current session
+            currentStudent.PhotoPath = photoPath;
+            accessor.HttpContext.SetUserSession(currentStudent);
+
+            return photoPath;
+        }
+
+        public async Task DeletePhoto(long studentId)
+        {
+            var student = await studentRepo.GetById(studentId);
+            if (student == null)
+            {
+                throw new AppException($"Invalid student id");
+            }
+
+            var currentStudent = accessor.HttpContext.GetUserSession();
+
+            var oldStudent = student.Clone<Student>();
+
+            student.PhotoPath = null;
+            student.UpdatedBy = currentStudent.Username;
+            student.UpdatedDate = DateTimeOffset.Now;
+
+            await studentRepo.Update(student, false);
+            // log action
+            await logger.LogActivity(
+                ActivityActionType.UPDATED_STUDENT_PHOTO,
+                currentStudent.Username, studentRepo.TableName,
+                 oldStudent, student, $"Deleted photo");
+
+
+            // update student photo in current session
+            currentStudent.PhotoPath = null;
+            accessor.HttpContext.SetUserSession(currentStudent);
+        }
         //=========== Batch Upload ===========
         public bool ValidateFile(IFormFile file, out List<string> errorItems)
         {
             bool isValid = true;
             List<string> errList = new List<string>();
-            var maxUploadSize = appSettings.MaxUploadSize;
+            var maxUploadSize = appSettingsDelegate.Value.MaxUploadSize;
             if (file == null)
             {
                 isValid = false;
@@ -956,7 +1029,7 @@ namespace SchoolPortal.Services.Implementations
 
         //=========== End Batch Upload =============
 
-        public IEnumerable<Student> SearchStudents(string searchParam, int max = 50)
+        public IEnumerable<Student> SearchStudents(string searchParam, long? classRoomId=null, int max = 50)
         {
             if (string.IsNullOrEmpty(searchParam))
             {
@@ -968,9 +1041,15 @@ namespace SchoolPortal.Services.Implementations
                 var students = studentRepo.GetWhere(u => u.IsActive && !u.IsGraduated &&
                 (u.Username.ToLower().Contains(searchParam) || u.Email.ToLower().Contains(searchParam)
                 || u.PhoneNumber.ToLower().Contains(searchParam) || u.FirstName.ToLower().Contains(searchParam)
-                || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam) 
-                || u.AdmissionNo.ToLower().Contains(searchParam))).Take(max);
+                || u.MiddleName.ToLower().Contains(searchParam) || u.Surname.ToLower().Contains(searchParam)
+                || u.AdmissionNo.ToLower().Contains(searchParam)));
 
+                if (classRoomId != null)
+                {
+                    students = students.Where(s => s.ClassRoomStudents.FirstOrDefault()?.ClassRoomId == classRoomId.Value);
+                }
+
+                  students=students.Take(max);
 
                 return students;
             }

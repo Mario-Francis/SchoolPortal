@@ -27,6 +27,8 @@ namespace SchoolPortal.Services
         Task ResetPassword(long userId);
         Task AddParentWard(long studentId, long parentId, long relationshipId);
         Task RemoveParentWard(long studentGuardianId);
+        Task<string> UploadPhoto(long userId, IFormFile file);
+        Task DeletePhoto(long userId);
 
         bool ValidateFile(IFormFile file, out List<string> errorItems);
         Task<IEnumerable<User>> ExtractData(IFormFile file);

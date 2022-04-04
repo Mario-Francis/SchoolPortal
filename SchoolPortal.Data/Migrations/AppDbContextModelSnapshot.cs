@@ -336,6 +336,9 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<int>("ClassGrade")
                         .HasColumnType("int");
 
+                    b.Property<long?>("ClassRoomId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("ClassTypeId")
                         .HasColumnType("bigint");
 
@@ -352,6 +355,8 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassRoomId");
 
                     b.HasIndex("ClassTypeId");
 
@@ -505,6 +510,53 @@ namespace SchoolPortal.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SchoolPortal.Core.Models.CourseWork", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("ClassRoomId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("From")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("To")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("WeekNo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassRoomId");
+
+                    b.ToTable("CourseWorks");
+                });
+
             modelBuilder.Entity("SchoolPortal.Core.Models.EndTermResult", b =>
                 {
                     b.Property<long>("Id")
@@ -519,7 +571,7 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("ClassWorkScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -531,7 +583,7 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("ExamScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<long>("StudentId")
                         .HasColumnType("bigint");
@@ -540,10 +592,10 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("TestScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -695,19 +747,19 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("EndHeight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<decimal?>("EndWeight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("Session")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("StartHeight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<decimal>("StartWeight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<long>("StudentId")
                         .HasColumnType("bigint");
@@ -783,7 +835,7 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("ClassWorkScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -795,7 +847,7 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("ExamScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<long>("StudentId")
                         .HasColumnType("bigint");
@@ -804,10 +856,10 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("TestScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -1522,6 +1574,10 @@ namespace SchoolPortal.Data.Migrations
 
             modelBuilder.Entity("SchoolPortal.Core.Models.Class", b =>
                 {
+                    b.HasOne("SchoolPortal.Core.Models.ClassRoom", null)
+                        .WithMany("CourseWorks")
+                        .HasForeignKey("ClassRoomId");
+
                     b.HasOne("SchoolPortal.Core.Models.ClassType", "ClassType")
                         .WithMany()
                         .HasForeignKey("ClassTypeId")
@@ -1564,6 +1620,15 @@ namespace SchoolPortal.Data.Migrations
                     b.HasOne("SchoolPortal.Core.Models.User", "Teacher")
                         .WithMany("ClassRoomTeachers")
                         .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.CourseWork", b =>
+                {
+                    b.HasOne("SchoolPortal.Core.Models.ClassRoom", "ClassRoom")
+                        .WithMany()
+                        .HasForeignKey("ClassRoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

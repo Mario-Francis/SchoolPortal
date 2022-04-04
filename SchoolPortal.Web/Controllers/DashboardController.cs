@@ -33,7 +33,6 @@ namespace SchoolPortal.Web.Controllers
         {
             return View("UserDashboard");
         }
-
         [NonAction]
         public IActionResult StudentDashboard()
         {

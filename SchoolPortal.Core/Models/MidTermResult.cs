@@ -13,9 +13,13 @@ namespace SchoolPortal.Core.Models
         public long ClassRoomId { get; set; }
         public long SubjectId { get; set; }
         public long StudentId { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal ClassWorkScore { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal TestScore { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal ExamScore { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal Total { get; set; }
 
         public string UpdatedBy { get; set; }

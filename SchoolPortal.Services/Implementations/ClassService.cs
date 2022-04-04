@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Services.Implementations
 {
-    public class ClassService:IClassService
+    public class ClassService : IClassService
     {
         private readonly IRepository<Class> classRepo;
         private readonly IRepository<ClassRoom> classRoomRepo;
@@ -38,7 +38,7 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException("Class object cannot be null");
             }
 
-            if(await classRepo.AnyAsync(c=>c.ClassTypeId == @class.ClassTypeId && c.ClassGrade == @class.ClassGrade))
+            if (await classRepo.AnyAsync(c => c.ClassTypeId == @class.ClassTypeId && c.ClassGrade == @class.ClassGrade))
             {
                 throw new AppException($"A class of same type and grade already exist");
             }
@@ -120,7 +120,7 @@ namespace SchoolPortal.Services.Implementations
 
         public IEnumerable<Class> GetClasses()
         {
-            return classRepo.GetAll().OrderBy(c => c.ClassTypeId).ThenBy(c=>c.ClassGrade);
+            return classRepo.GetAll().OrderBy(c => c.ClassTypeId).ThenBy(c => c.ClassGrade);
         }
 
         public async Task<Class> GetClass(long id)
@@ -167,19 +167,27 @@ namespace SchoolPortal.Services.Implementations
             }
             else
             {
-                if (classRoom.ClassRoomStudents.Count > 0)
+                if (classRoom.ClassRoomStudents.Count > 0 || classRoom.ClassRoomTeachers.Count > 0)
                 {
-                    throw new AppException("Classroom cannot be deleted as it still has one or more students in it");
+                    throw new AppException("Classroom cannot be deleted as there are still one or more entities attached to it");
                 }
                 else
                 {
-                    var _classRoom = classRoom.Clone<ClassRoom>();
-                    await classRoomRepo.Delete(classRoomId, true);
+                    try
+                    {
+                        var _classRoom = classRoom.Clone<ClassRoom>();
+                        await classRoomRepo.Delete(classRoomId, true);
 
-                    var currentUser = accessor.HttpContext.GetUserSession();
-                    // log activity
-                    //await loggerService.LogActivity(ActivityActionType.DELETED_ASSESSMENT, currentUser.PersonNumber,
-                    //    $"Deleted assessment of type '{((Core.AssessmentType)((int)_assessment.AssessmentTypeId)).ToString()}' for {_assessment.FromDate.ToString("dd-MM-yyyy")} to {_assessment.ToDate.ToString("dd-MM-yyyy")}");
+                        var currentUser = accessor.HttpContext.GetUserSession();
+                        // log activity
+                        //await loggerService.LogActivity(ActivityActionType.DELETED_ASSESSMENT, currentUser.PersonNumber,
+                        //    $"Deleted assessment of type '{((Core.AssessmentType)((int)_assessment.AssessmentTypeId)).ToString()}' for {_assessment.FromDate.ToString("dd-MM-yyyy")} to {_assessment.ToDate.ToString("dd-MM-yyyy")}");
+                    }
+                    catch(Exception ex)
+                    {
+                        logger.LogError(ex, ex.Message);
+                        throw new AppException("Classroom cannot be deleted as there are still one or more entities attached to it");
+                    }
                 }
             }
         }
@@ -205,7 +213,7 @@ namespace SchoolPortal.Services.Implementations
 
                 _classRoom.ClassId = classRoom.ClassId;
                 _classRoom.RoomCode = classRoom.RoomCode;
-               // _classRoom.IsActive = classRoom.IsActive;
+                // _classRoom.IsActive = classRoom.IsActive;
                 _classRoom.UpdatedBy = currentUser.Username;
                 _classRoom.UpdatedDate = DateTimeOffset.Now;
 
@@ -236,8 +244,8 @@ namespace SchoolPortal.Services.Implementations
                 var currentUser = accessor.HttpContext.GetUserSession();
                 var _oldclassRoom = _classRoom.Clone<ClassRoom>();
 
-               
-                 _classRoom.IsActive = isActive;
+
+                _classRoom.IsActive = isActive;
                 _classRoom.UpdatedBy = currentUser.Username;
                 _classRoom.UpdatedDate = DateTimeOffset.Now;
 
@@ -252,9 +260,9 @@ namespace SchoolPortal.Services.Implementations
             }
         }
 
-        public IEnumerable<ClassRoom> GetClassRooms(bool includeInactive=false)
-        {   
-            var classRooms =  classRoomRepo.GetAll();
+        public IEnumerable<ClassRoom> GetClassRooms(bool includeInactive = false)
+        {
+            var classRooms = classRoomRepo.GetAll();
             if (!includeInactive)
             {
                 classRooms = classRooms.Where(c => c.IsActive);

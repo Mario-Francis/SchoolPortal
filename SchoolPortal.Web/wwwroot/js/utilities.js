@@ -298,6 +298,63 @@ $(() => {
         });
     }
 
+    if ($('.week').Zebra_DatePicker) {
+
+        $('.week').Zebra_DatePicker({
+            direction: [moment().subtract(14, 'days').format('yyyy-MM-DD'), false],
+            disabled_dates: ['* * * 0,2-6'],
+            custom_classes: {
+                'dp_weekday': ['* * * 0-6']
+            },
+            default_position: 'below',
+            format: 'Y-m-d',
+            onSelect: function (formattedDate, defaultDate, dateObject) {
+                let to = $(`#${$(this).attr('to')}`);
+                let week = $(`#${$(this).attr('week')}`);
+                if (to) {
+                    to.val(moment(defaultDate).add(4, 'days').format('yyyy-MM-DD'));
+                }
+                if (week) {
+                    week.val(moment(defaultDate).format('w'));
+                }
+                $(this).trigger('change');
+            },
+            onClear: function () {
+                let to = $(`#${$(this).attr('to')}`);
+                let week = $(`#${$(this).attr('week')}`);
+                if (to) {
+                    to.val('');
+                }
+                if (week) {
+                    week.val('');
+                }
+                $(this).trigger('change');
+            }
+        });
+
+        $(document).on('mouseenter', '.dp_daypicker td.dp_weekday', e => {
+            let td = $(e.currentTarget);
+            if (!td.hasClass('dp_disabled')) {
+                let siblings = Array.from(td.siblings()).filter(e => !($(e).hasClass('dp_weekend')));
+                $(siblings).addClass('dp_hover');
+                $(siblings.slice(0,3)).css('border-radius', '0');
+                td.css('border-radius', '4px 0 0 4px');
+                $(siblings[3]).css('border-radius', '0 4px 4px 0');
+            }
+        });
+
+        $(document).on('mouseleave', '.dp_daypicker td.dp_weekday', e => {
+            let td = $(e.currentTarget);
+            if (!td.hasClass('dp_disabled')) {
+                let siblings = Array.from(td.siblings()).filter(e => !($(e).hasClass('dp_weekend')));
+                $(siblings).removeClass('dp_hover');
+                td.css('border-radius', '4px');
+                $(siblings).css('border-radius', '4px');
+            }
+        });
+
+    }
+
     // initiate popover
     $('[data-toggle="popover"]').popover();
 
@@ -404,16 +461,17 @@ $(() => {
     $('.custom_file .file').on('change', (e) => {
         let txtInput = $('#' + $(e.currentTarget).attr('file-text-id'));
         let fileInput = e.currentTarget;
+        let allowedExtensions = $(fileInput).attr('accept').split(',').map(e => e.trim());
         if (fileInput.files.length > 0) {
             var file = fileInput.files[0];
             $ext = file.name.split('.').pop().toLowerCase();
-            if (file.size > (50 * 1024 * 1024)) {
+            if (file.size > (maxUploadsize * 1024 * 1024)) {
                 notify('File too large! Size should not exceed 50MB', 'warning');
                 // set to default state
                 txtInput.val('').attr('title', '');
                 fileInput.files = null;
-            } else if ($ext != 'xls' && $ext != 'xlsx') {
-                notify('Invalid file selected! Supported file type includes .xls and .xlsx', 'warning');
+            } else if (!allowedExtensions.includes('.' + $ext)) {
+                notify(`Invalid file selected! Supported file type includes ${allowedExtensions.join(', ')}`, 'warning');
                 // set to default state
                 txtInput.val('');
                 fileInput.files = null;

@@ -510,11 +510,11 @@ namespace SchoolPortal.Web.Controllers
         }
 
         [HttpGet("[controller]/SearchStudents")]
-        public IActionResult SearchStudents([FromQuery] string query, [FromQuery] int max = 100)
+        public IActionResult SearchStudents([FromQuery] string query, [FromQuery] long? classRoomId, [FromQuery] int max = 100)
         {
             try
             {
-                var students = studentService.SearchStudents(query, max).Select(s => StudentItemVM.FromStudent(s));
+                var students = studentService.SearchStudents(query, classRoomId, max).Select(s => StudentItemVM.FromStudent(s));
                 return Ok(new { IsSuccess = true, Message = "Success", Data = students });
 
             }

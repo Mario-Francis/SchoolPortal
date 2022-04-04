@@ -20,14 +20,17 @@ namespace SchoolPortal.Web.Controllers
     public class AuthController : Controller
     {
         private readonly IUserService userMgr;
+        private readonly IStudentService studentService;
         private readonly ILogger<AuthController> logger;
         private readonly IHttpContextAccessor contextAccessor;
 
         public AuthController(IUserService userMgr, 
+            IStudentService studentService,
             ILogger<AuthController> logger,
             IHttpContextAccessor contextAccessor)
         {
             this.userMgr = userMgr;
+            this.studentService = studentService;
             this.logger = logger;
             this.contextAccessor = contextAccessor;
         }
@@ -105,6 +108,15 @@ namespace SchoolPortal.Web.Controllers
                     {
                         var isValid = await userMgr.IsUserAuthentic(new LoginCredential { Email = model.Username, Password = model.Password });
                         var user = await userMgr.GetUser(model.Username);
+                        if(model.Type == "parent" && !user.UserRoles.Any(ur=> ur.RoleId == (long)AppRoles.PARENT))
+                        {
+                            throw new AppException($"Invalid credentials");
+                        }
+                        if (model.Type == "staff" && !user.UserRoles.Any(ur => ur.RoleId == (long)AppRoles.ADMINISTRATOR || ur.RoleId == (long)AppRoles.HEAD_TEACHER || ur.RoleId == (long)AppRoles.TEACHER))
+                        {
+                            throw new AppException($"Invalid credentials");
+                        }
+
                         var sessionObject = SessionObject.FromUser(user);
 
                         ClaimsIdentity identity = new ClaimsIdentity(Constants.AUTH_COOKIE_ID);
@@ -127,7 +139,27 @@ namespace SchoolPortal.Web.Controllers
                     }
                     else if(model.Type == "student")
                     {
-                        throw new NotImplementedException();
+                        var isValid = await studentService.IsStudentAuthentic(new LoginCredential { Email = model.Username, Password = model.Password });
+                        var student = await studentService.GetStudent(model.Username);
+                        var sessionObject = SessionObject.FromStudent(student);
+
+                        ClaimsIdentity identity = new ClaimsIdentity(Constants.AUTH_COOKIE_ID);
+                        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, sessionObject.Username));
+                        identity.AddClaim(new Claim(ClaimTypes.Email, sessionObject.Email));
+                        identity.AddClaim(new Claim(ClaimTypes.Surname, sessionObject.Surname));
+                        identity.AddClaim(new Claim(ClaimTypes.GivenName, sessionObject.FirstName));
+                        identity.AddClaim(new Claim(ClaimTypes.Name, sessionObject.FullName));
+                        identity.AddClaim(new Claim(ClaimTypes.Sid, sessionObject.Id.ToString()));
+                        identity.AddClaim(new Claim(ClaimTypes.Actor, Constants.USER_TYPE_STUDENT));
+
+                        foreach (var r in sessionObject.Roles)
+                        {
+                            identity.AddClaim(new Claim(ClaimTypes.Role, r.Name));
+                        }
+                        var principal = new ClaimsPrincipal(identity);
+                        await contextAccessor.HttpContext.SignInAsync(Constants.AUTH_COOKIE_ID, principal);
+
+                        return Ok(new { IsSuccess = true, Message = "You were logged in successfully", ErrorItems = new string[] { } });
                     }
                     else
                     {

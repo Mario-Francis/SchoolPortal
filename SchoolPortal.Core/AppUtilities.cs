@@ -89,5 +89,35 @@ namespace SchoolPortal.Core
         {
             return Decimal.TryParse(value, out _);
         }
+
+
+        public static bool ValidateImage(IFormFile file, out List<string> errorItems, int maxUploadSize)
+        {
+            bool isValid = true;
+            List<string> errList = new List<string>();
+            if (file == null)
+            {
+                isValid = false;
+                errList.Add("No image uploaded.");
+            }
+            else
+            {
+                if (file.Length > (maxUploadSize * 1024 * 1024))
+                {
+                    isValid = false;
+                    errList.Add($"Max upload size exceeded. Max size is {maxUploadSize}MB");
+                }
+                var ext = Path.GetExtension(file.FileName);
+                if (ext != ".jpeg" && ext != ".jpg" && ext != ".png")
+                {
+                    isValid = false;
+                    errList.Add($"Invalid file format. Supported file formats include .jpeg, .jpg and .png");
+                }
+            }
+            errorItems = errList;
+            return isValid;
+        }
+
+
     }
 }

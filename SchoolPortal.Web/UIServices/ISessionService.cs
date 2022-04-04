@@ -6,6 +6,7 @@ namespace SchoolPortal.Web.UIServices
     public interface ISessionService
     {
         public string BaseUrl { get; }
+        public AppSettings AppSettings { get; }
         public string ControllerName { get; }
         public string ActionName { get; }
 

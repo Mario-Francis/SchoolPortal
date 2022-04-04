@@ -9,17 +9,25 @@ namespace SchoolPortal.Core.Models.Views
     {
         public long FirstMidTermResultId { get; set; }
         public long FirstEndTermResultId { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal FirstMidTermTotal { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal FirstEndTermTotal { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal FirstTermTotal { get; set; }
 
         public long SecondMidTermResultId { get; set; }
         public long SecondEndTermResultId { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal SecondMidTermTotal { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal SecondEndTermTotal { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal SecondTermTotal { get; set; }
 
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal TermTotal { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal AverageScore { get; set; }
 
         public long ExamId { get; set; }
@@ -28,10 +36,15 @@ namespace SchoolPortal.Core.Models.Views
         public long SubjectId { get; set; }
         public long StudentId { get; set; }
         public long MidTermResultId { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal MidTermTotal { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal ClassWorkScore { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal TestScore { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal ExamScore { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal Total { get; set; }
 
         public string StudentName { get; set; }

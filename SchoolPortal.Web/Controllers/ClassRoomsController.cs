@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
 using SchoolPortal.Core.DTOs;
+using SchoolPortal.Core.Extensions;
 using SchoolPortal.Services;
 using SchoolPortal.Web.ViewModels;
 using System;
@@ -14,21 +15,23 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Route("[controller]")]
     public class ClassRoomsController : Controller
     {
-        private readonly AppSettings appSettings;
+        private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly IClassService classService;
         private readonly IUserService userService;
         private readonly IStudentService studentService;
-        private readonly ILogger<ClassRoomsController> logger;
+        private readonly ILoggerService<ClassRoomsController> logger;
 
-        public ClassRoomsController(IOptions<AppSettings> appSettings,
+        public ClassRoomsController(
+            IOptionsSnapshot<AppSettings> appSettingsDelegate,
             IClassService classService,
             IUserService  userService,
             IStudentService studentService,
-            ILogger<ClassRoomsController> logger)
+            ILoggerService<ClassRoomsController> logger)
         {
-            this.appSettings = appSettings.Value;
+            this.appSettingsDelegate = appSettingsDelegate;
             this.classService = classService;
             this.userService = userService;
             this.studentService = studentService;
@@ -39,11 +42,11 @@ namespace SchoolPortal.Web.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("ClassRoomsDataTable")]
         public IActionResult ClassRoomsDataTable()
         {
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
-                appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+                appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
             var classRooms = classService.GetClassRooms(true).Select(c => ClassRoomVM.FromClassRoom(c, clientTimeOffset));
 
@@ -54,7 +57,7 @@ namespace SchoolPortal.Web.Controllers
             return Ok(parser.Parse());
         }
 
-        [HttpPost]
+        [HttpPost("AddClassRoom")]
         public async Task<IActionResult> AddClassRoom(ClassRoomVM classRoomVM)
         {
             try
@@ -77,20 +80,19 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (AppException ex)
             {
-                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails(), ErrorItems=ex.ErrorItems });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while creating a new classroom");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while creating a new classroom");
 
-                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
 
 
-        [HttpPost]
+        [HttpPost("UpdateClassRoom")]
         public async Task<IActionResult> UpdateClassRoom(ClassRoomVM classRoomVM)
         {
             try
@@ -117,19 +119,18 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (AppException ex)
             {
-                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails(), ErrorItems = ex.ErrorItems });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while updating a classroom");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while updating a classroom");
 
-                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
 
-        [HttpPost]
+        [HttpPost("UpdateClassRoomStatus/{id}")]
         public async Task<IActionResult> UpdateClassRoomStatus(long? id, bool isActive)
         {
             try
@@ -146,18 +147,18 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (AppException ex)
             {
-                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails(), ErrorItems = ex.ErrorItems });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while updating a classroom status");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while updating a classroom status");
 
-                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
 
+        [HttpGet("DeleteClassRoom/{id}")]
         public async Task<IActionResult> DeleteClassRoom(long? id)
         {
             try
@@ -174,18 +175,18 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (AppException ex)
             {
-                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails(), ErrorItems = ex.ErrorItems });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while deleting a classroom");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while deleting a classroom");
 
-                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail =ex.GetErrorDetails() });
             }
         }
 
+        [HttpGet("GetClassRoom/{id}")]
         public async Task<IActionResult> GetClassRoom(long? id)
         {
             try
@@ -202,19 +203,18 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (AppException ex)
             {
-                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails(), ErrorItems = ex.ErrorItems });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while fetching a classroom");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while fetching a classroom");
 
-                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
 
-        [HttpGet("[controller]/GetClassRooms/{classid}")]
+        [HttpGet("GetClassRooms/{classid}")]
         public IActionResult GetClassRooms(long? classid)
         {
             try
@@ -231,19 +231,18 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (AppException ex)
             {
-                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails(), ErrorItems = ex.ErrorItems });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while fetching a classroom");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while fetching a classroom");
 
-                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
         
-        [HttpGet("[controller]/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> ViewClassRoom(long? id)
         {
             try
@@ -264,15 +263,14 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error was encountered while fetching a classroom");
-                //await loggerService.LogException(ex);
-                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while fetching a classroom");
 
                 return StatusCode(500, ex.Message);
             }
         }
 
-        [HttpPost("[controller]/{id}/TeachersDataTable")]
+        [HttpPost("{id}/TeachersDataTable")]
         public async Task<IActionResult> ClassRoomTeachersDataTable(long? id)
         {
             if (id == null)
@@ -282,7 +280,7 @@ namespace SchoolPortal.Web.Controllers
             else
             {
                 var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
-             appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+             appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
                 var teachers = (await classService.GetClassRoom(id.Value)).ClassRoomTeachers.Select(t => UserVM.FromUser(t.Teacher, clientTimeOffset));
 
@@ -296,7 +294,7 @@ namespace SchoolPortal.Web.Controllers
           
         }
 
-        [HttpPost("[controller]/{id}/StudentsDataTable")]
+        [HttpPost("{id}/StudentsDataTable")]
         public async Task<IActionResult> ClassRoomStudentsDataTable(long? id)
         {
             if (id == null)
@@ -306,7 +304,7 @@ namespace SchoolPortal.Web.Controllers
             else
             {
                 var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
-             appSettings.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+             appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
                 var students = (await classService.GetClassRoom(id.Value)).ClassRoomStudents.Select(t => StudentVM.FromStudent(t.Student, clientTimeOffset));
 
@@ -319,5 +317,28 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        #region teachers
+
+        [HttpGet("/MyClassRoom")]
+        public async Task<IActionResult> MyClassRoom()
+        {
+            if (HttpContext.GetUserSession().HasClassRoom)
+            {
+                var classroom = await classService.GetClassRoom(HttpContext.GetUserSession().ClassRoomId);
+                var teachers = classroom.ClassRoomTeachers.Select(ct => UserVM.FromUser(ct.Teacher));
+                var subjects = classroom.Class.Subjects.Select(s => SubjectVM.FromSubject(s));
+
+                ViewData["teachers"] = teachers;
+                ViewData["subjects"] = subjects;
+                return View(ClassRoomVM.FromClassRoom(classroom));
+            }
+            else
+            {
+                return View(null);
+            }
+           
+        }
+
+        #endregion teachers
     }
 }

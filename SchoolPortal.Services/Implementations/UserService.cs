@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using ExcelDataReader;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,11 +28,12 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<UserRole> userRoleRepo;
         private readonly IEmailService emailService;
         private readonly IPasswordService passwordService;
-        private readonly ILogger<UserService> logger;
+        private readonly ILoggerService<UserService> logger;
         private readonly IHttpContextAccessor accessor;
         private readonly ITokenService tokenService;
         private readonly IMailService mailService;
-        private readonly AppSettings appSettings;
+        private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
+        private readonly IFileService fileService;
         private string[] headers = new string[] { "SN", "First Name", "Middle Name", "Surname", "Gender", "Date of Birth", "Email", "Phone Number" };
 
         public UserService(
@@ -43,11 +45,12 @@ namespace SchoolPortal.Services.Implementations
             IRepository<UserRole> userRoleRepo,
             IEmailService emailService,
             IPasswordService passwordService,
-            ILogger<UserService> logger,
+            ILoggerService<UserService> logger,
             IHttpContextAccessor accessor,
             ITokenService tokenService,
             IMailService mailService,
-            IOptions<AppSettings> appSettings)
+            IOptionsSnapshot<AppSettings> appSettingsDelegate,
+            IFileService fileService)
         {
             this.userRepo = userRepo;
             this.guardianRepo = guardianRepo;
@@ -61,7 +64,8 @@ namespace SchoolPortal.Services.Implementations
             this.accessor = accessor;
             this.tokenService = tokenService;
             this.mailService = mailService;
-            this.appSettings = appSettings.Value;
+            this.appSettingsDelegate = appSettingsDelegate;
+            this.fileService = fileService;
         }
 
         // Initial sysadmin user setup
@@ -235,10 +239,10 @@ namespace SchoolPortal.Services.Implementations
 
             await userRepo.Update(_user, true);
             // log action
-            //await loggerService.LogActivity(
-            //    $"Updated user",
-            //    ActivityType.UPDATE_USER,
-            //    currentUser.UserId, userRepository.TableName, oldUser, user);
+            await logger.LogActivity(
+                ActivityActionType.UPDATED_USER,
+                currentUser.Username, userRepo.TableName,
+                 oldUser, user, $"Updated user");
         }
 
         // update password
@@ -400,7 +404,7 @@ namespace SchoolPortal.Services.Implementations
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, ex.Message);
+                logger.LogException(ex);
                 throw new AppException($"User cannot be deleted as user is still associated with one or more entities");
             }
         }
@@ -586,12 +590,85 @@ namespace SchoolPortal.Services.Implementations
             // log 
         }
 
+        public async Task<string> UploadPhoto(long userId, IFormFile file)
+        {
+            var allowedExtensions = new string[] { ".jpeg", ".jpg", ".png" };
+            if(!fileService.ValidateFile(file, allowedExtensions, out List<string> errorItems, appSettingsDelegate.Value.MaxUploadSize))
+            {
+                throw new AppException($"File upload error", errorItems: errorItems);
+            }
+
+            var user = await userRepo.GetById(userId);
+            if (user == null)
+            {
+                throw new AppException($"Invalid user id");
+            }
+
+            var photoPath = fileService.SaveFile(file, "uploads/user_photos");
+            var currentUser = accessor.HttpContext.GetUserSession();
+
+            var oldUser = user.Clone<User>();
+
+            user.PhotoPath = photoPath;
+            user.UpdatedBy = currentUser.Username;
+            user.UpdatedDate = DateTimeOffset.Now;
+
+            await userRepo.Update(user, false);
+            // log action
+            await logger.LogActivity(
+                ActivityActionType.UPDATED_USER_PHOTO,
+                currentUser.Username, userRepo.TableName,
+                 oldUser, user, $"Updated photo");
+
+            if (!string.IsNullOrEmpty(oldUser.PhotoPath))
+            {
+                fileService.DeleteFile(oldUser.PhotoPath);
+            }
+
+            // update user photo in current session
+            currentUser.PhotoPath = photoPath;
+            accessor.HttpContext.SetUserSession(currentUser);
+
+            return photoPath;
+        }
+
+        public async Task DeletePhoto(long userId)
+        {  
+            var user = await userRepo.GetById(userId);
+            if (user == null)
+            {
+                throw new AppException($"Invalid user id");
+            }
+
+            var currentUser = accessor.HttpContext.GetUserSession();
+
+            var oldUser = user.Clone<User>();
+
+            user.PhotoPath = null;
+            user.UpdatedBy = currentUser.Username;
+            user.UpdatedDate = DateTimeOffset.Now;
+
+            await userRepo.Update(user, false);
+            // log action
+            await logger.LogActivity(
+                ActivityActionType.UPDATED_USER_PHOTO,
+                currentUser.Username, userRepo.TableName,
+                 oldUser, user, $"Deleted photo");
+
+
+            // update user photo in current session
+            currentUser.PhotoPath = null;
+            accessor.HttpContext.SetUserSession(currentUser);
+        }
+
+
+
         //=========== Batch Upload ===========
         public bool ValidateFile(IFormFile file, out List<string> errorItems)
         {
             bool isValid = true;
             List<string> errList = new List<string>();
-            var maxUploadSize = appSettings.MaxUploadSize;
+            var maxUploadSize = appSettingsDelegate.Value.MaxUploadSize;
             if (file == null)
             {
                 isValid = false;

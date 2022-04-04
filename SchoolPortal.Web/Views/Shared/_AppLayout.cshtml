@@ -51,10 +51,10 @@
                 <div class="header-logo">
                     <a href="index.html">
                         <div class="d-flex flex-row pl-3 p-md-0">
-                            <div><img src="~/img/caleb_logo.png" class="img-fluid" style="max-width: 46px;" alt="logo"></div>
+                            <div><img src="~/img/caleb_logo2.png" class="img-fluid" style="max-width: 46px;" alt="logo"></div>
                             <div class="flex-fill title-div">
-                                <h3 class="mb-0 mt-1 font-weight-bold text-center">CALEB</h3>
-                                <h6 class="mb-0 mt-n2 text-center">INTERNATIONAL SCHOOL</h6>
+                                <h3 class="mb-0 font-weight-bold text-center">CALEB</h3>
+                                <h6 class="mb-0 mt-n1 text-center">INTERNATIONAL SCHOOL, MAGODO</h6>
                             </div>
                         </div>
 
@@ -83,10 +83,10 @@
                     <li class="navbar-item">
                         <a href="index.html">
                             <div class="d-flex flex-row">
-                                <div><img src="~/img/caleb_logo.png" class="img-fluid" style="max-width: 46px;" alt="logo"></div>
+                                <div><img src="~/img/caleb_logo2.png" class="img-fluid" style="max-width: 46px;" alt="logo"></div>
                                 <div class="flex-fill title-div">
-                                    <h3 class="mb-0 mt-1 font-weight-bold text-center">CALEB</h3>
-                                    <h6 class="mb-0 mt-n2 text-center">INTERNATIONAL SCHOOL</h6>
+                                    <h3 class="mb-0 font-weight-bold text-center">CALEB</h3>
+                                    <h6 class="mb-0 mt-n1 text-center">INTERNATIONAL SCHOOL, MAGODO</h6>
                                 </div>
                             </div>
                         </a>
@@ -114,18 +114,25 @@
                             </div>
                             <div class="admin-img">
                                 @*<img src="~/img/admin_avatar2.png" style="width:40px;" alt="Admin">*@
-                                <div class="rounded-circle bg-claret font-weight-bold initial-box">
+                                <div class="rounded-circle bg-claret font-weight-bold initial-box" @(service.UserSession.PhotoPath == null?"style=padding-top:7px;":"")>
+                                    @if (service.UserSession.PhotoPath != null)
+                                    {
+                                        <img class="img-fluid img-thumbnail" id="navImage" src="@($"{service.BaseUrl+service.UserSession.PhotoPath}")" />
+                                    }
+                                    else
+                                    {
                                     <p class="text-center text-white m-0">@service.Initial</p>
+                                    }
                                 </div>
                             </div>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <div class="item-header">
-                                <h6 class="item-title">Steven Zone</h6>
+                            <div class="item-header bg-claret">
+                                <h6 class="item-title">@service.UserSession.FirstName's Zone</h6>
                             </div>
                             <div class="item-content">
                                 <ul class="settings-list">
-                                    <li><a href="#"><i class="flaticon-user"></i>My Profile</a></li>
+                                    <li><a asp-controller="Profile" asp-action="Index"><i class="flaticon-user"></i>My Profile</a></li>
                                     <li><a href="#"><i class="flaticon-list"></i>Task</a></li>
                                     <li><a href="#"><i class="flaticon-chat-comment-oval-speech-bubble-with-text-lines"></i>Message</a></li>
                                     <li><a href="#"><i class="flaticon-gear-loading"></i>Account Settings</a></li>
@@ -298,26 +305,26 @@
                             </a>
                         </li>
                         @*<li class="nav-item sidebar-nav-item">
-                                <a href="#" class="nav-link"><i class="flaticon-dashboard"></i><span>Dashboard</span></a>
-                                <ul class="nav sub-group-menu">
-                                    <li class="nav-item">
-                                        <a href="index.html" class="nav-link"><i class="fas fa-angle-right"></i>Admin</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="index3.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Students
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="index4.html" class="nav-link"><i class="fas fa-angle-right"></i>Parents</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="index5.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Teachers
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
+            <a href="#" class="nav-link"><i class="flaticon-dashboard"></i><span>Dashboard</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link"><i class="fas fa-angle-right"></i>Admin</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index3.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="index4.html" class="nav-link"><i class="fas fa-angle-right"></i>Parents</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index5.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Teachers
+                    </a>
+                </li>
+            </ul>
+        </li>*@
                         <li class="nav-item sidebar-nav-item">
                             <a href="#" class="nav-link"><i class="flaticon-classmates"></i><span>Students</span></a>
                             <ul class="nav sub-group-menu">
@@ -338,77 +345,77 @@
                                     </a>
                                 </li>
                                 @*<li class="nav-item">
-                                        <a href="student-promotion.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Student Promotion
-                                        </a>
-                                    </li>*@
+                    <a href="student-promotion.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Student Promotion
+                    </a>
+                </li>*@
                             </ul>
                         </li>
                         @*<li class="nav-item">
-                            <a asp-controller="Users" asp-action="Index" asp-route-tab="all" class="nav-link">
-                                <i class="flaticon-multiple-users-silhouette"></i><span>Users</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-controller="Users" asp-action="Index" asp-route-tab="teachers" class="nav-link">
-                                <i class="flaticon-multiple-users-silhouette"></i><span>Teachers</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-controller="Users" asp-action="Index" asp-route-tab="parents" class="nav-link">
-                                <i class="flaticon-couple"></i><span>Parents</span>
-                            </a>
-                        </li>*@
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="all" class="nav-link">
+                <i class="flaticon-multiple-users-silhouette"></i><span>Users</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="teachers" class="nav-link">
+                <i class="flaticon-multiple-users-silhouette"></i><span>Teachers</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="parents" class="nav-link">
+                <i class="flaticon-couple"></i><span>Parents</span>
+            </a>
+        </li>*@
                         <li class="nav-item sidebar-nav-item">
                             <a href="#" class="nav-link">
                                 <i class="flaticon-multiple-users-silhouette"></i><span>Users</span>
                             </a>
                             <ul class="nav sub-group-menu">
                                 <li class="nav-item">
-                                    <a  asp-controller="Users" asp-action="Index" asp-route-tab="all" class="nav-link">
+                                    <a asp-controller="Users" asp-action="Index" asp-route-tab="all" class="nav-link">
                                         <i class="fas fa-angle-right"></i>All
                                         Users
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a  asp-controller="Users" asp-action="Index" asp-route-tab="admins" class="nav-link">
+                                    <a asp-controller="Users" asp-action="Index" asp-route-tab="admins" class="nav-link">
                                         <i class="fas fa-angle-right"></i>Administrators
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a  asp-controller="Users" asp-action="Index" asp-route-tab="teachers" class="nav-link">
+                                    <a asp-controller="Users" asp-action="Index" asp-route-tab="teachers" class="nav-link">
                                         <i class="fas fa-angle-right"></i>Teachers
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a  asp-controller="Users" asp-action="Index" asp-route-tab="parents" class="nav-link">
+                                    <a asp-controller="Users" asp-action="Index" asp-route-tab="parents" class="nav-link">
                                         <i class="fas fa-angle-right"></i>Parents
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         @*<li class="nav-item sidebar-nav-item">
-                                <a href="#" class="nav-link"><i class="flaticon-couple"></i><span>Parents</span></a>
-                                <ul class="nav sub-group-menu">
-                                    <li class="nav-item">
-                                        <a href="all-parents.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>All
-                                            Parents
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="parents-details.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Parents Details
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="add-parents.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Add
-                                            Parent
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
+            <a href="#" class="nav-link"><i class="flaticon-couple"></i><span>Parents</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="all-parents.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>All
+                        Parents
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="parents-details.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Parents Details
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-parents.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Add
+                        Parent
+                    </a>
+                </li>
+            </ul>
+        </li>*@
                         <li class="nav-item sidebar-nav-item">
                             <a href="#" class="nav-link disabled"><i class="flaticon-books"></i><span>Library</span></a>
                             <ul class="nav sub-group-menu">
@@ -427,27 +434,27 @@
                             </ul>
                         </li>
                         @*<li class="nav-item sidebar-nav-item">
-                                <a href="#" class="nav-link"><i class="flaticon-technological"></i><span>Acconunt</span></a>
-                                <ul class="nav sub-group-menu">
-                                    <li class="nav-item">
-                                        <a href="all-fees.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>All Fees
-                                            Collection
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="all-expense.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Expenses
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="add-expense.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Add
-                                            Expenses
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
+            <a href="#" class="nav-link"><i class="flaticon-technological"></i><span>Acconunt</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="all-fees.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>All Fees
+                        Collection
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="all-expense.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Expenses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-expense.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Add
+                        Expenses
+                    </a>
+                </li>
+            </ul>
+        </li>*@
                         <li class="nav-item sidebar-nav-item">
                             <a href="#" class="nav-link">
                                 <i class="flaticon-maths-class-materials-cross-of-a-pencil-and-a-ruler"></i><span>Classes</span>
@@ -471,14 +478,19 @@
                                 <i class="flaticon-open-book"></i><span>Subject</span>
                             </a>
                         </li>
-                        @*<li class="nav-item">
-                            <a href="class-routine.html" class="nav-link disabled">
-                                <i class="flaticon-calendar"></i><span>
-                                    Class
-                                    Routine
-                                </span>
+                        <li class="nav-item">
+                            <a asp-controller="CourseWorks" asp-action="" class="nav-link">
+                                <i class="fa fa-book-open"></i><span>Course Works</span>
                             </a>
-                        </li>*@
+                        </li>
+                        @*<li class="nav-item">
+            <a href="class-routine.html" class="nav-link disabled">
+                <i class="flaticon-calendar"></i><span>
+                    Class
+                    Routine
+                </span>
+            </a>
+        </li>*@
                         <li class="nav-item">
                             <a href="student-attendence.html" class="nav-link disabled">
                                 <i class="flaticon-checklist"></i><span>Attendence</span>
@@ -539,43 +551,43 @@
                             </a>
                         </li>
                         @*<li class="nav-item sidebar-nav-item">
-                                <a href="#" class="nav-link"><i class="flaticon-menu-1"></i><span>UI Elements</span></a>
-                                <ul class="nav sub-group-menu">
-                                    <li class="nav-item">
-                                        <a href="notification-alart.html" class="nav-link"><i class="fas fa-angle-right"></i>Alart</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="button.html" class="nav-link"><i class="fas fa-angle-right"></i>Button</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="grid.html" class="nav-link"><i class="fas fa-angle-right"></i>Grid</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="modal.html" class="nav-link"><i class="fas fa-angle-right"></i>Modal</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="progress-bar.html" class="nav-link"><i class="fas fa-angle-right"></i>Progress Bar</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="ui-tab.html" class="nav-link"><i class="fas fa-angle-right"></i>Tab</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="ui-widget.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Widget
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
+            <a href="#" class="nav-link"><i class="flaticon-menu-1"></i><span>UI Elements</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="notification-alart.html" class="nav-link"><i class="fas fa-angle-right"></i>Alart</a>
+                </li>
+                <li class="nav-item">
+                    <a href="button.html" class="nav-link"><i class="fas fa-angle-right"></i>Button</a>
+                </li>
+                <li class="nav-item">
+                    <a href="grid.html" class="nav-link"><i class="fas fa-angle-right"></i>Grid</a>
+                </li>
+                <li class="nav-item">
+                    <a href="modal.html" class="nav-link"><i class="fas fa-angle-right"></i>Modal</a>
+                </li>
+                <li class="nav-item">
+                    <a href="progress-bar.html" class="nav-link"><i class="fas fa-angle-right"></i>Progress Bar</a>
+                </li>
+                <li class="nav-item">
+                    <a href="ui-tab.html" class="nav-link"><i class="fas fa-angle-right"></i>Tab</a>
+                </li>
+                <li class="nav-item">
+                    <a href="ui-widget.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Widget
+                    </a>
+                </li>
+            </ul>
+        </li>*@
                         @*<li class="nav-item">
-                                <a href="map.html" class="nav-link">
-                                    <i class="flaticon-planet-earth"></i><span>Map</span>
-                                </a>
-                            </li>*@
+            <a href="map.html" class="nav-link">
+                <i class="flaticon-planet-earth"></i><span>Map</span>
+            </a>
+        </li>*@
                         @*<li class="nav-item">
-                                <a href="account-settings.html" class="nav-link">
-                                    <i class="flaticon-settings"></i><span>Account</span>
-                                </a>
-                            </li>*@
+            <a href="account-settings.html" class="nav-link">
+                <i class="flaticon-settings"></i><span>Account</span>
+            </a>
+        </li>*@
                     </ul>
                 </div>
                 <div class="nav-pad"></div>
@@ -630,7 +642,9 @@
     <script src="~/lib/Chart.js/chart.js"></script>
     <script src="~/lib/simplebar/dist/simplebar.js"></script>
     <!-- Custom Js -->
-
+    <script>
+        const maxUploadsize = @service.AppSettings.MaxUploadSize;
+    </script>
     <script src="~/lib/bootstrap-notify/bootstrap-notify.js"></script>
     <script src="~/lib/sweetalert2/dist/sweetalert2.all.js"></script>
     <script src="~/lib/bootbox.js/bootbox.js"></script>

@@ -23,10 +23,14 @@ namespace SchoolPortal.Services
         Task UpdateStudentGraduationStatus(long studentId, bool isGraduated);
         Task AddStudentGuardian(long studentId, long parentId, long relationshipId);
         Task RemoveStudentGuardian(long studentGuardianId);
+        Task<string> UploadPhoto(long studentId, IFormFile file);
+        Task DeletePhoto(long studentId);
+
+
         bool ValidateFile(IFormFile file, out List<string> errorItems);
         Task<IEnumerable<Student>> ExtractData(IFormFile file);
         Task BatchCreateStudent(IEnumerable<Student> students);
         byte[] ExportStudentsToExcel(int id);
-        IEnumerable<Student> SearchStudents(string searchParam, int max = 50);
+        IEnumerable<Student> SearchStudents(string searchParam, long? classRoomId = null, int max = 50);
     }
 }

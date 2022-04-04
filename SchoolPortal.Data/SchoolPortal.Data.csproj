@@ -31,6 +31,8 @@
     <Compile Remove="Migrations\20211211121327_Added_ClassId_And_ClassRoomId_To_Result_Tables.Designer.cs" />
     <Compile Remove="Migrations\20211212210102_Created_View_For_MidTermResults.cs" />
     <Compile Remove="Migrations\20211212210102_Created_View_For_MidTermResults.Designer.cs" />
+    <Compile Remove="Migrations\20220402132404_check.cs" />
+    <Compile Remove="Migrations\20220402132404_check.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Audit.EntityFramework.Core.v3" Version="18.1.6" />

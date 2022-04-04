@@ -20,14 +20,17 @@ namespace SchoolPortal.Web.Controllers
     {
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly IResultService resultService;
+        private readonly IClassService classService;
         private readonly ILoggerService<ResultsController> logger;
 
         public ResultsController(IOptionsSnapshot<AppSettings> appSettingsDelegate,
             IResultService resultService,
+            IClassService classService,
             ILoggerService<ResultsController> logger)
         {
             this.appSettingsDelegate = appSettingsDelegate;
             this.resultService = resultService;
+            this.classService = classService;
             this.logger = logger;
         }
 
@@ -221,6 +224,41 @@ namespace SchoolPortal.Web.Controllers
 
         #endregion Mid-term results
 
+        #region classroom mid-term results
+        [HttpGet("[controller]/midterm/ClassRoomResults/{classRoomId}")]
+        public async Task<IActionResult> ClassRoomMidTermResults(long classRoomId)
+        {
+            var classRoom = await classService.GetClassRoom(classRoomId);
+            if (classRoom == null)
+            {
+                return NotFound();
+            }
+
+            var subjects = classRoom.Class.Subjects.Select(s => SubjectVM.FromSubject(s));
+            var students = classRoom.ClassRoomStudents.Select(s => StudentVM.FromStudent(s.Student));
+            ViewData["subjects"] = subjects;
+            ViewData["students"] = students;
+
+            return View(ClassRoomVM.FromClassRoom(classRoom));
+        }
+
+        [HttpPost("[controller]/midterm/ClassRoomResultsDataTable/{classRoomId}")]
+        public IActionResult ClassRoomMidTermResultsDataTable(long classRoomId)
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var results = resultService.GetMidTermResultViewObjects().Where(r=> r.ClassRoomId==classRoomId).Select(r => MidTermResultViewObjectVM.FromMidTermResultViewObject(r, clientTimeOffset));
+
+            var parser = new Parser<MidTermResultViewObjectVM>(Request.Form, results.AsQueryable())
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        #endregion classroom mid-term results
+
 
         #region End-term results
 
@@ -408,5 +446,39 @@ namespace SchoolPortal.Web.Controllers
 
         #endregion End-term results
 
+
+        #region classroom end-term results
+        [HttpGet("[controller]/endterm/ClassRoomResults/{classRoomId}")]
+        public async Task<IActionResult> ClassRoomEndTermResults(long classRoomId)
+        {
+            var classRoom = await classService.GetClassRoom(classRoomId);
+            if (classRoom == null)
+            {
+                return NotFound();
+            }
+
+            var subjects = classRoom.Class.Subjects.Select(s => SubjectVM.FromSubject(s));
+            var students = classRoom.ClassRoomStudents.Select(s => StudentVM.FromStudent(s.Student));
+            ViewData["subjects"] = subjects;
+            ViewData["students"] = students;
+
+            return View(ClassRoomVM.FromClassRoom(classRoom));
+        }
+
+        [HttpPost("[controller]/endterm/ClassRoomResultsDataTable/{classRoomId}")]
+        public IActionResult ClassRoomEndTermResultsDataTable(long classRoomId)
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var results = resultService.GetEndTermResultViewObjects().Where(r=>r.ClassRoomId == classRoomId).Select(r => EndTermResultViewObjectVM.FromEndTermResultViewObject(r, clientTimeOffset));
+
+            var parser = new Parser<EndTermResultViewObjectVM>(Request.Form, results.AsQueryable())
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+        #endregion classroom end-term results
     }
 }

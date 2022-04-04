@@ -185,6 +185,10 @@
         "choices.js",
         "choices.css"
       ]
+    },
+    {
+      "library": "cropperjs@1.5.12",
+      "destination": "wwwroot/lib/cropperjs/"
     }
   ]
 }

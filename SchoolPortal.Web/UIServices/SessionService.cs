@@ -13,12 +13,12 @@ namespace SchoolPortal.Web.UIServices
     public class SessionService:ISessionService
     {
         private readonly IHttpContextAccessor accessor;
-        private readonly AppSettings appSettings;
+        private readonly IOptionsSnapshot<AppSettings> appSettingsDelegete;
 
-        public SessionService(IHttpContextAccessor accessor, IOptions<AppSettings> appSettings)
+        public SessionService(IHttpContextAccessor accessor, IOptionsSnapshot<AppSettings> appSettingsDelegete)
         {
             this.accessor = accessor;
-            this.appSettings = appSettings.Value;
+            this.appSettingsDelegete = appSettingsDelegete;
         }
 
         public string BaseUrl
@@ -26,6 +26,14 @@ namespace SchoolPortal.Web.UIServices
             get
             {
                 return $"{accessor.HttpContext.Request.Scheme}://{accessor.HttpContext.Request.Host}{accessor.HttpContext.Request.PathBase}/";
+            }
+        }
+
+        public AppSettings AppSettings
+        {
+            get
+            {
+                return this.appSettingsDelegete.Value;
             }
         }
         public string ControllerName
@@ -188,7 +196,7 @@ namespace SchoolPortal.Web.UIServices
 
         public DateTimeOffset ConverDatetToClientTimeZone(DateTimeOffset date)
         {
-            int defaultOffset = appSettings.DefaultTimeZoneOffset;
+            int defaultOffset = appSettingsDelegete.Value.DefaultTimeZoneOffset;
             var val = accessor.HttpContext.Request.Cookies["clientTimeZoneOffset"];
             int offsetInMminutes = string.IsNullOrEmpty(val) ? defaultOffset : Convert.ToInt32(val);
             return date.ToOffset(new TimeSpan(0, offsetInMminutes, 0));

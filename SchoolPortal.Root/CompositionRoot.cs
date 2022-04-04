@@ -45,6 +45,8 @@ namespace SchoolPortal.Root
             services.AddScoped<IBehaviouralRatingService, BehaviouralRatingService>();
             services.AddScoped<IPerformanceRemarkService, PerformanceRemarkService>();
             services.AddScoped<IHealthRecordService, HealthRecordService>();
+            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<ICourseWorkService, CourseWorkService>();
 
 
 

@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="UIServices\" />
+    <Folder Include="wwwroot\uploads\course_works\" />
   </ItemGroup>
 
 </Project>

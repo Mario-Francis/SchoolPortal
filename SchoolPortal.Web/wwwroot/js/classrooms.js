@@ -282,7 +282,9 @@ $(() => {
                     } catch (ex) {
                         loader.hide();
                         console.error(ex);
-                        notify(ex + '.', 'danger');
+                        if (typeof (ex) == 'string') {
+                            notify(ex + '.', 'danger');
+                        }
                     }
                 }
             }
@@ -306,7 +308,9 @@ $(() => {
                     } catch (ex) {
                         loader.hide();
                         console.error(ex);
-                        notify(ex + '.', 'danger');
+                        if (typeof (ex) == 'string') {
+                            notify(ex + '.', 'danger');
+                        }
                     }
                 }
             }
@@ -330,7 +334,9 @@ $(() => {
                     } catch (ex) {
                         loader.hide();
                         console.error(ex);
-                        notify(ex + '.', 'danger');
+                        if (typeof (ex) == 'string') {
+                            notify(ex + '.', 'danger');
+                        }
                     }
                 }
             }
@@ -360,6 +366,7 @@ function getClassRoom(id) {
                     },
                     error: (req, status, err) => {
                         ajaxErrorHandler(req, status, err, {});
+                        reject(null);
                     }
                 });
             }
@@ -392,6 +399,7 @@ function deleteClassRoom(id) {
                     },
                     error: (req, status, err) => {
                         ajaxErrorHandler(req, status, err, {});
+                        reject(null);
                     }
                 });
             }
@@ -424,6 +432,7 @@ function updateClassRoomStatus(id, isActive=true) {
                     },
                     error: (req, status, err) => {
                         ajaxErrorHandler(req, status, err, {});
+                        reject(null);
                     }
                 });
             }

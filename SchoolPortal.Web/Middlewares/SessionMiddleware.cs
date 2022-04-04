@@ -27,17 +27,17 @@ namespace SchoolPortal.Web.Middlewares
             _appSettings = appSettings.Value;
         }
 
-        public async Task Invoke(HttpContext context, IUserService userService, ILogger<SessionMiddleware> logger)
+        public async Task Invoke(HttpContext context, IUserService userService, IStudentService studentService, ILogger<SessionMiddleware> logger)
         {
             if(context.User.Identity.IsAuthenticated)
             {
-                await AttachUserToContext(context, userService, logger);
+                await AttachUserToContext(context, userService, studentService, logger);
             }
            
             await _next(context);
         }
 
-        private async Task AttachUserToContext(HttpContext context, IUserService userService, ILogger<SessionMiddleware> logger)
+        private async Task AttachUserToContext(HttpContext context, IUserService userService, IStudentService studentService, ILogger<SessionMiddleware> logger)
         {
             try
             {
@@ -56,7 +56,9 @@ namespace SchoolPortal.Web.Middlewares
                     }
                     else if (type == Constants.USER_TYPE_STUDENT)
                     {
-
+                        var student = await studentService.GetStudent(Convert.ToInt64(id));
+                        sessionObject = SessionObject.FromStudent(student);
+                        context.SetUserSession(sessionObject);
                     }
                 }
             }

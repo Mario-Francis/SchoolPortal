@@ -177,7 +177,7 @@ $(() => {
         let rid = $(e.currentTarget).attr('rid');
         let loader = bootLoaderDialog('Fetching health record...');
         try {
-            let record = await getRemark(rid);
+            let record = await getRecord(rid);
             loader.hide();
 
             $('#startHeight').val(record.startHeight);
@@ -342,7 +342,7 @@ $(() => {
 });
 
 
-function getRemark(id) {
+function getRecord(id) {
     var promise = new Promise((resolve, reject) => {
         try {
             if (id == undefined || id == '' || id == 0) {

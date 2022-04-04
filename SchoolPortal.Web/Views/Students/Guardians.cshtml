@@ -3,6 +3,7 @@
 @{
     var name = Model.FullName;
     ViewData["Title"] = $"{name}'s Guardians";
+    var isAdminOrHeadTeacher = User.IsInRole(Constants.ROLE_ADMIN) || User.IsInRole(Constants.ROLE_HEAD_TEACHER);
 }
 <!-- Breadcubs Area Start Here -->
 <div class="breadcrumbs-area">
@@ -11,7 +12,7 @@
         <li>
             <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
         </li>
-        <li>
+        <li class= "@(isAdminOrHeadTeacher?"":"d-none")">
             <a asp-action="Index" asp-controller="Students">Students</a>
         </li>
         <li>

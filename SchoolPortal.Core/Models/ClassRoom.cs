@@ -23,6 +23,7 @@ namespace SchoolPortal.Core.Models
         public virtual Class Class { get; set; }
         public virtual ICollection<ClassRoomStudent> ClassRoomStudents { get; set; }
         public virtual ICollection<ClassRoomTeacher> ClassRoomTeachers { get; set; }
+        public virtual ICollection<Class> CourseWorks { get; set; }
     }
 
 }

@@ -11,9 +11,13 @@ namespace SchoolPortal.Core.Models
         public string Session { get; set; }
         public long TermId { get; set; }
         public long StudentId { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal StartHeight { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal? EndHeight { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal StartWeight { get; set; }
+        [Column(TypeName = "decimal(10, 2)")]
         public decimal? EndWeight { get; set; }
 
         public string UpdatedBy { get; set; }
