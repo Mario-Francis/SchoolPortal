@@ -18,15 +18,21 @@ namespace SchoolPortal.Web.Controllers
     public class RemarksController : Controller
     {
         private readonly IPerformanceRemarkService remarkService;
+        private readonly IClassService classService;
+        private readonly IStudentService studentService;
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly ILoggerService<RemarksController> logger;
 
         public RemarksController(
             IPerformanceRemarkService remarkService,
+            IClassService classService,
+            IStudentService studentService,
             IOptionsSnapshot<AppSettings> appSettingsDelegate,
             ILoggerService<RemarksController> logger)
         {
             this.remarkService = remarkService;
+            this.classService = classService;
+            this.studentService = studentService;
             this.appSettingsDelegate = appSettingsDelegate;
             this.logger = logger;
         }
@@ -286,5 +292,89 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        #region Classroom remarks
+        [HttpGet("ClassRoomRemarks/{classRoomId}")]
+        public async Task<IActionResult> ClassRoomRemarks(long classRoomId)
+        {
+            var classRoom = await classService.GetClassRoom(classRoomId);
+            if (classRoom == null)
+            {
+                return NotFound();
+            }
+
+            return View(ClassRoomVM.FromClassRoom(classRoom));
+        }
+
+        [HttpPost("ClassRoomRemarksDataTable/{classRoomId}")]
+        public IActionResult ClassRoomRemarksDataTable(long classRoomId)
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var remarks = remarkService.GetRemarks()
+                .Where(r=>r.Student.ClassRoomStudents.FirstOrDefault()?.ClassRoomId==classRoomId)
+                .Select(r => PerformanceRemarkVM.FromPerformanceRemark(r, clientTimeOffset));
+
+            var parser = new Parser<PerformanceRemarkVM>(Request.Form, remarks.AsQueryable())
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost("ClassRoomBatchUploadRemarks/{classRoomId}")]
+        public async Task<IActionResult> ClassRoomBatchUploadRemarks(BatchUploadRemarkVM model, long classRoomId)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else if (model.File == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "No file uploaded!", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    if (!AppUtilities.ValidateFile(model.File, out List<string> errItems, appSettingsDelegate.Value.MaxUploadSize))
+                    {
+                        return StatusCode(400, new { IsSuccess = false, Message = "Invalid file uploaded.", ErrorItems = errItems });
+                    }
+                    else
+                    {
+                        var remarks = await remarkService.ExtractData(model.File);
+
+                        foreach (var r in remarks)
+                        {
+                            var student = await studentService.GetStudent(r.StudentId);
+                            if (student.ClassRoomStudents.FirstOrDefault()?.ClassRoomId != classRoomId)
+                            {
+                                throw new AppException($"Student with admission number '{student.AdmissionNo}' does not exist in your classroom");
+                            }
+                        }
+
+                        await remarkService.BatchCreateRemarks(remarks, model.ExamId);
+
+                        return Ok(new { IsSuccess = true, Message = "File uploaded and read successfully", ErrorItems = new string[] { } });
+
+                    }
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while adding behavioural results in batch");
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
+            }
+        }
+
+        #endregion Classroom remarks
     }
 }

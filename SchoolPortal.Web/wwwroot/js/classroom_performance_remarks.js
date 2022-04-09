@@ -1,6 +1,7 @@
-﻿
+﻿const roomId = $('#roomId').val();
+const  classId = $('#classId').val();
 $(() => {
-    var exclude = [0, 7, 8, 9, 10, 11, 12];
+    var exclude = [0, 7, 8, 9, 10, 11];
     $('#remarksTable tfoot th').each(function (i, v) {
         if (!exclude.includes(i)) {
             var title = $(this).text();
@@ -14,7 +15,7 @@ $(() => {
         serverSide: true,
         processing: true,
         ajax: {
-            url: $base + 'remarks/RemarksDataTable',
+            url: $base + 'remarks/ClassRoomRemarksDataTable/' + roomId,
             type: "POST"
         },
         "order": [[3, "desc"]],
@@ -264,7 +265,7 @@ $(() => {
 
                     $('fieldset, .btn.action').prop('disabled', true);
                     btn.html('<i class="fa fa-circle-notch fa-spin"></i> Uploading file...');
-                    let url = $base + 'remarks/BatchUploadRemarks';
+                    let url = $base + 'remarks/ClassRoomBatchUploadRemarks/' + roomId;
 
                     $.ajax({
                         type: 'POST',

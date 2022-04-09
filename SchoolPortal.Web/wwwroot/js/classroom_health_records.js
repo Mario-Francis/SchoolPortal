@@ -1,7 +1,8 @@
-﻿
+﻿const roomId = $('#roomId').val();
+const classId = $('#classId').val();
 $(() => {
-    var exclude = [0, 7, 8, 9, 10, 11, 12];
-    $('#remarksTable tfoot th').each(function (i, v) {
+    var exclude = [0, 10, 11, 12, 13, 14];
+    $('#recordsTable tfoot th').each(function (i, v) {
         if (!exclude.includes(i)) {
             var title = $(this).text();
             $(this).html('<input type="text" class="form-control bg-light f12" style="min-width:64px;" placeholder="\u{2315} ' + title + '" />');
@@ -10,11 +11,11 @@ $(() => {
         }
     });
     // initialize datatable
-    let remarksTable = $('#remarksTable').DataTable({
+    let recordsTable = $('#recordsTable').DataTable({
         serverSide: true,
         processing: true,
         ajax: {
-            url: $base + 'remarks/RemarksDataTable',
+            url: $base + 'healthRecords/ClassRoomRecordsDataTable/' + roomId,
             type: "POST"
         },
         "order": [[3, "desc"]],
@@ -23,11 +24,11 @@ $(() => {
         autoWidth: false,
         //rowId: 'id',
         initComplete: function () {
-            var r = $('#remarksTable tfoot tr');
+            var r = $('#recordsTable tfoot tr');
             r.find('th').each(function () {
                 $(this).css('padding', '4px 8px');
             });
-            $('#remarksTable thead').append(r);
+            $('#recordsTable thead').append(r);
             $('#search_0').css('text-align', 'center');
 
             // Apply the search
@@ -65,8 +66,14 @@ $(() => {
             },
             {
                 data: {
-                    "filter": "ExamName",
-                    "display": "examName"
+                    "filter": "Session",
+                    "display": "session"
+                }
+            },
+            {
+                data: {
+                    "filter": "TermName",
+                    "display": "termName"
                 }
             },
             {
@@ -77,18 +84,34 @@ $(() => {
             },
             {
                 data: {
-                    "filter": "TeacherRemark",
-                    "display": "teacherRemark"
+                    "filter": "StartHeight",
+                    "display": "startHeight"
                 }, "render": function (data, type, row, meta) {
-                    return `${data ?? '---'}`;
+                    return `${data}mtr`;
                 }
             },
             {
                 data: {
-                    "filter": "HeadTeacherRemark",
-                    "display": "headTeacherRemark"
+                    "filter": "EndHeight",
+                    "display": "endHeight"
                 }, "render": function (data, type, row, meta) {
-                    return `${data ?? '---'}`;
+                    return `${data}mtr`;
+                }
+            },
+            {
+                data: {
+                    "filter": "StartWeight",
+                    "display": "startWeight"
+                }, "render": function (data, type, row, meta) {
+                    return `${data}kg`;
+                }
+            },
+            {
+                data: {
+                    "filter": "EndWeight",
+                    "display": "endWeight"
+                }, "render": function (data, type, row, meta) {
+                    return `${data}kg`;
                 }
             },
             {
@@ -101,7 +124,7 @@ $(() => {
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 7
+                }, orderData: 10
             },
             {
                 data: {
@@ -119,7 +142,7 @@ $(() => {
                 data: {
                     "filter": "FormattedUpdatedDate",
                     "display": "formattedUpdatedDate"
-                }, orderData: 10
+                }, orderData: 13
             },
             {
                 data: {
@@ -153,16 +176,19 @@ $(() => {
     // edit
     $(document).on('click', '.edit', async (e) => {
         let rid = $(e.currentTarget).attr('rid');
-        let loader = bootLoaderDialog('Fetching performance remark...');
+        let loader = bootLoaderDialog('Fetching health record...');
         try {
-            let record = await getRemark(rid);
+            let record = await getRecord(rid);
             loader.hide();
 
-            $('#tremark').val(record.teacherRemark);
-            $('#htremark').val(record.headTeacherRemark);
+            $('#startHeight').val(record.startHeight);
+            $('#endHeight').val(record.endHeight);
+            $('#startWeight').val(record.startWeight);
+            $('#endWeight').val(record.endWeight);
 
             $('#updateBtn').attr('rid', rid);
-            $('#updateBtn').attr('examId', record.examId);
+            $('#updateBtn').attr('session', record.session);
+            $('#updateBtn').attr('termId', record.termId);
             $('#updateBtn').attr('studentId', record.studentId);
 
             setTimeout(() => {
@@ -185,24 +211,30 @@ $(() => {
         try {
             let form = $("form")[0];
             if (validateForm(form)) {
-                let teacherRemark = $.trim($('#tremark').val());
-                let headTeacherRemark = $.trim($('#htremark').val());
+                let startHeight = $.trim($('#startHeight').val());
+                let endHeight = $.trim($('#endHeight').val());
+                let startWeight = $.trim($('#startWeight').val());
+                let endWeight = $.trim($('#endWeight').val());
 
-                let examId = $('#updateBtn').attr('examId');
+                let session = $('#updateBtn').attr('session');
+                let termId = $('#updateBtn').attr('termId');
                 let studentId = $('#updateBtn').attr('studentId');
 
-                if (teacherRemark == '' || headTeacherRemark == '') {
+                if (startHeight == '' || endHeight == '' || startWeight == '' || endWeight == '') {
                     notify('Fields with asteriks (*) are required', 'warning');
                 } else {
                     $('fieldset, .btn.action').prop('disabled', true);
-                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating performance remarks...');
-                    let url = $base + 'remarks/UpdateRemark';
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating health record...');
+                    let url = $base + 'healthRecords/UpdateRecord';
                     let data = {
                         id,
-                        examId,
+                        session,
+                        termId,
                         studentId,
-                        teacherRemark,
-                        headTeacherRemark
+                        startHeight,
+                        endHeight,
+                        startWeight,
+                        endWeight
                     };
                     $.ajax({
                         type: 'POST',
@@ -211,7 +243,7 @@ $(() => {
                         success: (response) => {
                             if (response.isSuccess) {
                                 notify(response.message + '.', 'success');
-                                remarksTable.ajax.reload();
+                                recordsTable.ajax.reload();
                                 form.reset();
 
                                 $('#editModal').modal('hide');
@@ -249,22 +281,24 @@ $(() => {
         try {
             let form = $("form")[1];
             if (validateForm(form)) {
-                let examId = $('#examId').val();
+                let session = $('#session').val();
+                let termId = $('#termId').val();
                 let files = $('#file')[0].files;
 
-                if (examId == '') {
+                if (session == '' || termId == '') {
                     notify('All fields with asteriks (*) are required.', 'warning');
                 }
                 else if (files.length == 0) {
                     notify('No file selected! Kindly select a valid excel file.', 'warning');
                 } else {
                     let formData = new FormData();
-                    formData.append('examId', examId);
+                    formData.append('session', session);
+                    formData.append('termId', termId);
                     formData.append('file', files[0]);
 
                     $('fieldset, .btn.action').prop('disabled', true);
                     btn.html('<i class="fa fa-circle-notch fa-spin"></i> Uploading file...');
-                    let url = $base + 'remarks/BatchUploadRemarks';
+                    let url = $base + 'healthRecords/ClassRoomBatchUploadRecords/' + roomId;
 
                     $.ajax({
                         type: 'POST',
@@ -275,8 +309,8 @@ $(() => {
                         processData: false,
                         success: (response) => {
                             if (response.isSuccess) {
-                                //remarksTable.ajax.reload()
-                                remarksTable.ajax.reload();
+                                //recordsTable.ajax.reload()
+                                recordsTable.ajax.reload();
                                 notify(response.message + '.', 'success');
 
                                 form.reset();
@@ -309,13 +343,13 @@ $(() => {
 });
 
 
-function getRemark(id) {
+function getRecord(id) {
     var promise = new Promise((resolve, reject) => {
         try {
             if (id == undefined || id == '' || id == 0) {
-                reject('Invalid remark id');
+                reject('Invalid record id');
             } else {
-                let url = $base + 'remarks/GetRemark/' + id;
+                let url = $base + 'healthRecords/GetRecord/' + id;
                 $.ajax({
                     type: 'GET',
                     url: url,

@@ -19,16 +19,22 @@ namespace SchoolPortal.Web.Controllers
     public class BehaviouralRatingsController : Controller
     {
         private readonly IBehaviouralRatingService ratingService;
+        private readonly IClassService classService;
+        private readonly IStudentService studentService;
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly ILoggerService<BehaviouralRatingsController> logger;
 
        
         public BehaviouralRatingsController(
             IBehaviouralRatingService ratingService,
+            IClassService classService,
+            IStudentService studentService,
             IOptionsSnapshot<AppSettings> appSettingsDelegate,
             ILoggerService<BehaviouralRatingsController> logger)
         {
             this.ratingService = ratingService;
+            this.classService = classService;
+            this.studentService = studentService;
             this.appSettingsDelegate = appSettingsDelegate;
             this.logger = logger;
         }
@@ -427,6 +433,91 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+
+
+        #region Classroom behavioural ratings
+        [HttpGet("ClassRoomBehaviouralRatings/{classRoomId}")]
+        public async Task<IActionResult> ClassRoomBehaviouralRatings(long classRoomId)
+        {
+            var classRoom = await classService.GetClassRoom(classRoomId);
+            if (classRoom == null)
+            {
+                return NotFound();
+            }
+
+            return View(ClassRoomVM.FromClassRoom(classRoom));
+        }
+
+        [HttpPost("ClassRoomRatingsDataTable/{classRoomId}")]
+        public IActionResult ClassRoomRatingsDataTable(long classRoomId)
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var results = ratingService.GetBehaviouralResults().Where(r=>r.Student.ClassRoomStudents.FirstOrDefault()?.ClassRoomId == classRoomId)
+                .Select(r => BehaviouralResultVM.FromBehaviouralResult(r, clientTimeOffset));
+
+            var parser = new Parser<BehaviouralResultVM>(Request.Form, results.AsQueryable())
+                  .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
+                   .SetConverter(x => x.CreatedDate, x => x.CreatedDate.ToString("MMM d, yyyy"));
+
+            return Ok(parser.Parse());
+        }
+
+        [HttpPost("BatchUploadClassRoomRatings/{classRoomId}")]
+        public async Task<IActionResult> BatchUploadClassRoomRatings(BatchUploadRatingVM model, long classRoomId)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else if (model.File == null)
+                {
+                    return StatusCode(400, new { IsSuccess = false, Message = "No file uploaded!", ErrorItems = new string[] { } });
+                }
+                else
+                {
+                    if (!AppUtilities.ValidateFile(model.File, out List<string> errItems, appSettingsDelegate.Value.MaxUploadSize))
+                    {
+                        return StatusCode(400, new { IsSuccess = false, Message = "Invalid file uploaded.", ErrorItems = errItems });
+                    }
+                    else
+                    {
+                        var results = await ratingService.ExtractData(model.File);
+
+                        foreach(var r in results)
+                        {
+                            var student = await studentService.GetStudent(r.First().StudentId);
+                            if (student.ClassRoomStudents.FirstOrDefault()?.ClassRoomId != classRoomId)
+                            {
+                                throw new AppException($"Studet with admission number '{student.AdmissionNo}' does not exist in your classroom");
+                            }
+                        }
+
+                        await ratingService.BatchCreateBehaviouralResults(results, model.Session, model.TermId);
+
+                        return Ok(new { IsSuccess = true, Message = "File uploaded and read successfully", ErrorItems = new string[] { } });
+                    }
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError("An error was encountered while adding behavioural results in batch");
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
+            }
+        }
+
+
+        #endregion Classroom behavioural ratings
 
     }
 }

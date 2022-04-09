@@ -355,7 +355,6 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
-
         [HttpPost("[controller]/endterm/UpdateResult")]
         public async Task<IActionResult> UpdateEndTermResult(EndTermResultVM resultVM)
         {

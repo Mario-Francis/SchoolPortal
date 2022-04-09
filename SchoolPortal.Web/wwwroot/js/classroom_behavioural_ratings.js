@@ -1,7 +1,10 @@
-﻿
+﻿var roomId, classId;
 $(() => {
-    var exclude = [0, 7, 8, 9, 10, 11, 12];
-    $('#remarksTable tfoot th').each(function (i, v) {
+    roomId = $('#roomId').val();
+    classId = $('#classId').val();
+
+    var exclude = [0, 8, 9, 10, 11, 12];
+    $('#resultsTable tfoot th').each(function (i, v) {
         if (!exclude.includes(i)) {
             var title = $(this).text();
             $(this).html('<input type="text" class="form-control bg-light f12" style="min-width:64px;" placeholder="\u{2315} ' + title + '" />');
@@ -10,24 +13,24 @@ $(() => {
         }
     });
     // initialize datatable
-    let remarksTable = $('#remarksTable').DataTable({
+    let resultsTable = $('#resultsTable').DataTable({
         serverSide: true,
         processing: true,
         ajax: {
-            url: $base + 'remarks/RemarksDataTable',
+            url: $base + 'behaviouralRatings/ClassRoomRatingsDataTable/' + roomId,
             type: "POST"
         },
         "order": [[3, "desc"]],
-        "lengthMenu": [10, 20, 30, 50, 100],
+        "lengthMenu": [10, 20, 30, 50, 100, 500],
         "paging": true,
         autoWidth: false,
         //rowId: 'id',
         initComplete: function () {
-            var r = $('#remarksTable tfoot tr');
+            var r = $('#resultsTable tfoot tr');
             r.find('th').each(function () {
                 $(this).css('padding', '4px 8px');
             });
-            $('#remarksTable thead').append(r);
+            $('#resultsTable thead').append(r);
             $('#search_0').css('text-align', 'center');
 
             // Apply the search
@@ -65,30 +68,28 @@ $(() => {
             },
             {
                 data: {
-                    "filter": "ExamName",
-                    "display": "examName"
+                    "filter": "Session",
+                    "display": "session"
                 }
             },
             {
                 data: {
-                    "filter": "Class",
-                    "display": "class"
+                    "filter": "TermName",
+                    "display": "termName"
                 }
             },
             {
                 data: {
-                    "filter": "TeacherRemark",
-                    "display": "teacherRemark"
+                    "filter": "Rating",
+                    "display": "rating"
+                }
+            },
+            {
+                data: {
+                    "filter": "Score",
+                    "display": "score"
                 }, "render": function (data, type, row, meta) {
-                    return `${data ?? '---'}`;
-                }
-            },
-            {
-                data: {
-                    "filter": "HeadTeacherRemark",
-                    "display": "headTeacherRemark"
-                }, "render": function (data, type, row, meta) {
-                    return `${data ?? '---'}`;
+                    return `${data}`;
                 }
             },
             {
@@ -153,17 +154,20 @@ $(() => {
     // edit
     $(document).on('click', '.edit', async (e) => {
         let rid = $(e.currentTarget).attr('rid');
-        let loader = bootLoaderDialog('Fetching performance remark...');
+        let loader = bootLoaderDialog('Fetching behavioural result...');
         try {
-            let record = await getRemark(rid);
+            let result = await getRemark(rid);
             loader.hide();
 
-            $('#tremark').val(record.teacherRemark);
-            $('#htremark').val(record.headTeacherRemark);
+            $('#behaviour').val(result.rating);
+            $('#rating').val(result.score);
+            $('#behaviour').attr('ratingId', result.behaviouralRatingId);
+
 
             $('#updateBtn').attr('rid', rid);
-            $('#updateBtn').attr('examId', record.examId);
-            $('#updateBtn').attr('studentId', record.studentId);
+            $('#updateBtn').attr('session', result.session);
+            $('#updateBtn').attr('termId', result.termId);
+            $('#updateBtn').attr('studentId', result.studentId);
 
             setTimeout(() => {
                 $('#editModal').modal({ backdrop: 'static', keyboard: false }, 'show');
@@ -185,24 +189,25 @@ $(() => {
         try {
             let form = $("form")[0];
             if (validateForm(form)) {
-                let teacherRemark = $.trim($('#tremark').val());
-                let headTeacherRemark = $.trim($('#htremark').val());
-
-                let examId = $('#updateBtn').attr('examId');
+                let score = $.trim($('#rating').val());
+                let session = $('#updateBtn').attr('session');
+                let termId = $('#updateBtn').attr('termId');
                 let studentId = $('#updateBtn').attr('studentId');
+                let behaviouralRatingId = $('#behaviour').attr('ratingId');
 
-                if (teacherRemark == '' || headTeacherRemark == '') {
+                if (score == '') {
                     notify('Fields with asteriks (*) are required', 'warning');
                 } else {
                     $('fieldset, .btn.action').prop('disabled', true);
-                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating performance remarks...');
-                    let url = $base + 'remarks/UpdateRemark';
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating behavioural result...');
+                    let url = $base + 'behaviouralRatings/UpdateBehaviouralResult';
                     let data = {
                         id,
-                        examId,
+                        score,
+                        session,
+                        termId,
                         studentId,
-                        teacherRemark,
-                        headTeacherRemark
+                        behaviouralRatingId
                     };
                     $.ajax({
                         type: 'POST',
@@ -211,7 +216,7 @@ $(() => {
                         success: (response) => {
                             if (response.isSuccess) {
                                 notify(response.message + '.', 'success');
-                                remarksTable.ajax.reload();
+                                resultsTable.ajax.reload();
                                 form.reset();
 
                                 $('#editModal').modal('hide');
@@ -249,22 +254,24 @@ $(() => {
         try {
             let form = $("form")[1];
             if (validateForm(form)) {
-                let examId = $('#examId').val();
+                let session = $('#session').val();
+                let termId = $('#termId').val();
                 let files = $('#file')[0].files;
 
-                if (examId == '') {
+                if (session == '' || termId == '') {
                     notify('All fields with asteriks (*) are required.', 'warning');
                 }
                 else if (files.length == 0) {
                     notify('No file selected! Kindly select a valid excel file.', 'warning');
                 } else {
                     let formData = new FormData();
-                    formData.append('examId', examId);
+                    formData.append('session', session);
+                    formData.append('termId', termId);
                     formData.append('file', files[0]);
 
                     $('fieldset, .btn.action').prop('disabled', true);
                     btn.html('<i class="fa fa-circle-notch fa-spin"></i> Uploading file...');
-                    let url = $base + 'remarks/BatchUploadRemarks';
+                    let url = $base + 'behaviouralRatings/BatchUploadClassRoomRatings/' + roomId;
 
                     $.ajax({
                         type: 'POST',
@@ -275,8 +282,8 @@ $(() => {
                         processData: false,
                         success: (response) => {
                             if (response.isSuccess) {
-                                //remarksTable.ajax.reload()
-                                remarksTable.ajax.reload();
+                                //resultsTable.ajax.reload()
+                                resultsTable.ajax.reload();
                                 notify(response.message + '.', 'success');
 
                                 form.reset();
@@ -313,9 +320,9 @@ function getRemark(id) {
     var promise = new Promise((resolve, reject) => {
         try {
             if (id == undefined || id == '' || id == 0) {
-                reject('Invalid remark id');
+                reject('Invalid result id');
             } else {
-                let url = $base + 'remarks/GetRemark/' + id;
+                let url = $base + 'behaviouralRatings/GetBehaviouralResult/' + id;
                 $.ajax({
                     type: 'GET',
                     url: url,
