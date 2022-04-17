@@ -13,7 +13,8 @@ namespace SchoolPortal.Data.Repositories
         IEnumerable<T> GetAll();
         IEnumerable<T> GetWhere(Expression<Func<T, bool>> expression);
         Task<T> GetById(long id);
-        Task<T> GetSingleWhere(Expression<Func<T, bool>> expression);
+        Task<T> GetSingleWhereAsync(Expression<Func<T, bool>> expression);
+        T GetSingleWhere(Expression<Func<T, bool>> expression);
         Task Insert(T entity, bool save = true);
         Task InsertRange(IEnumerable<T> entityList, bool save = true);
         Task InsertBulk(IEnumerable<T> entityList);

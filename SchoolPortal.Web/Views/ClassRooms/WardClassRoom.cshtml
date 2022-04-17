@@ -1,0 +1,183 @@
+﻿@inject ISessionService service;
+@model ClassRoomVM;
+@{
+    var name = $"{Model.Class} {Model.RoomCode}".Capitalize();
+    ViewData["Title"] = name;
+    var teachers = ViewData["teachers"] as IEnumerable<UserVM>;
+    var subjects = ViewData["subjects"] as IEnumerable<SubjectVM>;
+    var maleCount = (int)ViewData["maleCount"];
+    var femaleCount = (int)ViewData["femaleCount"];
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+
+    <h3 class="mb-2">@ViewData["Title"]</h3>
+
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li>@name</li>
+
+    </ul>
+</div>
+
+
+<input type="hidden" id="roomId" value="@Model.Id" />
+<div class="row">
+    <div class="col-xl-4">
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body shadow p-2">
+                        <h6 class="m-0 py-1 px-3">Class Teachers <span class="badge bg-claret rounded-pill py-1 px-2 text-white ml-2">@teachers.Count()</span></h6>
+                        <hr class="my-2" />
+                        @if (teachers.Count() == 0)
+                        {
+                            <div class="alert alert-info">
+                                <p class="f14"><i class="fa fa-exclamation-circle"></i> There are no teachers assigned to this classroom.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            foreach (var t in teachers)
+                            {
+                                <div class="border rounded p-3 d-flex flex-row mb-2 hover-light">
+                                    <div class="px-2">
+                                        <div class="bg-claret rounded-circle py-3" style="height:50px;width:50px">
+                                            <h4 class="text-white text-center font-weight-bold mm-0">@t.FirstName[0]@t.Surname[0]</h4>
+                                        </div>
+                                    </div>
+                                    <div class="flex-fill p-2">
+                                        <h6 class="mini-bold m-0">@t.FullName</h6>
+                                        <p class="text-secondary f12 mt-n1">@t.Username | @t.Email</p>
+                                        <p class="text-secondary f12 mt-n1">
+                                            @t.PhoneNumber |
+                                            @if (t.IsActive)
+                                            {
+                                                <span class="badge badge-success badge-pill py-2 px-3"><i class="fa fa-check-circle"></i> Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary badge-pill py-2 px-3"><i class="fa fa-times-circle"></i> Inactive</span>
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body shadow p-2">
+                        <h6 class="m-0 py-1 px-3">Class Subjects <span class="badge bg-claret rounded-pill py-1 px-2 text-white ml-2">@subjects.Count()</span></h6>
+                        <hr class="my-2" />
+                        @if (subjects.Count() == 0)
+                        {
+                            <div class="alert alert-info">
+                                <p class="f14"><i class="fa fa-exclamation-circle"></i> There are no subjects created for this class.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            foreach (var s in subjects)
+                            {
+                                <div class="border rounded p-3 d-flex flex-row mb-2 hover-light">
+                                    <div class="px-2">
+                                        <div class="bg-light text-dark border rounded-circle py-1" style="height:30px;width:30px">
+                                            <h6 class="text-dark text-center font-weight-bold mm-0">@s.Name[0]</h6>
+                                        </div>
+                                    </div>
+                                    <div class="flex-fill p-1">
+                                        <h6 class="mini-bold m-0 f12">@s.Name (@s.Code)</h6>
+                                        <p style="line-height:16px;" class="text-secondary f12">@s.Description</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+    <div class="col-xl-8">
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info mb-3 f14 shadow">
+                    <h6  class="m-0 f16 mini-bold">Students Info</h6>
+                    <hr class="my-2" />
+                    <p>Classroom contains a total of <b>@(maleCount+femaleCount)</b> students which comprises</p>
+                    <ul style="list-style-type:disc;" class="ml-5">
+                        <li><b>@maleCount</b> Male(s)</li>
+                        <li><b>@femaleCount</b> Female(s)</li>
+                    </ul>
+                </div>
+                <div class="card bg-transparent">
+                    <div class="card-body shadow p-0 bg-transparent">
+
+                        <div>
+                            <nav class="">
+                                <div class="nav nav-tabs nav-fill bg-white" style="border-radius:7px 7px 0 0;" id="nav-tab" role="tablist">
+                                    <a class="nav-link active" id="nav-under-graduates-tab" data-toggle="tab" href="#nav-under-graduates" role="tab" aria-controls="nav-profile" aria-selected="false">Course Works</a>
+                                </div>
+                            </nav>
+                            <div class="tab-content px-3 p-3 bg-white" id="nav-tabContent">
+
+                                <div class="tab-pane fade show active" id="nav-under-graduates" role="tabpanel" aria-labelledby="nav-under-graduates-tab">
+                                    @*<div class="text-right mb-3">
+                                <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; New Course Work</button>
+                            </div>*@
+                                    <div class="table-responsive">
+                                        <table id="courseWorksTable" class="table table-sm display text-nowrap f12 table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:28px">#</th>
+                                                    <th>Tile</th>
+                                                    <th>Description</th>
+                                                    <th>Week</th>
+                                                    <th>From</th>
+                                                    <th>From</th>
+                                                    <th>To</th>
+                                                    <th>To</th>
+                                                    <th>&nbsp;</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section css{
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script>
+
+    </script>
+    <script src="~/js/ward_classroom.js" asp-append-version="true"></script>
+
+}

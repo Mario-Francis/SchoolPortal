@@ -47,6 +47,7 @@ namespace SchoolPortal.Root
             services.AddScoped<IHealthRecordService, HealthRecordService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<ICourseWorkService, CourseWorkService>();
+            services.AddScoped<IGradeService, GradeService>();
 
 
 

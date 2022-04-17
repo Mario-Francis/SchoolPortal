@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
 using SchoolPortal.Core.DTOs;
+using SchoolPortal.Core.Extensions;
 using SchoolPortal.Services;
 using SchoolPortal.Web.ViewModels;
 using System;
@@ -540,6 +541,21 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        [HttpGet("/MyWards")]
+        public async Task<IActionResult> MyWards()
+        {
+            var userId = HttpContext.GetUserSession().Id;
+            var user = await userService.GetUser(userId);
+            if (user == null)
+            {
+                return NotFound("User is not found");
+            }
+            if (!user.UserRoles.Any(r => r.RoleId == (int)AppRoles.PARENT))
+            {
+                return NotFound("User is not found");
+            }
 
+            return View(UserVM.FromUser(user));
+        }
     }
 }

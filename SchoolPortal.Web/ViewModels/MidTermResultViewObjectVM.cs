@@ -1,4 +1,5 @@
 ﻿using SchoolPortal.Core.Models.Views;
+using SchoolPortal.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace SchoolPortal.Web.ViewModels
         public string Class { get; set; }
         public string RoomCode { get; set; }
         public string Subject { get; set; }
+        public string Grade { get; set; }
 
         public string UpdatedBy { get; set; }
         public DateTimeOffset CreatedDate { get; set; }
@@ -50,7 +52,8 @@ namespace SchoolPortal.Web.ViewModels
         }
 
 
-        public static MidTermResultViewObjectVM FromMidTermResultViewObject(MidTermResultViewObject result, int? clientTimeOffset = null)
+        public static MidTermResultViewObjectVM FromMidTermResultViewObject(MidTermResultViewObject result, 
+            int? clientTimeOffset = null, IGradeService gradeService = null)
         {
             if (result == null)
                 return null;
@@ -79,6 +82,7 @@ namespace SchoolPortal.Web.ViewModels
                     UpdatedBy= result.UpdatedBy,
                     CreatedDate = clientTimeOffset == null ? result.CreatedDate : result.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
                     UpdatedDate = clientTimeOffset == null ? result.UpdatedDate : result.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                    Grade = gradeService == null ? result.Total.ToString() : gradeService.GetGrade(result.Total, Core.TermSections.FIRST_HALF).Code
                 };
         }
     }

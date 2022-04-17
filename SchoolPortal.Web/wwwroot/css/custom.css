@@ -572,6 +572,12 @@ select {
     font-size: 12px !important;
 }
 
+.sidebar-menu-one .sidebar-menu-content .nav-sidebar-menu > .nav-item > .nav-link i.fa::before{
+    font-size:14px !important;
+}
+
+
+
 
 
 /* // Small devices (landscape phones, 576px and up) */

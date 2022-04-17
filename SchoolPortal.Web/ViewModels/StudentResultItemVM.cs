@@ -1,4 +1,6 @@
 ﻿using SchoolPortal.Core.DTOs;
+using SchoolPortal.Core.Models;
+using SchoolPortal.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,8 +37,10 @@ namespace SchoolPortal.Web.ViewModels
         public decimal TermTotal { get; set; }
         public decimal AverageScore { get; set; }
 
+        public string Grade { get; set; }
+
         #endregion End of session fields
-        public static StudentResultItemVM FromStudentResultItem(StudentResultItem item)
+        public static StudentResultItemVM FromStudentResultItem(StudentResultItem item, Core.TermSections section, IGradeService gradeService)
         {
             return new StudentResultItemVM
             {
@@ -48,11 +52,12 @@ namespace SchoolPortal.Web.ViewModels
                 Total = item.Total,
                 Subject = SubjectVM.FromSubject(item.Subject),
                 SubjectName = item.SubjectName,
-                AverageScore = item.AverageScore,
+                AverageScore = Math.Round(item.AverageScore, 0, MidpointRounding.AwayFromZero),
                 FirstTermTotal = item.FirstTermTotal,
                 MidTermTotal = item.MidTermTotal,
                 SecondTermTotal = item.SecondTermTotal,
-                TermTotal = item.TermTotal
+                TermTotal = item.TermTotal,
+                Grade = gradeService.GetGrade(Math.Round(item.AverageScore==0?(item.TermTotal==0?item.Total:item.TermTotal):item.AverageScore, 0, MidpointRounding.AwayFromZero), section).Code
             };
         }
        

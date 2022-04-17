@@ -24,6 +24,7 @@ namespace SchoolPortal.Web.Controllers
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly IBehaviouralRatingService behaviouralRatingService;
         private readonly ILoggerService<StudentResultsController> logger;
+        private readonly IGradeService gradeService;
 
         public StudentResultsController(
             IStudentService studentService,
@@ -31,7 +32,8 @@ namespace SchoolPortal.Web.Controllers
             IResultService resultService,
             IOptionsSnapshot<AppSettings> appSettingsDelegate,
             IBehaviouralRatingService behaviouralRatingService,
-            ILoggerService<StudentResultsController> logger)
+            ILoggerService<StudentResultsController> logger,
+            IGradeService gradeService)
         {
             this.studentService = studentService;
             this.studentResultService = studentResultService;
@@ -39,6 +41,7 @@ namespace SchoolPortal.Web.Controllers
             this.appSettingsDelegate = appSettingsDelegate;
             this.behaviouralRatingService = behaviouralRatingService;
             this.logger = logger;
+            this.gradeService = gradeService;
         }
         //public IActionResult Index()
         //{
@@ -152,7 +155,8 @@ namespace SchoolPortal.Web.Controllers
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
                 appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
-            var results = studentResultService.GetMidTermResults(studentId.Value, session, termId.Value).Select(r => StudentResultItemVM.FromStudentResultItem(r));
+            var results = studentResultService.GetMidTermResults(studentId.Value, session, termId.Value)
+                .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.FIRST_HALF, gradeService));
 
             var parser = new Parser<StudentResultItemVM>(Request.Form, results.AsQueryable());
             var dtResults = StudentResultDataTableResultVM.FromDTResults(parser.Parse());
@@ -160,6 +164,8 @@ namespace SchoolPortal.Web.Controllers
             dtResults.TotalScoreObtained = results.Select(r => r.Total).Sum();
             dtResults.TotalScoreObtainable = 40 * results.Count();
             dtResults.Percentage = Math.Round(dtResults.TotalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.FIRST_HALF).Code;
+
 
             return Ok(dtResults);
         }
@@ -170,7 +176,8 @@ namespace SchoolPortal.Web.Controllers
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
                 appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
-            var results = studentResultService.GetEndTermResults(studentId.Value, session, termId.Value).Select(r=> StudentResultItemVM.FromStudentResultItem(r));
+            var results = studentResultService.GetEndTermResults(studentId.Value, session, termId.Value)
+                .Select(r=> StudentResultItemVM.FromStudentResultItem(r, TermSections.SECOND_HALF, gradeService));
 
             var parser = new Parser<StudentResultItemVM>(Request.Form, results.AsQueryable());
             var dtResults = StudentResultDataTableResultVM.FromDTResults(parser.Parse());
@@ -178,6 +185,7 @@ namespace SchoolPortal.Web.Controllers
             dtResults.TotalScoreObtained = results.Select(r => r.TermTotal).Sum();
             dtResults.TotalScoreObtainable = 100 * results.Count();
             dtResults.Percentage = Math.Round(dtResults.TotalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
 
             return Ok(dtResults);
         }
@@ -188,7 +196,8 @@ namespace SchoolPortal.Web.Controllers
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
                 appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
-            var results = studentResultService.GetEndOfSessionResults(studentId.Value, session).Select(r => StudentResultItemVM.FromStudentResultItem(r));
+            var results = studentResultService.GetEndOfSessionResults(studentId.Value, session)
+                .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.SECOND_HALF, gradeService));
 
             var parser = new Parser<StudentResultItemVM>(Request.Form, results.AsQueryable());
             var dtResults = StudentResultDataTableResultVM.FromDTResults(parser.Parse());
@@ -196,10 +205,30 @@ namespace SchoolPortal.Web.Controllers
             dtResults.TotalScoreObtained = results.Select(r => r.AverageScore).Sum();
             dtResults.TotalScoreObtainable = 100 * results.Count();
             dtResults.Percentage = Math.Round(dtResults.TotalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
 
             return Ok(dtResults);
         }
 
+        // For viewing
+        [HttpGet("{studentId}/View")]
+        public async Task<IActionResult> ViewStudentResults(long? studentId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var behaviouralRatings = behaviouralRatingService.GetBehaviouralRatings();
+            ViewData["BehaviouralRatings"] = behaviouralRatings;
+
+            return View(StudentVM.FromStudent(student));
+        }
 
     }
 }

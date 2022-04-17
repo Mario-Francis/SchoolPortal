@@ -138,8 +138,8 @@ $(() => {
             },
             {
                 data: {
-                    "filter": "Total",
-                    "display": "total"
+                    "filter": "Grade",
+                    "display": "grade"
                 }, "render": function (data, type, row, meta) {
                     return `${data}`;
                 }

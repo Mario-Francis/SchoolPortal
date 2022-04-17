@@ -332,7 +332,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Password is required");
             }
-            var user = await userRepo.GetSingleWhere(u => u.Email == credential.Email || u.Username == credential.Email);
+            var user = await userRepo.GetSingleWhereAsync(u => u.Email == credential.Email || u.Username == credential.Email);
             if (user == null)
             {
                 throw new AppException($"Email/username is invalid");
@@ -356,7 +356,7 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<User> GetUser(string email)
         {
-            var user = await userRepo.GetSingleWhere(u => u.Email == email || u.Username == email);
+            var user = await userRepo.GetSingleWhereAsync(u => u.Email == email || u.Username == email);
             if (user == null)
                 throw new AppException($"User with email or username: '{email}' does not exist");
             else

@@ -30,7 +30,7 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<Role> GetRole(string name)
         {
-            return await roleRepo.GetSingleWhere(r => r.Name == name);
+            return await roleRepo.GetSingleWhereAsync(r => r.Name == name);
         }
         // get all roles
         public IEnumerable<Role> GetRoles()

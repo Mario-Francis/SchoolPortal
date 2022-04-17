@@ -151,7 +151,7 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<HealthRecord> GetRecord(string session, long termId, long studentId)
         {
-            return await healthRecordRepo.GetSingleWhere(r => r.Session == session
+            return await healthRecordRepo.GetSingleWhereAsync(r => r.Session == session
             && r.TermId == termId && r.StudentId == studentId);
         }
 
@@ -234,7 +234,7 @@ namespace SchoolPortal.Services.Implementations
                     }
                     else
                     {
-                        var studentId = (await studentRepo.GetSingleWhere(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
+                        var studentId = (await studentRepo.GetSingleWhereAsync(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
                         var record = new HealthRecord()
                         {
                             StudentId = studentId,

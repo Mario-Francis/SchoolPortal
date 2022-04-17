@@ -226,6 +226,53 @@ namespace SchoolPortal.Services.Implementations
             //    currentUser.StudentId, studentRepository.TableName, oldStudent, student);
         }
 
+        // update student profile
+        public async Task UpdateStudentProfile(Student student)
+        {
+            if (student == null)
+            {
+                throw new AppException("Student object is required");
+            }
+            var _student = await studentRepo.GetById(student.Id);
+            if (student == null)
+            {
+                throw new AppException($"Student with id '{student.Id}' does not exist");
+            }
+            if (!await emailService.IsEmailValidAsync(student.Email))
+            {
+                throw new AppException($"Email '{student.Email}' is not valid");
+            }
+            if (await studentRepo.AnyAsync(u => u.Email == student.Email) && student.Email != _student.Email)
+            {
+                throw new AppException($"A student with email '{student.Email}' already exist");
+            }
+           
+
+            var currentUser = accessor.HttpContext.GetUserSession();
+
+            var oldStudent = _student.Clone<Student>();
+
+            _student.FirstName = student.FirstName;
+            _student.MiddleName = student.MiddleName;
+            _student.Surname = student.Surname;
+            _student.PhoneNumber = student.PhoneNumber;
+            _student.Email = student.Email;
+            _student.Gender = student.Gender;
+            _student.DateOfBirth = student.DateOfBirth;
+
+            _student.UpdatedBy = currentUser.Username;
+            _student.UpdatedDate = DateTimeOffset.Now;
+            _student.UpdatedByType = currentUser.UserType;
+
+            await studentRepo.Update(_student, true);
+            // log action
+            //await loggerService.LogActivity(
+            //    $"Updated student",
+            //    ActivityType.UPDATE_USER,
+            //    currentUser.StudentId, studentRepository.TableName, oldStudent, student);
+        }
+
+
         // update password
         public async Task UpdatePassword(PasswordRequestObject req)
         {
@@ -315,7 +362,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Password is required");
             }
-            var student = await studentRepo.GetSingleWhere(u => u.Email == credential.Email || u.Username == credential.Email);
+            var student = await studentRepo.GetSingleWhereAsync(u => u.Email == credential.Email || u.Username == credential.Email);
             if (student == null)
             {
                 throw new AppException($"Email/username is invalid");
@@ -339,7 +386,7 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<Student> GetStudent(string email)
         {
-            var student = await studentRepo.GetSingleWhere(u => u.Email == email || u.Username == email);
+            var student = await studentRepo.GetSingleWhereAsync(u => u.Email == email || u.Username == email);
             if (student == null)
                 throw new AppException($"Student with email or username: '{email}' does not exist");
             else
@@ -768,7 +815,7 @@ namespace SchoolPortal.Services.Implementations
             @class = @class.Trim();
             var arr = @class.Split(' ');
 
-            var _class = await classRepo.GetSingleWhere(c => c.ClassType.Name.ToLower() == arr[0].ToLower() && c.ClassGrade.ToString() == arr[1]);
+            var _class = await classRepo.GetSingleWhereAsync(c => c.ClassType.Name.ToLower() == arr[0].ToLower() && c.ClassGrade.ToString() == arr[1]);
 
             return _class.Id;
         }
@@ -778,7 +825,7 @@ namespace SchoolPortal.Services.Implementations
             var isValid = true;
             @class = @class.Trim();
             var arr = @class.Split(' ');
-            var _class = (await classRepo.GetSingleWhere(c => c.ClassType.Name.ToLower() == arr[0].ToLower() && c.ClassGrade.ToString() == arr[1]));
+            var _class = (await classRepo.GetSingleWhereAsync(c => c.ClassType.Name.ToLower() == arr[0].ToLower() && c.ClassGrade.ToString() == arr[1]));
             if (!_class.ClassRooms.Any(r => r.RoomCode.ToLower() == roomCode.ToLower()))
             {
                 isValid = false;
@@ -790,7 +837,7 @@ namespace SchoolPortal.Services.Implementations
         {
             @class = @class.Trim();
             var arr = @class.Split(' ');
-            var classRoom = await classRoomRepo.GetSingleWhere(r => r.Class.ClassType.Name.ToLower() == arr[0].ToLower() && r.Class.ClassGrade.ToString() == arr[1] && r.RoomCode.ToLower() == roomCode.ToLower());
+            var classRoom = await classRoomRepo.GetSingleWhereAsync(r => r.Class.ClassType.Name.ToLower() == arr[0].ToLower() && r.Class.ClassGrade.ToString() == arr[1] && r.RoomCode.ToLower() == roomCode.ToLower());
 
             return classRoom.Id;
         }
@@ -847,7 +894,7 @@ namespace SchoolPortal.Services.Implementations
                             PhoneNumber = Convert.ToString(rows[i][7]),
                             AdmissionNo = Convert.ToString(rows[i][8]),
                             EntryClassId = await GetClassId(Convert.ToString(rows[i][9])),
-                            EntryTermId = (await termRepo.GetSingleWhere(t => t.Name.ToLower() == Convert.ToString(rows[i][10]).ToLower())).Id,
+                            EntryTermId = (await termRepo.GetSingleWhereAsync(t => t.Name.ToLower() == Convert.ToString(rows[i][10]).ToLower())).Id,
                             EntrySession = Convert.ToString(rows[i][11]),
                             EnrollmentDate = DateTimeOffset.Parse(Convert.ToString(rows[i][12]))
                         };

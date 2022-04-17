@@ -77,7 +77,7 @@ namespace SchoolPortal.Services.Implementations
         // private - get mid term comments
         private async Task<ResultCommentObject> GetMidTermComments(long studentId, string session, long termId)
         {
-            var remark = await performanceRemarkRepo.GetSingleWhere(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId && r.Exam.ExamTypeId == (int)ExamTypes.MID_TERM);
+            var remark = await performanceRemarkRepo.GetSingleWhereAsync(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId && r.Exam.ExamTypeId == (int)ExamTypes.MID_TERM);
 
             return ResultCommentObject.FromPerformanceRemark(remark);
         }
@@ -94,7 +94,7 @@ namespace SchoolPortal.Services.Implementations
         // private - get end of term comments
         private async Task<ResultCommentObject> GetEndTermComments(long studentId, string session, long termId)
         {
-            var remark = await performanceRemarkRepo.GetSingleWhere(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId && r.Exam.ExamTypeId == (int)ExamTypes.END_TERM);
+            var remark = await performanceRemarkRepo.GetSingleWhereAsync(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId && r.Exam.ExamTypeId == (int)ExamTypes.END_TERM);
 
             return ResultCommentObject.FromPerformanceRemark(remark);
         }
@@ -110,7 +110,7 @@ namespace SchoolPortal.Services.Implementations
         // private - get end of term health records
         private async Task<HealthRecordObject> GetEndTermHealthRecord(long studentId, string session, long termId)
         {
-            var record = await healthRecordRepo.GetSingleWhere(r => r.StudentId == studentId && r.Session == session && r.TermId == termId);
+            var record = await healthRecordRepo.GetSingleWhereAsync(r => r.StudentId == studentId && r.Session == session && r.TermId == termId);
 
             return HealthRecordObject.FromHealthRecord(record);
         }
@@ -127,8 +127,8 @@ namespace SchoolPortal.Services.Implementations
         // get results
         public async Task<StudentResult> GetStudentResult(long studentId, string session, long termId)
         {
-            var mResult = await midTermResultRepo.GetSingleWhere(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId);
-            var eResult = await endTermResultRepo.GetSingleWhere(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId);
+            var mResult = await midTermResultRepo.GetSingleWhereAsync(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId);
+            var eResult = await endTermResultRepo.GetSingleWhereAsync(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId);
             var midTermResult = new StudentMidTermResult
             {
                 ClassRoom = mResult.ClassRoom,

@@ -12,6 +12,7 @@ namespace SchoolPortal.Web.ViewModels
         public decimal TotalScoreObtained { get; set; }
         public decimal TotalScoreObtainable { get; set; }
         public decimal Percentage { get; set; }
+        public string PercentageGrade { get; set; }
         public static StudentResultDataTableResultVM FromDTResults(Results<StudentResultItemVM> result)
         {
             return new StudentResultDataTableResultVM

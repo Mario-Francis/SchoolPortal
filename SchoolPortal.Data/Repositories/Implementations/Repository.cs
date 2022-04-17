@@ -41,9 +41,13 @@ namespace SchoolPortal.Data.Repositories.Implementations
         {
             return await entities.SingleOrDefaultAsync(s => s.Id == id);
         }
-        public async Task<T> GetSingleWhere(Expression<Func<T, bool>> expression)
+        public async Task<T> GetSingleWhereAsync(Expression<Func<T, bool>> expression)
         {
             return await entities.Where(expression).FirstOrDefaultAsync();
+        }
+        public T GetSingleWhere(Expression<Func<T, bool>> expression)
+        {
+            return entities.Where(expression).FirstOrDefault();
         }
         public async Task Insert(T entity, bool save = true)
         {

@@ -235,7 +235,7 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<MidTermResultViewObject> GetMidTermResultViewObject(long id)
         {
-            return await midTermResultViewObjectRepo.GetSingleWhere(r => r.Id == id);
+            return await midTermResultViewObjectRepo.GetSingleWhereAsync(r => r.Id == id);
         }
 
        
@@ -342,7 +342,7 @@ namespace SchoolPortal.Services.Implementations
                     }
                     else
                     {
-                        var studentId = (await studentRepo.GetSingleWhere(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
+                        var studentId = (await studentRepo.GetSingleWhereAsync(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
                         var result = new MidTermResult()
                         {
                             StudentId = studentId,
@@ -599,7 +599,7 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<EndTermResultViewObject> GetEndTermResultViewObject(long id)
         {
-            return await endTermResultViewObjectRepo.GetSingleWhere(r => r.Id == id);
+            return await endTermResultViewObjectRepo.GetSingleWhereAsync(r => r.Id == id);
         }
 
         private async Task<(bool isValid, string errorMessage)> ValidateEndTermDataRow(int index, DataRow row)
@@ -705,7 +705,7 @@ namespace SchoolPortal.Services.Implementations
                     }
                     else
                     {
-                        var studentId = (await studentRepo.GetSingleWhere(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
+                        var studentId = (await studentRepo.GetSingleWhereAsync(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
                         var result = new EndTermResult()
                         {
                             StudentId = studentId,

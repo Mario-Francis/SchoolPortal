@@ -1,4 +1,5 @@
 ﻿using SchoolPortal.Core.Models;
+using SchoolPortal.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -36,6 +37,7 @@ namespace SchoolPortal.Web.ViewModels
         public string SubjectName { get; set; }
         public string StudentName { get; set; }
         public string RoomCode { get; set; }
+        public string Grade { get; set; }
 
         public ExamVM Exam { get; set; }
         public SubjectVM Subject { get; set; }
@@ -79,7 +81,7 @@ namespace SchoolPortal.Web.ViewModels
             };
         }
 
-        public static EndTermResultVM FromEndTermResult(EndTermResult result, int? clientTimeOffset = null)
+        public static EndTermResultVM FromEndTermResult(EndTermResult result, int? clientTimeOffset = null, IGradeService gradeService = null)
         {
             return new EndTermResultVM
             {
@@ -102,7 +104,8 @@ namespace SchoolPortal.Web.ViewModels
                 SubjectName=$"{result.Subject.Name} {(result.Subject.Code==null?"":$"({result.Subject.Code})")}".Trim(),
                 UpdatedBy = result.UpdatedBy,
                 CreatedDate = clientTimeOffset == null ? result.CreatedDate : result.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-                UpdatedDate = clientTimeOffset == null ? result.UpdatedDate : result.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value))
+                UpdatedDate = clientTimeOffset == null ? result.UpdatedDate : result.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
+                Grade = gradeService == null ? result.Total.ToString() : gradeService.GetGrade(result.Total, Core.TermSections.FIRST_HALF).Code
             };
         }
     }

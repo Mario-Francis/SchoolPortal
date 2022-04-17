@@ -192,7 +192,7 @@ $(() => {
                 let examId = $('#updateBtn').attr('examId');
                 let studentId = $('#updateBtn').attr('studentId');
 
-                if (teacherRemark == '' || headTeacherRemark == '') {
+                if (teacherRemark == '' && headTeacherRemark == '') {
                     notify('Fields with asteriks (*) are required', 'warning');
                 } else {
                     $('fieldset, .btn.action').prop('disabled', true);

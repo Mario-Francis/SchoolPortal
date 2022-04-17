@@ -149,7 +149,7 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<PerformanceRemark> GetRemark(long examId, long studentId)
         {
-            return await remarkRepo.GetSingleWhere(r => r.ExamId == examId && r.StudentId == studentId);
+            return await remarkRepo.GetSingleWhereAsync(r => r.ExamId == examId && r.StudentId == studentId);
         }
         // ============ Batch Upload ==================
         private async Task<(bool isValid, string errorMessage)> ValidateDataRow(int index, DataRow row)
@@ -225,7 +225,7 @@ namespace SchoolPortal.Services.Implementations
                     }
                     else
                     {
-                        var studentId = (await studentRepo.GetSingleWhere(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
+                        var studentId = (await studentRepo.GetSingleWhereAsync(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
                         var record = new PerformanceRemark()
                         {
                             StudentId = studentId,

@@ -2,16 +2,22 @@
 @inject ISessionService service;
 @inject IDropdownService dropdownService
 @{
-    ViewData["Title"] = "My Profile";
+    ViewData["Title"] = service.IsStudent?"My Profile":$"{Model.FullName}'s Profile";
 }
 <!-- Breadcubs Area Start Here -->
 <div class="breadcrumbs-area">
-    <h3>My Profile</h3>
+    <h3>@ViewData["Title"]</h3>
     <ul>
         <li>
             <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
         </li>
-        <li>My Profile</li>
+        @if (service.IsParent)
+        {
+            <li>
+                <a asp-action="" asp-controller="MyWards">My wards</a>
+            </li>
+        }
+    <li>@ViewData["Title"]</li>
     </ul>
 </div>
 <!-- Breadcubs Area End Here -->
@@ -52,7 +58,7 @@
                 </div>
 
             </div>
-            <div class="card-footer bg-white text-right d-none">
+            <div class="card-footer bg-white text-right @(service.IsStudent?"d-none":"")">
                 <button class="btn btn-outline-info f12" id="editBtn"><i class="fa fa-pencil-alt"></i> &nbsp;Edit Profile</button>
             </div>
         </div>
@@ -92,7 +98,7 @@
 
 
 
-<!-- Add Modal -->
+<!-- Photo Modal -->
 <div class="modal fade" id="editPhotoModal">
     <div class="modal-dialog modal-md modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
@@ -178,53 +184,6 @@
                                     <input id="phone" type="text" class="form-control integer" placeholder="Enter student phone number" maxlength="15" />
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="enrollmentDate" class="f14">* Enrollment Date</label>
-                                    <input id="enrollmentDate" type="text" class="form-control date" placeholder="YYYY-MM-DD" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="admissionNo" class="f14">* Admission Number</label>
-                                    <input id="admissionNo" type="text" class="form-control" placeholder="Enter admission number" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="entryClassId" class="f14">* Entry Class</label>
-                                    <select id="entryClassId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()" required>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="entryTermId" class="f14">* Entry Term</label>
-                                    <select id="entryTermId" class="custom-select form-control" asp-items="@dropdownService.GetTerms()" required>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="entrySession" class="f14">* Entry Session</label>
-                                    <input id="entrySession" type="text" class="form-control" placeholder="YYYY/YYYY" required />
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="classId" class="f14">* Current Class</label>
-                                    <select id="classId" class="custom-select form-control" asp-items="@dropdownService.GetClasses()" required>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="roomId" class="f14">* Current Classroom &nbsp;<i id="roomLoader" style="display:none;" class="fa fa-circle-notch fa-spin"></i></label>
-                                    <select id="roomId" class="custom-select form-control" required>
-                                        <option value="">- Select classroom -</option>
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <!-- Modal footer -->
@@ -251,9 +210,9 @@
     <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
     <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
     <script src="~/lib/cropperjs/cropper.js"></script>
-    <script>
+    @*<script>
         const maxUploadsize = @service.AppSettings.MaxUploadSize;
-    </script>
+    </script>*@
     <script src="~/js/my_student_profile.js" asp-append-version="true"></script>
 
 }

@@ -22,16 +22,19 @@ namespace SchoolPortal.Web.Controllers
         private readonly IResultService resultService;
         private readonly IClassService classService;
         private readonly ILoggerService<ResultsController> logger;
+        private readonly IGradeService gradeService;
 
         public ResultsController(IOptionsSnapshot<AppSettings> appSettingsDelegate,
             IResultService resultService,
             IClassService classService,
-            ILoggerService<ResultsController> logger)
+            ILoggerService<ResultsController> logger,
+            IGradeService gradeService)
         {
             this.appSettingsDelegate = appSettingsDelegate;
             this.resultService = resultService;
             this.classService = classService;
             this.logger = logger;
+            this.gradeService = gradeService;
         }
 
         public IActionResult Index()
@@ -52,7 +55,7 @@ namespace SchoolPortal.Web.Controllers
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
                 appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
-            var results = resultService.GetMidTermResultViewObjects().Select(r => MidTermResultViewObjectVM.FromMidTermResultViewObject(r, clientTimeOffset));
+            var results = resultService.GetMidTermResultViewObjects().Select(r => MidTermResultViewObjectVM.FromMidTermResultViewObject(r, clientTimeOffset, gradeService));
 
             var parser = new Parser<MidTermResultViewObjectVM>(Request.Form, results.AsQueryable())
                   .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
@@ -273,7 +276,8 @@ namespace SchoolPortal.Web.Controllers
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
                 appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
-            var results = resultService.GetEndTermResultViewObjects().Select(r => EndTermResultViewObjectVM.FromEndTermResultViewObject(r, clientTimeOffset));
+            var results = resultService.GetEndTermResultViewObjects()
+                .Select(r => EndTermResultViewObjectVM.FromEndTermResultViewObject(r, clientTimeOffset, gradeService));
 
             var parser = new Parser<EndTermResultViewObjectVM>(Request.Form, results.AsQueryable())
                   .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))

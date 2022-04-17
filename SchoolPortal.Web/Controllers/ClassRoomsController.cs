@@ -340,5 +340,26 @@ namespace SchoolPortal.Web.Controllers
         }
 
         #endregion teachers
+
+        #region parents
+        [HttpGet("WardClassRoom/{classRoomId}")]
+        public async Task<IActionResult> WardClassRoom(long classRoomId)
+        {
+            var classroom = await classService.GetClassRoom(classRoomId);
+            var teachers = classroom.ClassRoomTeachers.Select(ct => UserVM.FromUser(ct.Teacher));
+            var subjects = classroom.Class.Subjects.Select(s => SubjectVM.FromSubject(s));
+            var maleCount = classroom.ClassRoomStudents.Count(rs => rs.Student.Gender == "Male");
+            var femaleCount = classroom.ClassRoomStudents.Count(rs => rs.Student.Gender == "Female");
+
+
+            ViewData["teachers"] = teachers;
+            ViewData["subjects"] = subjects;
+            ViewData["maleCount"] = maleCount;
+            ViewData["femaleCount"] = femaleCount;
+
+            return View(ClassRoomVM.FromClassRoom(classroom));
+
+        }
+        #endregion parents
     }
 }

@@ -39,20 +39,26 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
-        [NonAction]
-        public async Task<IActionResult> StudentProfile()
+        [HttpGet("/WardProfile/{id}")]
+        public async Task<IActionResult> WardProfile(long id)
         {
-            var student = await studentService.GetStudent(HttpContext.GetUserSession().Id);
+            return await StudentProfile(id);
+        }
+
+        [NonAction]
+        public async Task<IActionResult> StudentProfile(long? id=null)
+        {
+            var student = await studentService.GetStudent(id ?? HttpContext.GetUserSession().Id);
             var model = StudentVM.FromStudent(student);
             return View("StudentProfile", model);
         }
 
         [HttpPost("UploadStudentPhoto")]
-        public async Task<IActionResult> UploadStudentPhoto(IFormFile file)
+        public async Task<IActionResult> UploadStudentPhoto(IFormFile file, long? id)
         {
             try
             {
-                var photoPath = await studentService.UploadPhoto(HttpContext.GetUserSession().Id, file);
+                var photoPath = await studentService.UploadPhoto(id ?? HttpContext.GetUserSession().Id, file);
                 return Ok(new { IsSuccess = true, Message = "Photo upload successful", Data = photoPath, ErrorItems = new string[] { } });
             }
             catch (AppException ex)
@@ -73,7 +79,7 @@ namespace SchoolPortal.Web.Controllers
         {
             try
             {
-                var student = await studentService.GetStudent(HttpContext.GetUserSession().Id);
+                var student = await studentService.GetStudent(model.Id!=0?model.Id: HttpContext.GetUserSession().Id);
                 var _student = student.Clone<Student>();
                 _student.FirstName = model.FirstName;
                 _student.MiddleName = model.MiddleName;
@@ -81,8 +87,9 @@ namespace SchoolPortal.Web.Controllers
                 _student.Gender = model.Gender;
                 _student.DateOfBirth = model.DateOfBirth;
                 _student.PhoneNumber = model.PhoneNumber;
+                _student.Email = model.Email;
 
-                await studentService.UpdateStudent(_student);
+                await studentService.UpdateStudentProfile(_student);
                 return Ok(new { IsSuccess = true, Message = "Profile updated successfully", ErrorItems = new string[] { } });
             }
             catch (AppException ex)

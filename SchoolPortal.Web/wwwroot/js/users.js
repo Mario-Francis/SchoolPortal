@@ -352,11 +352,11 @@ $(() => {
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
                         + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
-                        + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
-                        + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
-                        + `<a class="dropdown-item reset" href="javascript:void(0)" uid="${row.id}">Reset Password</a>`
+                        + (isAdmin && !status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
+                        + (isAdmin && status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
+                        + (isAdmin ? `<a class="dropdown-item reset" href="javascript:void(0)" uid="${row.id}">Reset Password</a>` : '')
                         + `<a class="dropdown-item edit" href="javascript:void(0)" uid="${row.id}">Edit</a>`
-                        + `<a class="dropdown-item delete" href="javascript:void(0)" uid="${row.id}">Delete</a>`
+                        + (isAdmin?`<a class="dropdown-item delete" href="javascript:void(0)" uid="${row.id}">Delete</a>`:'')
                         + '</div>'
                         + '</div>';
                 }
@@ -472,11 +472,11 @@ $(() => {
                         + (row.roles.map(r => r.id).includes(Teacher) ? `<a class="dropdown-item assign-class" href="javascript:void(0)" uid="${row.id}">Assign Classroom</a>` : '')
                         + `<a class="dropdown-item disabled" href="#" uid="${row.id}">View Login History</a>`
                         + `<div class="dropdown-divider"></div>`
-                        + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
-                        + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
-                        + `<a class="dropdown-item reset" href="javascript:void(0)" uid="${row.id}">Reset Password</a>`
+                        + (isAdmin && !status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
+                        + (isAdmin && status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
+                        + (isAdmin ? `<a class="dropdown-item reset" href="javascript:void(0)" uid="${row.id}">Reset Password</a>` : '')
                         + `<a class="dropdown-item edit" href="javascript:void(0)" uid="${row.id}">Edit</a>`
-                        + `<a class="dropdown-item delete" href="javascript:void(0)" uid="${row.id}">Delete</a>`
+                        + (isAdmin ? `<a class="dropdown-item delete" href="javascript:void(0)" uid="${row.id}">Delete</a>` : '')
                         + '</div>'
                         + '</div>';
                 }

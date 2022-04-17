@@ -173,7 +173,7 @@ namespace SchoolPortal.Web.UIServices
         {
             get
             {
-                return accessor.HttpContext.User.IsInRole(Constants.ROLE_STUDENT);
+                return accessor.HttpContext.GetUserSession().UserType == Constants.USER_TYPE_STUDENT;
             }
         }
 

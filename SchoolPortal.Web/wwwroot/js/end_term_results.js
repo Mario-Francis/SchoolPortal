@@ -146,8 +146,8 @@ $(() => {
             },
             {
                 data: {
-                    "filter": "TermTotal",
-                    "display": "termTotal"
+                    "filter": "Grade",
+                    "display": "grade"
                 }, "render": function (data, type, row, meta) {
                     return `${data}`;
                 }

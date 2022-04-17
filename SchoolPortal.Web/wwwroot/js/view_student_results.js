@@ -262,7 +262,7 @@ $(() => {
                                 if ($.fn.DataTable.isDataTable('#sEndTermResultsTable')) {
                                     sEndTermResultsTable.ajax.reload();
                                 }
-                                
+
                                 form.reset();
 
                                 $('#editEndTermModal').modal('hide');
@@ -308,7 +308,7 @@ $(() => {
                 } else {
                     $('fieldset').prop('disabled', true);
                     btn.html('<i class="fa fa-circle-notch fa-spin"></i> Saving comment...');
-                    
+
                     let data = {
                         id,
                         examId,
@@ -335,7 +335,7 @@ $(() => {
                     notify(ex.message, 'danger');
                 }
             }
-            
+
             btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Comments');
             $('fieldset').prop('disabled', false);
         }
@@ -404,7 +404,7 @@ $(() => {
                 let startWeight = $.trim($('#startWeight').val());
                 let endWeight = $.trim($('#endWeight').val());
 
-                if (startHeight == '' || endHeight == '' || startWeight == '' || endWeight=='') {
+                if (startHeight == '' || endHeight == '' || startWeight == '' || endWeight == '') {
                     notify('All fields are required', 'warning');
                 } else {
                     $('fieldset').prop('disabled', true);
@@ -462,7 +462,7 @@ $(() => {
 
                 if (ratings.some(r => r.score.trim() === '')) {
                     notify('All fields are required', 'warning');
-                }else {
+                } else {
                     $('fieldset').prop('disabled', true);
                     btn.html('<i class="fa fa-circle-notch fa-spin"></i> Saving ratings...');
 
@@ -599,102 +599,102 @@ function populateResultData(resultObj) {
         console.log(resultObj);
         $('#resultsCard').slideDown(300);
     });
-   
+
 }
 
 // mid term section
 function initializeMidTermDataTable() {
     if ($.fn.DataTable.isDataTable('#midTermResultsTable')) {
         midTermResultsTable.destroy();
-    } 
-        midTermResultsTable = $('#midTermResultsTable').DataTable({
-            serverSide: true,
-            processing: true,
-            ajax: {
-                url: $base + `StudentResults/${studentId}/MidTermResultsDataTable?session=${lastSearchedSession}&termId=${lastSearchedTermId}`,
-                type: "POST"
-            },
-            "order": [[2, "asc"]],
-            "lengthMenu": [10, 20, 30, 50, 100],
-            "paging": true,
-            autoWidth: false,
-            //rowId: 'id',
-            columns: [
-                {
-                    data: {
-                        "filter": "Id",
-                        "display": "id"
-                    }, "orderable": true, "render": function (data, type, row, meta) {
-                        return (meta.row + 1 + meta.settings._iDisplayStart) + '.';
-                    }
-                },
-                {
-                    data: {
-                        "filter": "Id",
-                        "display": "id"
-                    }, "orderable": false, "render": function (data, type, row, meta) {
-                        return '<div class="dropdown f14">'
-                            + '<button type="button" class="btn px-3 f12" data-toggle="dropdown">'
-                            + '<i class="fa fa-ellipsis-v"></i>'
-                            + '</button>'
-                            + '<div class="dropdown-menu f14">'
-                           // + `<a class="dropdown-item" href="#" cid="${row.id}">View Classrooms</a>`
-                           // + `<div class="dropdown-divider"></div>`
-                            + `<a class="dropdown-item m_edit" href="javascript:void(0)" rid="${row.id}">Edit</a>`
-                            //+ `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
-                            + '</div>'
-                            + '</div>';
-                    }
-                },
-                {
-                    data: {
-                        "filter": "SubjectName",
-                        "display": "subjectName"
-                    }, visible: true
-                },
-                {
-                    data: {
-                        "filter": "ClassWorkScore",
-                        "display": "classWorkScore"
-                    }
-                },
-                {
-                    data: {
-                        "filter": "TestScore",
-                        "display": "testScore"
-                    }
-                },
-                {
-                    data: {
-                        "filter": "ExamScore",
-                        "display": "examScore"
-                    }
-                },
-                {
-                    data: {
-                        "filter": "Total",
-                        "display": "total"
-                    }
-                },
-                {
-                    data: {
-                        "filter": "Grade",
-                        "display": "grade"
-                    }
+    }
+    midTermResultsTable = $('#midTermResultsTable').DataTable({
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: $base + `StudentResults/${studentId}/MidTermResultsDataTable?session=${lastSearchedSession}&termId=${lastSearchedTermId}`,
+            type: "POST"
+        },
+        "order": [[2, "asc"]],
+        "lengthMenu": [10, 20, 30, 50, 100],
+        "paging": true,
+        autoWidth: false,
+        //rowId: 'id',
+        columns: [
+            {
+                data: {
+                    "filter": "Id",
+                    "display": "id"
+                }, "orderable": true, "render": function (data, type, row, meta) {
+                    return (meta.row + 1 + meta.settings._iDisplayStart) + '.';
                 }
-               
-            ]
-        }).on('xhr.dt', (e, settings, json, xhr) => {
-            if (json != null) {
-                console.log(json);
-                $('#midTmoSpan').html(json.totalScoreObtained);
-                $('#midTmoSpan2').html(json.totalScoreObtainable);
-                $('#midAvgSpan').html(json.percentage);
-                $('#midAvgGradeSpan').html(json.percentageGrade);
+            },
+            {
+                data: {
+                    "filter": "Id",
+                    "display": "id"
+                }, "orderable": false, "render": function (data, type, row, meta) {
+                    return '<div class="dropdown f14">'
+                        + '<button type="button" class="btn px-3 f12" data-toggle="dropdown">'
+                        + '<i class="fa fa-ellipsis-v"></i>'
+                        + '</button>'
+                        + '<div class="dropdown-menu f14">'
+                        // + `<a class="dropdown-item" href="#" cid="${row.id}">View Classrooms</a>`
+                        // + `<div class="dropdown-divider"></div>`
+                        + `<a class="dropdown-item m_edit" href="javascript:void(0)" rid="${row.id}">Edit</a>`
+                        //+ `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
+                        + '</div>'
+                        + '</div>';
+                }
+            },
+            {
+                data: {
+                    "filter": "SubjectName",
+                    "display": "subjectName"
+                }, visible: true
+            },
+            {
+                data: {
+                    "filter": "ClassWorkScore",
+                    "display": "classWorkScore"
+                }
+            },
+            {
+                data: {
+                    "filter": "TestScore",
+                    "display": "testScore"
+                }
+            },
+            {
+                data: {
+                    "filter": "ExamScore",
+                    "display": "examScore"
+                }
+            },
+            {
+                data: {
+                    "filter": "Total",
+                    "display": "total"
+                }
+            },
+            {
+                data: {
+                    "filter": "Grade",
+                    "display": "grade"
+                }
             }
-        });
 
-    
+        ]
+    }).on('xhr.dt', (e, settings, json, xhr) => {
+        if (json != null) {
+            console.log(json);
+            $('#midTmoSpan').html(json.totalScoreObtained);
+            $('#midTmoSpan2').html(json.totalScoreObtainable);
+            $('#midAvgSpan').html(json.percentage);
+            $('#midAvgGradeSpan').html(json.percentageGrade);
+        }
+    });
+
+
 }
 
 function populateMidTerm(data) {
@@ -708,8 +708,8 @@ function populateMidTerm(data) {
     // comment
     if (data.resultComment != null) {
         $('#midCommentId').val(data.resultComment.id);
-        $('#midTeacherComment').val(data.resultComment.teacherComment);
-        $('#midHeadTeacherComment').val(data.resultComment.headTeacherComment);
+        $('#midTeacherComment').html(data.resultComment.teacherComment);
+        $('#midHeadTeacherComment').html(data.resultComment.headTeacherComment);
     } else {
         $('#midCommentId').val('0');
     }
@@ -964,8 +964,8 @@ function populateEndTerm(data) {
         // end term comment
         if (data.resultComment != null) {
             $('#endCommentId').val(data.resultComment.id);
-            $('#endTeacherComment').val(data.resultComment.teacherComment);
-            $('#endHeadTeacherComment').val(data.resultComment.headTeacherComment);
+            $('#endTeacherComment').html(data.resultComment.teacherComment);
+            $('#endHeadTeacherComment').html(data.resultComment.headTeacherComment);
         } else {
             $('#endCommentId').val('0');
         }
@@ -973,10 +973,10 @@ function populateEndTerm(data) {
         // health record
         if (data.healthRecord != null) {
             $('#endRecordId').val(data.healthRecord.id);
-            $('#startHeight').val(data.healthRecord.startHeight);
-            $('#endHeight').val(data.healthRecord.endHeight);
-            $('#startWeight').val(data.healthRecord.startWeight);
-            $('#endWeight').val(data.healthRecord.endWeight);
+            $('#startHeight').html(data.healthRecord.startHeight);
+            $('#endHeight').html(data.healthRecord.endHeight);
+            $('#startWeight').html(data.healthRecord.startWeight);
+            $('#endWeight').html(data.healthRecord.endWeight);
         } else {
             $('#endRecordId').val('0');
         }
@@ -984,29 +984,29 @@ function populateEndTerm(data) {
         //behavioural ratings
         if (data.behaviouralResults.length > 0) {
             data.behaviouralResults.forEach((r, i) => {
-                $(`#rating_${r.behaviouralRatingId}`).attr('resid', r.id).val(r.score);
+                $(`#rating_${r.behaviouralRatingId}`).attr('resid', r.id).html(r.score);
             });
         } else {
-            $('select[name="ratings[]"]').attr('resid', '0').val('');
+            $('p[name="ratings[]"]').attr('resid', '0').html('---');
         }
     }
 }
 
 function clearResult() {
     // clear ratings
-    $('select[name="ratings[]"]').attr('resid', '0').val('');
+    $('select[name="ratings[]"]').attr('resid', '0').html('---');
 
     // clear health records
     $('#endRecordId').val(0);
-    $('#startHeight').val('');
-    $('#endHeight').val('');
-    $('#startWeight').val('');
-    $('#endWeight').val('');
+    $('#startHeight').html('---');
+    $('#endHeight').html('---');
+    $('#startWeight').html('---');
+    $('#endWeight').html('---');
 
     // clear end term comment
     $('#endCommentId').val(0);
-    $('#endTeacherComment').val('');
-    $('#endHeadTeacherComment').val('');
+    $('#endTeacherComment').html('---');
+    $('#endHeadTeacherComment').html('---');
 
     // clear ed of session table
     $('#sEndSessionSpan').html('');
@@ -1028,8 +1028,8 @@ function clearResult() {
 
     // clear mid term comment
     $('#midCommentId').val(0);
-    $('#midTeacherComment').val('');
-    $('#midHeadTeacherComment').val('');
+    $('#midTeacherComment').html('---');
+    $('#midHeadTeacherComment').html('---');
 
     // clear mid term table
     $('#midSessionSpan').html('');
@@ -1046,17 +1046,17 @@ function clearResult() {
 
 
 
-function saveComment(comment=null, type='update') {
+function saveComment(comment = null, type = 'update') {
     var promise = new Promise((resolve, reject) => {
         try {
-            if (comment==null) {
+            if (comment == null) {
                 reject('Comment object is required');
             } else {
-                let url = $base + (type == 'update' ? 'remarks/updateRemark' :'remarks/addRemark');
+                let url = $base + (type == 'update' ? 'remarks/updateRemark' : 'remarks/addRemark');
                 $.ajax({
                     type: 'POST',
                     url: url,
-                    data:comment,
+                    data: comment,
                     success: (response) => {
                         if (response.isSuccess) {
                             resolve(response.message);

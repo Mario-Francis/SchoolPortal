@@ -1,8 +1,8 @@
 ﻿const allowedExtensions = ['jpeg', 'jpg', 'png'];
-var cropper, imageType, studentId = null;
+var cropper, imageType;
+const studentId = $('#studentId').val();
 
 $(() => {
-    studentId = $('#studentId').val();
     $('#file').on('change', e => {
         let file = $(e.currentTarget)[0].files[0];
         console.log(file);
@@ -55,13 +55,16 @@ $(() => {
         let file = await getCroppedImageFile();
         let data = new FormData();
         data.append('file', file);
+        data.append('id', studentId);
         let loader;
         try {
             loader = bootLoaderDialog('Uploading photo...');
             let path = await uploadPhoto(data);
             loader.hide();
             $('#profilePhoto').attr('src', $base + path);
-            $('#navImage').attr('src', $base + path);
+            if (isStudent) {
+                $('#navImage').attr('src', $base + path);
+            }
             notify('Photo uploaded successfully', 'success');
 
             $('#editPhotoModal').modal('hide');
@@ -77,18 +80,19 @@ $(() => {
     // on edit
     $('#editBtn').on('click', async (e) => {
         let uid = studentId;
-        let loader = bootLoaderDialog('Fetching student...');
+        let loader = bootLoaderDialog('Fetching...');
         let student = null;
         try {
             student = await getStudent(uid);
             loader.hide();
 
-            $('#e_fname').val(student.firstName);
-            $('#e_mname').val(student.middleName);
-            $('#e_sname').val(student.surname);
-            $('#e_dob').val(student.dateOfBirth?.split('T')[0]);
-            $('#e_gender').val(student.gender);
-            $('#e_phone').val(student.phoneNumber);
+            $('#fname').val(student.firstName);
+            $('#mname').val(student.middleName);
+            $('#sname').val(student.surname);
+            $('#dob').val(student.dateOfBirth?.split('T')[0]);
+            $('#gender').val(student.gender);
+            $('#phone').val(student.phoneNumber);
+            $('#email').val(student.email);
 
             $('#updateBtn').attr('uid', uid);
 
@@ -110,18 +114,19 @@ $(() => {
         try {
             let form = $("form")[0];
             if (validateForm(form)) {
-                let firstName = $.trim($('#e_fname').val());
-                let middleName = $.trim($('#e_mname').val());
-                let surname = $.trim($('#e_sname').val());
-                let gender = $.trim($('#e_gender').val());
-                let dob = $.trim($('#e_dob').val());
-                let phone = $.trim($('#e_phone').val());
+                let firstName = $.trim($('#fname').val());
+                let middleName = $.trim($('#mname').val());
+                let surname = $.trim($('#sname').val());
+                let gender = $.trim($('#gender').val());
+                let dob = $.trim($('#dob').val());
+                let phone = $.trim($('#phone').val());
+                let email = $.trim($('#email').val());
 
-                if (firstName == '' || surname == '' || gender == '' || phone == '') {
+                if (firstName == '' || surname == '' || gender == '' || phone == '' || email=='') {
                     notify('Fields with asteriks (*) are required', 'warning');
                 } else {
                     $('fieldset').prop('disabled', true);
-                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating student...');
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Updating profile...');
                     let url = $base + 'profile/UpdateStudentProfile';
                     let data = {
                         id: uid,
@@ -130,7 +135,8 @@ $(() => {
                         surname,
                         gender,
                         dateOfBirth: dob,
-                        phoneNumber: phone
+                        phoneNumber: phone,
+                        email
                     };
                     $.ajax({
                         type: 'POST',

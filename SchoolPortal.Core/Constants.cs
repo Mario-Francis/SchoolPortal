@@ -67,7 +67,11 @@ namespace SchoolPortal.Core
 
         ADDED_COURSE_WORK,
         UPDATED_COURSE_WORK,
-        DELETED_COURSE_WORK
+        DELETED_COURSE_WORK,
+
+        ADDED_GRADE,
+        UPDATED_GRADE,
+        DELETED_GRADE
 
     }
 

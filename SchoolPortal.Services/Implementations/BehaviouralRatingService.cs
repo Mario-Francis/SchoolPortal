@@ -60,7 +60,7 @@ namespace SchoolPortal.Services.Implementations
 
         public async Task<BehaviouralRating> GetBehaviouralRatingByName(string name)
         {
-            var rating = await behaviouralRatingRepo.GetSingleWhere(r => r.Name == name);
+            var rating = await behaviouralRatingRepo.GetSingleWhereAsync(r => r.Name == name);
             return rating;
         }
         // add
@@ -464,7 +464,7 @@ namespace SchoolPortal.Services.Implementations
                     {
                         var ratings = GetBehaviouralRatings().ToList();
                         var results = new List<BehaviouralResult>();
-                        var studentId = (await studentRepo.GetSingleWhere(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
+                        var studentId = (await studentRepo.GetSingleWhereAsync(s => s.AdmissionNo == Convert.ToString(rows[i][1]).Trim())).Id;
 
                         for(int j = 2; j < headers.Count; j++)
                         {
