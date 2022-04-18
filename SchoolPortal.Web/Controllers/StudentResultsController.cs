@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using MimeKit;
 using SchoolPortal.Core;
 using SchoolPortal.Core.DTOs;
 using SchoolPortal.Services;
@@ -25,6 +26,9 @@ namespace SchoolPortal.Web.Controllers
         private readonly IBehaviouralRatingService behaviouralRatingService;
         private readonly ILoggerService<StudentResultsController> logger;
         private readonly IGradeService gradeService;
+        private readonly IPerformanceRemarkService remarkService;
+        private readonly IPdfGeneratorService pdfGeneratorService;
+        private readonly IHealthRecordService healthRecordService;
 
         public StudentResultsController(
             IStudentService studentService,
@@ -33,7 +37,11 @@ namespace SchoolPortal.Web.Controllers
             IOptionsSnapshot<AppSettings> appSettingsDelegate,
             IBehaviouralRatingService behaviouralRatingService,
             ILoggerService<StudentResultsController> logger,
-            IGradeService gradeService)
+            IGradeService gradeService,
+            IPerformanceRemarkService remarkService,
+            IPdfGeneratorService pdfGeneratorService,
+            IHealthRecordService healthRecordService
+            )
         {
             this.studentService = studentService;
             this.studentResultService = studentResultService;
@@ -42,6 +50,9 @@ namespace SchoolPortal.Web.Controllers
             this.behaviouralRatingService = behaviouralRatingService;
             this.logger = logger;
             this.gradeService = gradeService;
+            this.remarkService = remarkService;
+            this.pdfGeneratorService = pdfGeneratorService;
+            this.healthRecordService = healthRecordService;
         }
         //public IActionResult Index()
         //{
@@ -53,7 +64,7 @@ namespace SchoolPortal.Web.Controllers
         {
             if (studentId == null)
             {
-                return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
             }
             var student = await studentService.GetStudent(studentId.Value);
             if (student == null)
@@ -76,7 +87,7 @@ namespace SchoolPortal.Web.Controllers
             {
                 if (studentId == null)
                 {
-                    return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+                    return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
                 }
                 var student = await studentService.GetStudent(studentId.Value);
                 if (student == null)
@@ -114,7 +125,7 @@ namespace SchoolPortal.Web.Controllers
             {
                 if (studentId == null)
                 {
-                    return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+                    return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
                 }
                 var student = await studentService.GetStudent(studentId.Value);
                 if (student == null)
@@ -166,7 +177,6 @@ namespace SchoolPortal.Web.Controllers
             dtResults.Percentage = Math.Round(dtResults.TotalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
             dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.FIRST_HALF).Code;
 
-
             return Ok(dtResults);
         }
 
@@ -216,7 +226,7 @@ namespace SchoolPortal.Web.Controllers
         {
             if (studentId == null)
             {
-                return NotFound(new { ISSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
             }
             var student = await studentService.GetStudent(studentId.Value);
             if (student == null)
@@ -228,6 +238,244 @@ namespace SchoolPortal.Web.Controllers
             ViewData["BehaviouralRatings"] = behaviouralRatings;
 
             return View(StudentVM.FromStudent(student));
+        }
+
+
+        // Export Views
+        [AllowAnonymous]
+        [HttpGet("{studentId}/MidTermResult/ExportView")]
+        public async Task<IActionResult> MidTermResultExportView(long? studentId, string session, long? termId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var results = studentResultService.GetMidTermResults(studentId.Value, session, termId.Value)
+               .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.FIRST_HALF, gradeService));
+
+            var totalScoreObtained = results.Select(r => r.Total).Sum();
+            var totalScoreObtainable = 40 * results.Count();
+            var percentage = Math.Round(totalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            var percentageGrade = gradeService.GetGrade(percentage, TermSections.FIRST_HALF).Code;
+
+            var midTermResult = await resultService.GetMidTermResult(results.First().Id);
+            var classRoom = midTermResult.ClassRoom;
+            var exam = midTermResult.Exam;
+
+            var grades = gradeService.GetGrades(TermSections.FIRST_HALF);
+
+            // remark 
+            var remark = await remarkService.GetRemark(exam.Id, student.Id);
+
+            var exportViewData = new MidTermResultExportVM
+            {
+                ResultItems = results,
+                Percentage = percentage,
+                PercentageGrade = percentageGrade,
+                TotalScoreObtained = totalScoreObtained,
+                TotalScoreObtainable = totalScoreObtainable,
+                Exam = ExamVM.FromExam(exam),
+                Student = StudentVM.FromStudent(student),
+                ClassRoom=ClassRoomVM.FromClassRoom(classRoom),
+                Grades = grades.Select(g => GradeVM.FromGrade(g)),
+                HeadTeacherComment = remark?.HeadTeacherRemark,
+                TeacherComment = remark?.TeacherRemark
+            };
+
+            return View(exportViewData);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{studentId}/EndTermResult/ExportView")]
+        public async Task<IActionResult> EndTermResultExportView(long? studentId, string session, long? termId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var results = studentResultService.GetEndTermResults(studentId.Value, session, termId.Value)
+               .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.SECOND_HALF, gradeService));
+
+            var totalScoreObtained = results.Select(r => r.TermTotal).Sum();
+            var totalScoreObtainable = 100 * results.Count();
+            var percentage = Math.Round(totalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
+
+            var endTermResult = await resultService.GetEndTermResult(results.First().Id);
+            var classRoom = endTermResult.ClassRoom;
+            var exam = endTermResult.Exam;
+
+            var grades = gradeService.GetGrades(TermSections.SECOND_HALF);
+
+            // remark 
+            var remark = await remarkService.GetRemark(exam.Id, student.Id);
+
+            // behavioural ratings
+            var affective = behaviouralRatingService.GetBehaviouralResults(session, termId.Value, student.Id)
+                .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Affective.ToString());
+
+            var psychomotor = behaviouralRatingService.GetBehaviouralResults(session, termId.Value, student.Id)
+                .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Psychomotor.ToString());
+
+            var healthRecord = await healthRecordService.GetRecord(session, termId.Value, student.Id);
+
+            var exportViewData = new EndTermResultExportVM
+            {
+                ResultItems = results,
+                Percentage = percentage,
+                PercentageGrade = percentageGrade,
+                TotalScoreObtained = totalScoreObtained,
+                TotalScoreObtainable = totalScoreObtainable,
+                Exam = ExamVM.FromExam(exam),
+                Student = StudentVM.FromStudent(student),
+                ClassRoom = ClassRoomVM.FromClassRoom(classRoom),
+                Grades = grades.Select(g => GradeVM.FromGrade(g)),
+                HeadTeacherComment = remark?.HeadTeacherRemark,
+                TeacherComment = remark?.TeacherRemark,
+                AffectiveDomainBehaviouralRatings = affective.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
+                PsychoMotorDomainBehaviouralRatings = psychomotor.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
+                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord)
+            };
+
+            return View(exportViewData);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{studentId}/EndSessionResult/ExportView")]
+        public async Task<IActionResult> EndSessionResultExportView(long? studentId, string session, long? termId= (int)Terms.THIRD)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var results = studentResultService.GetEndOfSessionResults(studentId.Value, session)
+               .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.SECOND_HALF, gradeService));
+
+            var totalScoreObtained = results.Select(r => r.AverageScore).Sum();
+            var totalScoreObtainable = 100 * results.Count();
+            var percentage = Math.Round(totalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
+
+            var endTermResult = await resultService.GetEndTermResult(results.First().Id);
+            var classRoom = endTermResult.ClassRoom;
+            var exam = endTermResult.Exam;
+
+            var grades = gradeService.GetGrades(TermSections.SECOND_HALF);
+
+            // remark 
+            var remark = await remarkService.GetRemark(exam.Id, student.Id);
+
+            // behavioural ratings
+            var affective = behaviouralRatingService.GetBehaviouralResults(session, termId.Value, student.Id)
+                .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Affective.ToString());
+
+            var psychomotor = behaviouralRatingService.GetBehaviouralResults(session, termId.Value, student.Id)
+                .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Psychomotor.ToString());
+
+            var healthRecord = await healthRecordService.GetRecord(session, termId.Value, student.Id);
+
+            var exportViewData = new EndTermResultExportVM
+            {
+                ResultItems = results,
+                Percentage = percentage,
+                PercentageGrade = percentageGrade,
+                TotalScoreObtained = totalScoreObtained,
+                TotalScoreObtainable = totalScoreObtainable,
+                Exam = ExamVM.FromExam(exam),
+                Student = StudentVM.FromStudent(student),
+                ClassRoom = ClassRoomVM.FromClassRoom(classRoom),
+                Grades = grades.Select(g => GradeVM.FromGrade(g)),
+                HeadTeacherComment = remark?.HeadTeacherRemark,
+                TeacherComment = remark?.TeacherRemark,
+                AffectiveDomainBehaviouralRatings = affective.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
+                PsychoMotorDomainBehaviouralRatings = psychomotor.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
+                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord)
+            };
+
+            return View(exportViewData);
+        }
+
+
+        // Export Mid-term result
+        [AllowAnonymous]
+        [HttpGet("{studentId}/MidTermResult/Export")]
+        public async Task<IActionResult> MidTermResultExport(long? studentId, string session, long? termId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var url = $"{appSettingsDelegate.Value.LocalBaseUrl}StudentResults/{student.Id}/MidTermResult/ExportView?session={session}&termId={termId}";
+            var pdfBuffer = pdfGeneratorService.GeneratePdfFromUrl(url);
+            var fileName = $"{student.FirstName} {student.MiddleName} {student.Surname} ({student.AdmissionNo}) Mid-Term Result for {session} {((Terms)termId).ToString()} Term - {DateTime.Now.ToString("dd-MM-yyyy hh-mm-ss")}.pdf".ToLower().Replace(" ", "_");
+
+            return File(pdfBuffer, MimeTypes.GetMimeType(fileName), fileName);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{studentId}/EndTermResult/Export")]
+        public async Task<IActionResult> EndTermResultExport(long? studentId, string session, long? termId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var url = $"{appSettingsDelegate.Value.LocalBaseUrl}StudentResults/{student.Id}/EndTermResult/ExportView?session={session}&termId={termId}";
+            var pdfBuffer = pdfGeneratorService.GeneratePdfFromUrl(url);
+            var fileName = $"{student.FirstName} {student.MiddleName} {student.Surname} ({student.AdmissionNo}) End-Term Result for {session} {((Terms)termId).ToString()} Term - {DateTime.Now.ToString("dd-MM-yyyy hh-mm-ss")}.pdf".ToLower().Replace(" ", "_");
+
+            return File(pdfBuffer, MimeTypes.GetMimeType(fileName), fileName);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{studentId}/EndSessionResult/Export")]
+        public async Task<IActionResult> EndSessionResultExport(long? studentId, string session, long? termId)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var url = $"{appSettingsDelegate.Value.LocalBaseUrl}StudentResults/{student.Id}/EndSessionResult/ExportView?session={session}&termId={termId}";
+            var pdfBuffer = pdfGeneratorService.GeneratePdfFromUrl(url);
+            var fileName = $"{student.FirstName} {student.MiddleName} {student.Surname} ({student.AdmissionNo}) End-Session Result for {session} - {DateTime.Now.ToString("dd-MM-yyyy hh-mm-ss")}.pdf".ToLower().Replace(" ", "_");
+
+            return File(pdfBuffer, MimeTypes.GetMimeType(fileName), fileName);
         }
 
     }

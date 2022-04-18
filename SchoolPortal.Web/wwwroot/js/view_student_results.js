@@ -497,6 +497,19 @@ $(() => {
         }
     });
 
+    $('#mExportBtn').on('click', e => {
+        let url = $base + `studentResults/${studentId}/MidTermResult/Export?session=${lastSearchedSession}&termId=${lastSearchedTermId}`;
+        location.assign(url);
+    });
+    $('#eExportBtn').on('click', e => {
+        let url = $base + `studentResults/${studentId}/EndTermResult/Export?session=${lastSearchedSession}&termId=${lastSearchedTermId}`;
+        location.assign(url);
+    });
+    $('#esExportBtn').on('click', e => {
+        let url = $base + `studentResults/${studentId}/EndSessionResult/Export?session=${lastSearchedSession}&termId=${lastSearchedTermId}`;
+        location.assign(url);
+    });
+
 });
 
 

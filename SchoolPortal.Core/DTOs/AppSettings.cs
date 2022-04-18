@@ -6,6 +6,8 @@ namespace SchoolPortal.Core.DTOs
 {
     public class AppSettings
     {
+        public string LocalBaseUrl { get; set; }
+        public string AppBaseUrl { get; set; }
         public int MaxUploadSize { get; set; }
         public int DefaultTimeZoneOffset { get; set; }
         public int ReminderServiceExecutionInterval { get; set; }

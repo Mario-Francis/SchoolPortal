@@ -33,6 +33,12 @@ namespace SchoolPortal.Core
         END_TERM
     }
 
+    public enum BehaviouralRatingCategory
+    {
+        Affective,
+        Psychomotor
+    }
+
     public enum ActivityActionType
     {
         OTHER,

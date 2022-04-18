@@ -48,6 +48,7 @@ namespace SchoolPortal.Root
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<ICourseWorkService, CourseWorkService>();
             services.AddScoped<IGradeService, GradeService>();
+            services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
 
 
 
