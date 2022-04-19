@@ -555,7 +555,7 @@ namespace SchoolPortal.Web.Controllers
                 return NotFound("User is not found");
             }
 
-            return View(UserVM.FromUser(user));
+            return View(user);
         }
     }
 }

@@ -22,7 +22,6 @@ $(() => {
                     return (meta.row + 1 + meta.settings._iDisplayStart) + '.';
                 }
             },
-
             {
                 data: {
                     "filter": "Relationship",

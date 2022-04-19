@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
 using SchoolPortal.Core.DTOs;
+using SchoolPortal.Core.Extensions;
 using SchoolPortal.Core.Models;
 using SchoolPortal.Services;
 using SchoolPortal.Web.ViewModels;
@@ -532,5 +533,17 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        [HttpGet("/MyGuardians")]
+        public async Task<IActionResult> MyGuardians()
+        {
+            var studentId = HttpContext.GetUserSession().Id;
+            var student = await studentService.GetStudent(studentId);
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            return View(student);
+        }
     }
 }

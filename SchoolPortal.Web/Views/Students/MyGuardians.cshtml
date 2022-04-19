@@ -1,0 +1,77 @@
+﻿@model Student;
+@inject ISessionService service;
+@inject IDropdownService dropdownService
+@{
+    var name = $"{Model.FirstName} {Model.MiddleName} {Model.Surname}".Replace("  ", " ");
+    ViewData["Title"] = $"My Guardians";
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>@ViewData["Title"]</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li>My Guardians</li>
+    </ul>
+</div>
+
+@if (Model.StudentGuardians != null && Model.StudentGuardians.Count() > 0)
+{
+    <div class="row">
+        @foreach (var g in Model.StudentGuardians)
+        {
+
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="card height-auto">
+                    <div class="card-header bg-white py-4">
+                        <div style="width:100px;height:100px;" class=" d-block mx-auto">
+                            <img src="@(g.Guardian.PhotoPath==null?$"{service.BaseUrl+"img/avatar.png"}":$"{service.BaseUrl+g.Guardian.PhotoPath}")" id="@(g.Guardian.Id)profilePhoto" class="img-fluid w-100 img-thumbnail rounded-circle bg-light" />
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+                        <h5 class="text-center mini-bold m-0">@($"{g.Guardian.FirstName} {g.Guardian.Surname}")</h5>
+                        <p class="text-center m-0 f14">@g.Guardian.Username</p>
+                        <hr class="my-2 mb-3" />
+                        <div class="py-2">
+                            <p class="f12 m-0" style="line-height:12px;">Email</p>
+                            <p class="f14 text-dark">@g.Guardian.Email</p>
+                        </div>
+                        <div class="py-2">
+                            <p class="f12 m-0" style="line-height:12px;">Phone Number</p>
+                            <p class="f14 text-dark">@g.Guardian.PhoneNumber</p>
+                        </div>
+                        <div class="py-2">
+                            <p class="f12 m-0" style="line-height:12px;">Relationship</p>
+                            <p class="f14 text-dark">@g.Relationship.Name</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h6 class="m-0 f14"><i class="fa fa-exclamation-circle"></i> You currently have no guardians</h6>
+    </div>
+}
+
+
+@section css{
+    <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script>
+
+    </script>
+    @*<script src="~/js/my_guardians.js" asp-append-version="true"></script>*@
+
+}

@@ -322,7 +322,29 @@
                                 </a>
                             </li>
                         }
-                         @if (service.IsParent)
+                        @if (service.IsStudent)
+                        {
+                            if (service.UserSession.HasClassRoom)
+                            {
+                                <li class="nav-item">
+                                    <a href="@(service.BaseUrl)classrooms/wardClassroom/@(service.UserSession.ClassRoomId)" class="nav-link">
+                                        <i class="fa fa-chalkboard-teacher"></i><span>My Classroom</span>
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a href="@(service.BaseUrl)StudentResults/@(service.UserSession.Id)/View" class="nav-link">
+                                    <i class="fa fa-list-alt"></i><span>My Results</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="MyGuardians" asp-action="" class="nav-link">
+                                    <i class="fa fa-users"></i><span>My Guardians</span>
+                                </a>
+                            </li>
+
+                        }
+                        @if (service.IsParent)
                         {
                             <li class="nav-item">
                                 <a asp-controller="MyWards" asp-action="" class="nav-link">
@@ -332,26 +354,26 @@
                         }
 
                         @*<li class="nav-item sidebar-nav-item">
-                                <a href="#" class="nav-link"><i class="flaticon-dashboard"></i><span>Dashboard</span></a>
-                                <ul class="nav sub-group-menu">
-                                    <li class="nav-item">
-                                        <a href="index.html" class="nav-link"><i class="fas fa-angle-right"></i>Admin</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="index3.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Students
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="index4.html" class="nav-link"><i class="fas fa-angle-right"></i>Parents</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="index5.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Teachers
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
+            <a href="#" class="nav-link"><i class="flaticon-dashboard"></i><span>Dashboard</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link"><i class="fas fa-angle-right"></i>Admin</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index3.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="index4.html" class="nav-link"><i class="fas fa-angle-right"></i>Parents</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index5.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Teachers
+                    </a>
+                </li>
+            </ul>
+        </li>*@
                         @if (service.IsAdmin || service.IsHeadTeacher)
                         {
                             <li class="nav-item sidebar-nav-item">
@@ -379,20 +401,20 @@
 
 
                         @*<li class="nav-item">
-                                <a asp-controller="Users" asp-action="Index" asp-route-tab="all" class="nav-link">
-                                    <i class="flaticon-multiple-users-silhouette"></i><span>Users</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Users" asp-action="Index" asp-route-tab="teachers" class="nav-link">
-                                    <i class="flaticon-multiple-users-silhouette"></i><span>Teachers</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Users" asp-action="Index" asp-route-tab="parents" class="nav-link">
-                                    <i class="flaticon-couple"></i><span>Parents</span>
-                                </a>
-                            </li>*@
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="all" class="nav-link">
+                <i class="flaticon-multiple-users-silhouette"></i><span>Users</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="teachers" class="nav-link">
+                <i class="flaticon-multiple-users-silhouette"></i><span>Teachers</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="parents" class="nav-link">
+                <i class="flaticon-couple"></i><span>Parents</span>
+            </a>
+        </li>*@
                         @if (service.IsAdmin || service.IsHeadTeacher)
                         {
 
@@ -432,27 +454,27 @@
 
 
                         @*<li class="nav-item sidebar-nav-item">
-                                <a href="#" class="nav-link"><i class="flaticon-couple"></i><span>Parents</span></a>
-                                <ul class="nav sub-group-menu">
-                                    <li class="nav-item">
-                                        <a href="all-parents.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>All
-                                            Parents
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="parents-details.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Parents Details
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="add-parents.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Add
-                                            Parent
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
+            <a href="#" class="nav-link"><i class="flaticon-couple"></i><span>Parents</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="all-parents.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>All
+                        Parents
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="parents-details.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Parents Details
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-parents.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Add
+                        Parent
+                    </a>
+                </li>
+            </ul>
+        </li>*@
                         <li class="nav-item sidebar-nav-item d-none">
                             <a href="#" class="nav-link disabled"><i class="flaticon-books"></i><span>Library</span></a>
                             <ul class="nav sub-group-menu">
@@ -471,27 +493,27 @@
                             </ul>
                         </li>
                         @*<li class="nav-item sidebar-nav-item">
-                                <a href="#" class="nav-link"><i class="flaticon-technological"></i><span>Acconunt</span></a>
-                                <ul class="nav sub-group-menu">
-                                    <li class="nav-item">
-                                        <a href="all-fees.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>All Fees
-                                            Collection
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="all-expense.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Expenses
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="add-expense.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Add
-                                            Expenses
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
+            <a href="#" class="nav-link"><i class="flaticon-technological"></i><span>Acconunt</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="all-fees.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>All Fees
+                        Collection
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="all-expense.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Expenses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-expense.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Add
+                        Expenses
+                    </a>
+                </li>
+            </ul>
+        </li>*@
                         @if (service.IsAdmin)
                         {
                             <li class="nav-item sidebar-nav-item">
@@ -529,13 +551,13 @@
                             </li>
                         }
                         @*<li class="nav-item">
-                                <a href="class-routine.html" class="nav-link disabled">
-                                    <i class="flaticon-calendar"></i><span>
-                                        Class
-                                        Routine
-                                    </span>
-                                </a>
-                            </li>*@
+            <a href="class-routine.html" class="nav-link disabled">
+                <i class="flaticon-calendar"></i><span>
+                    Class
+                    Routine
+                </span>
+            </a>
+        </li>*@
                         <li class="nav-item d-none">
                             <a href="student-attendence.html" class="nav-link disabled">
                                 <i class="flaticon-checklist"></i><span>Attendence</span>
@@ -543,76 +565,76 @@
                         </li>
                         @if (service.IsAdmin || service.IsHeadTeacher || (service.IsTeacher && service.UserSession.HasClassRoom))
                         {
-                        <li class="nav-item sidebar-nav-item">
-                            <a href="#" class="nav-link"><i class="flaticon-shopping-list"></i><span>Exams & Records</span></a>
-                            <ul class="nav sub-group-menu">
-                                @if (service.IsAdmin || service.IsHeadTeacher)
-                                {
-                                    <li class="nav-item">
-                                        <a asp-controller="Exams" asp-action="" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Exam
-                                            Schedules
-                                        </a>
-                                    </li>
-                                }
-                                @if (service.IsAdmin || service.IsHeadTeacher)
-                                {
-                                    <li class="nav-item">
-                                        <a asp-controller="Results" asp-action="MidTermResults" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Mid-term Results
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a asp-controller="Results" asp-action="EndTermResults" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>End-term Results
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a asp-controller="BehaviouralRatings" asp-action="Index" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Behavioural Ratings
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a asp-controller="HealthRecords" asp-action="Index" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Health Records
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a asp-controller="Remarks" asp-action="Index" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Performance Remarks
-                                        </a>
-                                    </li>
-                                }
-                                else if (service.IsTeacher && service.UserSession.HasClassRoom)
-                                {
-                                    <li class="nav-item">
-                                        <a href="/results/midterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Mid-term Results
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a  href="/results/endterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>End-term Results
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="/BehaviouralRatings/ClassRoomBehaviouralRatings/@service.UserSession.ClassRoomId" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Behavioural Ratings
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="/HealthRecords/ClassRoomHealthRecords/@service.UserSession.ClassRoomId" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Health Records
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="/Remarks/ClassRoomRemarks/@service.UserSession.ClassRoomId" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Performance Remarks
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
-                        </li>
+                            <li class="nav-item sidebar-nav-item">
+                                <a href="#" class="nav-link"><i class="flaticon-shopping-list"></i><span>Exams & Records</span></a>
+                                <ul class="nav sub-group-menu">
+                                    @if (service.IsAdmin || service.IsHeadTeacher)
+                                    {
+                                        <li class="nav-item">
+                                            <a asp-controller="Exams" asp-action="" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Exam
+                                                Schedules
+                                            </a>
+                                        </li>
+                                    }
+                                    @if (service.IsAdmin || service.IsHeadTeacher)
+                                    {
+                                        <li class="nav-item">
+                                            <a asp-controller="Results" asp-action="MidTermResults" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Mid-term Results
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="Results" asp-action="EndTermResults" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>End-term Results
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="BehaviouralRatings" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Behavioural Ratings
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="HealthRecords" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Health Records
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="Remarks" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Performance Remarks
+                                            </a>
+                                        </li>
+                                    }
+                                    else if (service.IsTeacher && service.UserSession.HasClassRoom)
+                                    {
+                                        <li class="nav-item">
+                                            <a href="/results/midterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Mid-term Results
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/results/endterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>End-term Results
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/BehaviouralRatings/ClassRoomBehaviouralRatings/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Behavioural Ratings
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/HealthRecords/ClassRoomHealthRecords/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Health Records
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/Remarks/ClassRoomRemarks/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Performance Remarks
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
                         }
                         <li class="nav-item d-none">
                             <a href="transport.html" class="nav-link disabled">
@@ -633,43 +655,43 @@
                             </a>
                         </li>
                         @*<li class="nav-item sidebar-nav-item">
-                                <a href="#" class="nav-link"><i class="flaticon-menu-1"></i><span>UI Elements</span></a>
-                                <ul class="nav sub-group-menu">
-                                    <li class="nav-item">
-                                        <a href="notification-alart.html" class="nav-link"><i class="fas fa-angle-right"></i>Alart</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="button.html" class="nav-link"><i class="fas fa-angle-right"></i>Button</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="grid.html" class="nav-link"><i class="fas fa-angle-right"></i>Grid</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="modal.html" class="nav-link"><i class="fas fa-angle-right"></i>Modal</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="progress-bar.html" class="nav-link"><i class="fas fa-angle-right"></i>Progress Bar</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="ui-tab.html" class="nav-link"><i class="fas fa-angle-right"></i>Tab</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="ui-widget.html" class="nav-link">
-                                            <i class="fas fa-angle-right"></i>Widget
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>*@
+            <a href="#" class="nav-link"><i class="flaticon-menu-1"></i><span>UI Elements</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="notification-alart.html" class="nav-link"><i class="fas fa-angle-right"></i>Alart</a>
+                </li>
+                <li class="nav-item">
+                    <a href="button.html" class="nav-link"><i class="fas fa-angle-right"></i>Button</a>
+                </li>
+                <li class="nav-item">
+                    <a href="grid.html" class="nav-link"><i class="fas fa-angle-right"></i>Grid</a>
+                </li>
+                <li class="nav-item">
+                    <a href="modal.html" class="nav-link"><i class="fas fa-angle-right"></i>Modal</a>
+                </li>
+                <li class="nav-item">
+                    <a href="progress-bar.html" class="nav-link"><i class="fas fa-angle-right"></i>Progress Bar</a>
+                </li>
+                <li class="nav-item">
+                    <a href="ui-tab.html" class="nav-link"><i class="fas fa-angle-right"></i>Tab</a>
+                </li>
+                <li class="nav-item">
+                    <a href="ui-widget.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Widget
+                    </a>
+                </li>
+            </ul>
+        </li>*@
                         @*<li class="nav-item">
-                                <a href="map.html" class="nav-link">
-                                    <i class="flaticon-planet-earth"></i><span>Map</span>
-                                </a>
-                            </li>*@
+            <a href="map.html" class="nav-link">
+                <i class="flaticon-planet-earth"></i><span>Map</span>
+            </a>
+        </li>*@
                         @*<li class="nav-item">
-                                <a href="account-settings.html" class="nav-link">
-                                    <i class="flaticon-settings"></i><span>Account</span>
-                                </a>
-                            </li>*@
+            <a href="account-settings.html" class="nav-link">
+                <i class="flaticon-settings"></i><span>Account</span>
+            </a>
+        </li>*@
                     </ul>
                 </div>
                 <div class="nav-pad"></div>
