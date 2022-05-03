@@ -17,6 +17,7 @@ namespace SchoolPortal.Services
         Task<User> GetUser(long userId);
         Task<User> GetUser(string email);
         IEnumerable<User> GetUsers(bool includeInactive = true);
+        Task SendPasswordRecoveryMail(string email);
         Task DeleteUser(long userId);
         Task<string> GenerateUsername(string firstName, string lastName);
         Task<bool> AnyUserExists();
@@ -25,6 +26,7 @@ namespace SchoolPortal.Services
         Task UpdateUserStatus(long userId, bool isActive);
         Task AssignClassRoom(long userId, long? roomId);
         Task ResetPassword(long userId);
+        Task ResetPassword(PasswordRequestObject req);
         Task AddParentWard(long studentId, long parentId, long relationshipId);
         Task RemoveParentWard(long studentGuardianId);
         Task<string> UploadPhoto(long userId, IFormFile file);

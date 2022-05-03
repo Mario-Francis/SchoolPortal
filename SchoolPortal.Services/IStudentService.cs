@@ -13,10 +13,12 @@ namespace SchoolPortal.Services
         Task UpdateStudentProfile(Student student);
         Task UpdatePassword(PasswordRequestObject req);
         Task ResetPassword(long studentId);
+        Task ResetPassword(PasswordRequestObject req);
         Task<bool> IsStudentAuthentic(LoginCredential credential);
         Task<Student> GetStudent(long studentId);
         Task<Student> GetStudent(string email);
         IEnumerable<Student> GetStudents(bool includeInactive = true);
+        Task SendPasswordRecoveryMail(string email);
         Task DeleteStudent(long studentId);
         Task<string> GenerateUsername(string firstName, string lastName);
         Task<bool> AnyStudentExists();

@@ -11,6 +11,9 @@ namespace SchoolPortal.Services
     {
         Task SchedulePasswordResetMail(MailObject mail);
         Task ScheduleEmailConfirmationMail(MailObject mail);
+        Task SchedulePasswordRecoveryMail(MailObject mail);
+
+
         Task<bool> SendMail(Mail mail);
         Task ProcessUnsentMails();
         Task DeleteOldMails();

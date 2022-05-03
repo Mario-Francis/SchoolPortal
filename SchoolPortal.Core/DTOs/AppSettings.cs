@@ -14,5 +14,7 @@ namespace SchoolPortal.Core.DTOs
         public EmailSMTPConfig EmailSMTPConfig { get; set; }
         public int MailRetentionPeriod { get; set; }
         public int EmailVerificationTokenExpiryPeriod { get; set; }
+        public int PasswordResetTokenExpiryPeriod { get; set; }
+
     }
 }

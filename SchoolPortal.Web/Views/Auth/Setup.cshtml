@@ -1,168 +1,100 @@
-﻿@inject ISessionService service;
-@{
-    Layout = null;
+﻿@{
     ViewData["Title"] = "Setup";
+    Layout = "_AuthLayout";
 }
+<div class="row">
+    <div class="offset-xl-3 col-xl-6 offset-md-2 col-md-8 offset-sm-1 col-sm-10">
+        <div class="login-page-content w-100 p-0 m-0" style="margin-top: 7vh !important;">
 
-<!doctype html>
-<html class="no-js" lang="e">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>@ViewData["Title"] | Caleb International School</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.png">
-    <!-- Normalize CSS -->
-    <link rel="stylesheet" href="~/lib/normalize/normalize.css">
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="~/css/main.css">
-    <!-- Bootstrap CSS -->
-    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <!-- Fontawesome CSS -->
-    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css">
-    <!-- Flaticon CSS -->
-    <link rel="stylesheet" href="~/fonts/flaticon.css">
-    <!-- Animate CSS -->
-    <link rel="stylesheet" href="~/lib/animate.css/animate.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="~/css/style.css">
-    <link rel="stylesheet" href="~/css/custom.css">
-    <!-- Modernize js -->
-    <script src="~/js/modernizr-3.6.0.min.js"></script>
-</head>
-
-<body class="auth-bg">
-    <!-- Preloader Start Here -->
-    <div id="preloader"></div>
-    <!-- Preloader End Here -->
-    <!-- Login Page Start Here -->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="offset-xl-3 col-xl-6 offset-md-2 col-md-8 offset-sm-1 col-sm-10">
-                <div class="login-page-content w-100 p-0 m-0" style="margin-top: 7vh !important;">
-
-                    <div class="login-box p-5 pb-0 w-100" style="padding-bottom: 0px !important;">
-                        <div class="p-lg-3">
-                            <div class="item-logo">
-                                <!-- <img src="img/logo2.png" alt="logo"> -->
-                                <div class="d-flex flex-row pl-3 p-md-0 mx-auto" style="width: 250px;">
-                                    <div><img src="~/img/caleb_logo2.png" class="img-fluid mt-3" style="max-width: 74px;" alt="logo"></div>
-                                    <div class="flex-fill auth-title-div">
-                                        <h3 class="mb-0 mt-2 font-weight-bold text-center">CALEB</h3>
-                                        <h6 class="mb-0 mt-n2 text-center">INTERNATIONAL SCHOOL, MAGODO</h6>
-                                    </div>
-                                </div>
-                                <hr />
-                                <div class="">
-                                    <h4 class="text-uppercase font-weight-bold m-0 text-claret">Admin Setup</h4>
-                                </div>
-                                <hr />
+            <div class="login-box p-5 pb-0 w-100" style="padding-bottom: 0px !important;">
+                <div class="p-lg-3">
+                    <div class="item-logo">
+                        <!-- <img src="img/logo2.png" alt="logo"> -->
+                        <div class="d-flex flex-row pl-3 p-md-0 mx-auto" style="width: 250px;">
+                            <div><img src="~/img/caleb_logo2.png" class="img-fluid mt-3" style="max-width: 74px;" alt="logo"></div>
+                            <div class="flex-fill auth-title-div">
+                                <h3 class="mb-0 mt-2 font-weight-bold text-center">CALEB</h3>
+                                <h6 class="mb-0 mt-n2 text-center">INTERNATIONAL SCHOOL, MAGODO</h6>
                             </div>
-
-
-                            <form class="login-form">
-                                <fieldset>
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="fname">* First Name</label>
-                                                <input id="fname" type="text" placeholder="Enter first name" class="form-control" required />
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="mname"> Middle Name</label>
-                                                <input id="mname" type="text" placeholder="Enter middle name" class="form-control" />
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="sname">* Surname</label>
-                                                <input id="sname" type="text" placeholder="Enter surname" class="form-control" required />
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="gender">* Gender</label>
-                                                <select id="gender" class="form-control custom-select" required>
-                                                    <option value="">- Choose gender -</option>
-                                                    <option value="Male">Male</option>
-                                                    <option value="Female">Female</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="email">* Email</label>
-                                                <input id="email" type="email" placeholder="Enter email" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="phone">* Phone Number</label>
-                                                <input id="phone" type="text" placeholder="Enter phone number" class="form-control" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="password">* Password</label>
-                                                <input id="password" type="password" placeholder="Enter password" class="form-control" required>
-                                                <i class="fas fa-lock"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="cpassword">* Confirm Password</label>
-                                                <input id="cpassword" type="password" placeholder="Confirm password" class="form-control" required>
-                                                <i class="fas fa-lock"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    @*<div class="form-group d-flex align-items-center justify-content-between">
-                                            <div class="form-check">
-                                                <input type="checkbox" class="form-check-input" id="remember-me">
-                                                <label for="remember-me" class="form-check-label">Remember Me</label>
-                                            </div>
-                                            <a href="#" class="forgot-btn text-claret">Forgot Password?</a>
-                                        </div>*@
-                                    <div class="form-group">
-                                        <button type="submit" id="setupBtn" class="login-btn d-block ml-auto" style="max-width:250px;"><span class="fa fa-check-circle"></span> &nbsp;Setup</button>
-                                    </div>
-                                </fieldset>
-                            </form>
                         </div>
-
+                        <hr />
+                        <div class="">
+                            <h4 class="text-uppercase font-weight-bold m-0 text-claret">Admin Setup</h4>
+                        </div>
+                        <hr />
                     </div>
+
+
+                    <form class="login-form">
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="fname">* First Name</label>
+                                        <input id="fname" type="text" placeholder="Enter first name" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="mname"> Middle Name</label>
+                                        <input id="mname" type="text" placeholder="Enter middle name" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="sname">* Surname</label>
+                                        <input id="sname" type="text" placeholder="Enter surname" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="gender">* Gender</label>
+                                        <select id="gender" class="form-control custom-select" required>
+                                            <option value="">- Choose gender -</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="email">* Email</label>
+                                        <input id="email" type="email" placeholder="Enter email" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="phone">* Phone Number</label>
+                                        <input id="phone" type="text" placeholder="Enter phone number" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="password">* Password</label>
+                                        <input id="password" type="password" placeholder="Enter password" class="form-control" required>
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="cpassword">* Confirm Password</label>
+                                        <input id="cpassword" type="password" placeholder="Confirm password" class="form-control" required>
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" id="setupBtn" class="login-btn d-block ml-auto" style="max-width:250px;"><span class="fa fa-check-circle"></span> &nbsp;Setup</button>
+                            </div>
+                        </fieldset>
+                    </form>
                 </div>
+
             </div>
         </div>
     </div>
-    <!-- Login Page End Here -->
-    <!-- jquery-->
-    <script src="~/lib/jquery/jquery.js"></script>
-    <!-- Plugins js -->
-    <script src="~/js/plugins.js"></script>
-    <!-- Bootstrap js -->
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    <!-- Scroll Up Js -->
-    <script src="~/js/jquery.scrollUp.min.js"></script>
-    <!-- Custom Js -->
-    <script>
-         $base = '@service.BaseUrl';
-    </script>
-    <script src="~/lib/bootstrap-notify/bootstrap-notify.js" asp-append-version="true"></script>
-    <script src="~/lib//js-cookie/js.cookie.js" asp-append-version="true"></script>
-    <script src="~/js/notify.js" asp-append-version="true"></script>
-    <script src="~/js/utilities.js" asp-append-version="true"></script>
-    <script src="~/js/main.js" asp-append-version="true"></script>
-    <script src="~/js/error_handler.js" asp-append-version="true"></script>
-    <script src="~/js/setup.js" asp-append-version="true"></script>
+</div>
 
-</body>
-</html>
+@section js{
+    <script src="~/js/setup.js" asp-append-version="true"></script>
+}

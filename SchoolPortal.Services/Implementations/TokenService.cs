@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchoolPortal.Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -26,7 +27,7 @@ namespace SchoolPortal.Services.Implementations
             }
             catch
             {
-                throw new Exception("Invalid token");
+                throw new AppException("Invalid token");
             }
         }
 
@@ -40,7 +41,7 @@ namespace SchoolPortal.Services.Implementations
             }
             catch
             {
-                throw new Exception("Invalid token");
+                throw new AppException("Invalid token");
             }
         }
     }

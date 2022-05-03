@@ -319,7 +319,40 @@ namespace SchoolPortal.Services.Implementations
             await mailService.SchedulePasswordResetMail(mail);
 
         }
+        public async Task ResetPassword(PasswordRequestObject req)
+        {
+            if (req == null)
+            {
+                throw new AppException("Password object is required");
+            }
+            var user = await userRepo.GetById(req.UserId);
+            if (user == null)
+            {
+                throw new AppException($"User with id '{req.UserId}' does not exist");
+            }
+           
+            if (!passwordService.ValidatePassword(req.NewPassword, out string passwordValidationMessage))
+            {
+                throw new AppException($"New password validation error: {passwordValidationMessage}");
+            }
+            if (!req.NewPasswordMatch)
+            {
+                throw new AppException($"New passwords don't match");
+            }
+            //var currentUser = accessor.HttpContext.GetUserSession();
+            var _oldUser = user.Clone<User>();
 
+            user.Password = passwordService.Hash(req.NewPassword);
+            user.PasswordRecoveryToken = null;
+            user.UpdatedBy = user.Username;
+            user.UpdatedDate = DateTimeOffset.Now;
+
+            await userRepo.Update(user, false);
+
+            // log action
+            await logger.LogActivity(ActivityActionType.RESET_USER_PASSWORD,
+                     user.Username, userRepo.TableName, _oldUser, user, "Reset user password");
+        }
 
         // authenticate user
         public async Task<bool> IsUserAuthentic(LoginCredential credential)
@@ -374,7 +407,45 @@ namespace SchoolPortal.Services.Implementations
             return users;
         }
 
-#warning send password recovery mail
+        public async Task SendPasswordRecoveryMail(string email)
+        {
+            var user = await userRepo.GetSingleWhereAsync(u => u.Email == email || u.Username == email);
+            if (user == null) {
+                throw new AppException($"User with email or username: '{email}' does not exist");
+            }
+            else
+            {
+                var token = tokenService.GenerateTokenFromData(user.Id.ToString()+$":{Constants.USER_TYPE_USER}");
+                var _oldUser = user.Clone<User>();
+                // update  user
+                user.PasswordRecoveryToken = token;
+                user.UpdatedBy = user.Username;
+                user.UpdatedDate = DateTimeOffset.Now;
+
+                await userRepo.Update(user, false);
+                await logger.LogActivity(ActivityActionType.UPDATED_USER_PASSWORD_RECOVERY_TOKEN, 
+                    user.Username, userRepo.TableName, _oldUser, user, "Set password recovery token");
+
+                var mail = new MailObject
+                {
+                    Recipients = new List<Recipient>()
+                    {
+                        new Recipient
+                        {
+                            Email=user.Email,
+                            FirstName=user.FirstName,
+                            LastName=user.Surname,
+                            Username=user.Username,
+                            Token=token
+                        }
+                    }
+                };
+                await mailService.SchedulePasswordRecoveryMail(mail);
+            }
+               
+        }
+
+
 
         // delete user
         public async Task DeleteUser(long userId)
