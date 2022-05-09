@@ -147,7 +147,7 @@ namespace SchoolPortal.Services.Implementations
             }).ToList();
             await userRepo.Insert(user, true);
 
-            var token = tokenService.GenerateTokenFromData(user.Id.ToString());
+            var token = tokenService.GenerateTokenFromData(user.Id.ToString()+":"+Constants.USER_TYPE_USER);
             user.EmailVerificationToken = token;
             await userRepo.Update(user, true);
 
@@ -1018,5 +1018,22 @@ namespace SchoolPortal.Services.Implementations
         }
 
         //=========== End Batch Upload =============
+
+        public async Task<bool> VerifyEmail(long userId, string token)
+        {
+            var user = await userRepo.GetById(userId);
+            if (user.EmailVerificationToken != token)
+            {
+                return false;
+            }
+            else
+            {
+                user.EmailVerificationToken = null;
+                user.UpdatedBy = Constants.SYSTEM_NAME;
+                user.UpdatedDate = DateTimeOffset.Now;
+                await userRepo.Update(user);
+                return true;
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SchoolPortal.Core;
 using SchoolPortal.Core.Extensions;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     public class ProfileController : Controller
     {

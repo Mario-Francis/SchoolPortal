@@ -1,4 +1,5 @@
 ﻿using DataTablesParser;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SchoolPortal.Core;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     public class HealthRecordsController : Controller
     {

@@ -196,6 +196,7 @@ namespace SchoolPortal.Web.Controllers
             return RedirectToAction("Index");
         }
 
+        #region Password Recovery
         [HttpGet]
         public async Task<IActionResult> RecoverPassword()
         {
@@ -252,7 +253,7 @@ namespace SchoolPortal.Web.Controllers
             {
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
-                logger.LogError(ex, "An error was encountered during initial app setup");
+                logger.LogError(ex, "An error was encountered while sending password reset link");
 
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
@@ -270,7 +271,7 @@ namespace SchoolPortal.Web.Controllers
                 }
                 if (tokenService.IsTokenExpired(token, appSettingsDelegate.Value.PasswordResetTokenExpiryPeriod * 24))
                 {
-                    TempData["errorResetMessage"] = "Password reset link expired!";
+                    TempData["errorMessage"] = "Password reset link expired!";
                     return RedirectToAction("Index");
                 }
                 else
@@ -284,7 +285,7 @@ namespace SchoolPortal.Web.Controllers
 
                         if (student.PasswordRecoveryToken != token)
                         {
-                            TempData["errorResetMessage"] = "Invalid password reset link!";
+                            TempData["errorMessage"] = "Invalid password reset link!";
                             return RedirectToAction("Index");
                         }
                     }
@@ -294,7 +295,7 @@ namespace SchoolPortal.Web.Controllers
 
                         if (user.PasswordRecoveryToken != token)
                         {
-                            TempData["errorResetMessage"] = "Invalid password reset link!";
+                            TempData["errorMessage"] = "Invalid password reset link!";
                             return RedirectToAction("Index");
                         }
                     }
@@ -315,7 +316,7 @@ namespace SchoolPortal.Web.Controllers
             {
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
-                logger.LogError(ex, "An error was encountered during initial app setup");
+                logger.LogError(ex, "An error was encountered during password reset token validation");
 
                 return StatusCode(500, "something went wrong");
             }
@@ -343,7 +344,7 @@ namespace SchoolPortal.Web.Controllers
                         await userMgr.ResetPassword(model.ToPasswordRequestObject());
                     }
 
-                    TempData["successResetMessage"] = "Password reset successfully!";
+                    TempData["successMessage"] = "Password reset successfully!";
                     return Ok(new { IsSuccess = true, Message = "Password reset successfully", ErrorItems = new string[] { } });
                 }
             }
@@ -360,6 +361,74 @@ namespace SchoolPortal.Web.Controllers
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
+        #endregion Password Recovery
+
+        [HttpGet]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(token))
+                {
+                    return NotFound();
+                }
+                if (tokenService.IsTokenExpired(token, appSettingsDelegate.Value.EmailVerificationTokenExpiryPeriod * 24))
+                {
+                    TempData["errorMessage"] = "Email verification link expired! Please contact your system administrator";
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    var tokenData = tokenService.ExtractDataFromToken(token).Split(":");
+                    var userId = Convert.ToInt64(tokenData[0]);
+                    var userType = tokenData[1];
+                    if (userType.ToLower() == Constants.USER_TYPE_STUDENT.ToLower())
+                    {
+                        var student = await studentService.GetStudent(userId);
+
+                        if (!await studentService.VerifyEmail(student.Id, token))
+                        {
+                            TempData["errorMessage"] = "Invalid email verification link!";
+                            
+                        }
+                        else
+                        {
+                            TempData["successMessage"] = "Email verified successfully!";
+                        }
+                    }
+                    else
+                    {
+                        var user = await userMgr.GetUser(userId);
+
+                        if (!await userMgr.VerifyEmail(user.Id, token))
+                        {
+                            TempData["errorMessage"] = "Invalid email verification link!";
+
+                        }
+                        else
+                        {
+                            TempData["successMessage"] = "Email verified successfully!";
+                        }
+                    }
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (AppException ex)
+            {
+                logger.LogError(ex, ex.Message);
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                //await loggerService.LogException(ex);
+                //await loggerService.LogError(ex.GetErrorDetails());
+                logger.LogError(ex, "An error was encountered during email verification");
+
+                return StatusCode(500, "something went wrong");
+            }
+        }
+
 
     }
 }

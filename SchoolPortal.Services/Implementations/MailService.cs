@@ -23,22 +23,22 @@ namespace SchoolPortal.Services.Implementations
 {
     public class MailService:IMailService
     {
-        private readonly AppSettings appSettings;
         private readonly ILogger<MailService> logger;
+        private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IRepository<Mail> mailRepo;
         private readonly IHttpContextAccessor contextAccessor;
         private readonly IWebHostEnvironment hostEnvironment;
 
         public MailService(ILogger<MailService> logger,
-            IOptions<AppSettings> appSettings,
+            IOptionsSnapshot<AppSettings> appSettingsDelegate,
             IServiceScopeFactory serviceScopeFactory,
             IRepository<Mail> mailRepo,
             IHttpContextAccessor contextAccessor,
              IWebHostEnvironment hostEnvironment)
         {   
-            this.appSettings = appSettings.Value;
             this.logger = logger;
+            this.appSettingsDelegate = appSettingsDelegate;
             this.serviceScopeFactory = serviceScopeFactory;
             this.mailRepo = mailRepo;
             this.contextAccessor = contextAccessor;
@@ -57,13 +57,13 @@ namespace SchoolPortal.Services.Implementations
             foreach (var m in mail.Recipients)
             {
                 var _htmlBody = htmlBody;
-                var url = contextAccessor.HttpContext.GetBaseUrl() + "Auth/VerifEmail?token=" + m.Token;
+                var url = contextAccessor.HttpContext.GetBaseUrl() + "Auth/VerifyEmail?token=" + m.Token;
                 var message = $"Welcome onboard and we are glad to have you. You have just been profiled on the Caleb International School Portal and you are required to confirm your email address." +
                     $"Kindly find your login credentials below.<br />" +
                      $"<ul><li><b>Username: </b> {m.Username}</li><li><b>Password: </b> {m.Password}</li></ul><br /> On login, you will be required to change your password. Please click the button below to confirm your email address.";
 
                 var message2 = $"If you are having issues clicking the above button, copy and past the link below on your browser's address bar<br /><b>URL: </b><a style='color:#8f1b39;' href='{url}' target='_blank'>{url}</a>.<br /><br />" +
-                   $"The above confirmation link will expire in {appSettings.EmailVerificationTokenExpiryPeriod} days.";
+                   $"The above confirmation link will expire in {appSettingsDelegate.Value.EmailVerificationTokenExpiryPeriod} days.";
 
                 _htmlBody = _htmlBody.Replace("{name}", m.FirstName);
                 _htmlBody = _htmlBody.Replace("{message}", message);
@@ -169,7 +169,7 @@ namespace SchoolPortal.Services.Implementations
             {
                 // create email message
                 var email = new MimeMessage();
-                var _from = new MailboxAddress(appSettings.EmailSMTPConfig.FromName, appSettings.EmailSMTPConfig.Username);
+                var _from = new MailboxAddress(appSettingsDelegate.Value.EmailSMTPConfig.FromName, appSettingsDelegate.Value.EmailSMTPConfig.Username);
                 // from
                 email.From.Add(_from);
                 // to
@@ -185,8 +185,11 @@ namespace SchoolPortal.Services.Implementations
 
                 // send email
                 using var smtp = new SmtpClient();
-                await smtp.ConnectAsync(appSettings.EmailSMTPConfig.Host, appSettings.EmailSMTPConfig.Port, SecureSocketOptions.StartTls);
-                await smtp.AuthenticateAsync(appSettings.EmailSMTPConfig.Username, appSettings.EmailSMTPConfig.Password);
+                await smtp.ConnectAsync(appSettingsDelegate.Value.EmailSMTPConfig.Host, appSettingsDelegate.Value.EmailSMTPConfig.Port, SecureSocketOptions.Auto);
+                if (appSettingsDelegate.Value.EmailSMTPConfig.AuthenticateMail)
+                {
+                    await smtp.AuthenticateAsync(appSettingsDelegate.Value.EmailSMTPConfig.Username, appSettingsDelegate.Value.EmailSMTPConfig.Password);
+                }
                 await smtp.SendAsync(email);
                 await smtp.DisconnectAsync(true);
                 return true;
@@ -233,7 +236,7 @@ namespace SchoolPortal.Services.Implementations
             using (var scope = serviceScopeFactory.CreateScope())
             {
                 var mailRepo = scope.ServiceProvider.GetRequiredService<IRepository<Mail>>();
-                var mailRetentionPeriod = appSettings.MailRetentionPeriod;
+                var mailRetentionPeriod = appSettingsDelegate.Value.MailRetentionPeriod;
                 var now = DateTimeOffset.Now;
                 await mailRepo.DeleteWhere(m => EF.Functions.DateDiffDay(now, m.CreatedDate) > mailRetentionPeriod);
             }

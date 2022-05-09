@@ -6,21 +6,21 @@
 <div class="row">
     <div class="offset-xl-4 col-xl-4 offset-md-3 col-md-6 offset-sm-2 col-sm-8">
         <div class="login-page-content w-100 p-0 m-0" style="margin-top: 10vh !important;">
-            @if (TempData["successResetMessage"] != null)
+            @if (TempData["successMessage"] != null)
             {
             <div class="alert alert-success alert-dismissible fade show w-100" role="alert">
                 <strong class="f16"><i class="fa fa-check-circle"></i> Success</strong>
-                <p class="m-0 f14">@TempData["successResetMessage"]</p>
+                <p class="m-0 f14">@TempData["successMessage"]</p>
                 <button type="button" class="close f18" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             }
-            @if (TempData["errorResetMessage"] != null)
+            @if (TempData["errorMessage"] != null)
             {
             <div class="alert alert-danger alert-dismissible fade show w-100" role="alert">
                 <strong class="f16"><i class="fa fa-times-circle"></i> Error</strong>
-                <p class="m-0 f14">@TempData["errorResetMessage"]</p>
+                <p class="m-0 f14">@TempData["errorMessage"]</p>
                 <button type="button" class="close f18" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

@@ -1,4 +1,5 @@
 ﻿using DataTablesParser;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Authorize]
     public class ExamsController : Controller
     {
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;

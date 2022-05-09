@@ -1,4 +1,5 @@
 ﻿using DataTablesParser;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     public class BehaviouralRatingsController : Controller
     {

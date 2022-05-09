@@ -106,29 +106,29 @@ namespace SchoolPortal.Web.UIServices
             get
             {
                 var session = UserSession;
-                if (session.Roles.Any(r => r.Name == Constants.ROLE_ADMIN))
+                if (session?.Roles?.Any(r => r?.Name == Constants.ROLE_ADMIN) ?? false)
                 {
                     return Constants.ROLE_ADMIN;
                 }
                 else
                 {
                     var roles = new List<string>();
-                    if (session.Roles.Any(r => r.Name == Constants.ROLE_HEAD_TEACHER))
+                    if (session?.Roles?.Any(r => r?.Name == Constants.ROLE_HEAD_TEACHER) ?? false)
                     {
                         roles.Add(Constants.ROLE_HEAD_TEACHER);
                     }
 
-                    if (session.Roles.Any(r => r.Name == Constants.ROLE_TEACHER))
+                    if (session?.Roles?.Any(r => r?.Name == Constants.ROLE_TEACHER) ?? false)
                     {
                         roles.Add(Constants.ROLE_TEACHER);
                     }
 
-                    if (session.Roles.Any(r => r.Name == Constants.ROLE_PARENT))
+                    if (session?.Roles?.Any(r => r?.Name == Constants.ROLE_PARENT) ?? false)
                     {
                         roles.Add(Constants.ROLE_PARENT);
                     }
 
-                    if (session.Roles.Any(r => r.Name == Constants.ROLE_STUDENT))
+                    if (session?.Roles?.Any(r => r?.Name == Constants.ROLE_STUDENT) ?? false)
                     {
                         roles.Add(Constants.ROLE_STUDENT);
                     }

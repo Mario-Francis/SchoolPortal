@@ -1,4 +1,5 @@
 ﻿using DataTablesParser;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [Authorize]
     public class StudentsController : Controller
     {
         private readonly IStudentService studentService;

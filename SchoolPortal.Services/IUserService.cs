@@ -36,5 +36,7 @@ namespace SchoolPortal.Services
         Task<IEnumerable<User>> ExtractData(IFormFile file);
         Task BatchCreateUser(IEnumerable<User> users, long roleId);
         byte[] ExportUsersToExcel(int id);
+
+        Task<bool> VerifyEmail(long userId, string token);
     }
 }

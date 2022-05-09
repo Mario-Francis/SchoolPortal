@@ -127,7 +127,7 @@ namespace SchoolPortal.Services.Implementations
 
             await studentRepo.Insert(student, true);
 
-            var token = tokenService.GenerateTokenFromData(student.Id.ToString());
+            var token = tokenService.GenerateTokenFromData(student.Id.ToString() + ":" + Constants.USER_TYPE_STUDENT);
             student.EmailVerificationToken = token;
             await studentRepo.Update(student, true);
 
@@ -1171,6 +1171,23 @@ namespace SchoolPortal.Services.Implementations
                   students=students.Take(max);
 
                 return students;
+            }
+        }
+
+        public async Task<bool> VerifyEmail(long studentId, string token)
+        {
+            var student = await studentRepo.GetById(studentId);
+            if (student.EmailVerificationToken != token)
+            {
+                return false;
+            }
+            else
+            {
+                student.EmailVerificationToken = null;
+                student.UpdatedBy = Constants.SYSTEM_NAME;
+                student.UpdatedDate = DateTimeOffset.Now;
+                await studentRepo.Update(student);
+                return true;
             }
         }
     }

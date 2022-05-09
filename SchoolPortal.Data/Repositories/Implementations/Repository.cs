@@ -117,7 +117,7 @@ namespace SchoolPortal.Data.Repositories.Implementations
             }
         }
 
-        public async Task Update<T1>(T1 entity, bool save = true) where T1 : BaseEntity, IUpdatable
+        public async Task Update<T1>(T1 entity, bool save = true) where T1 : BaseEntity, T, IUpdatable
         {
             if (entity == null) throw new ArgumentNullException("Entity cannot be null");
             entity.UpdatedDate = DateTimeOffset.Now;
@@ -126,7 +126,7 @@ namespace SchoolPortal.Data.Repositories.Implementations
                 await db.SaveChangesAsync();
         }
 
-        public async Task UpdateRange<T1>(IEnumerable<T1> entityList, bool save = true) where T1 : BaseEntity, IUpdatable
+        public async Task UpdateRange<T1>(IEnumerable<T1> entityList, bool save = true) where T1 : BaseEntity, T, IUpdatable
         {
             if (entityList == null) throw new ArgumentNullException("Entity list cannot be null");
             entityList.Select(u =>
@@ -144,7 +144,7 @@ namespace SchoolPortal.Data.Repositories.Implementations
             db.ChangeTracker.AutoDetectChangesEnabled = true;
         }
 
-        public async Task UpdateBulk<T1>(IEnumerable<T1> entityList) where T1 : BaseEntity, IUpdatable
+        public async Task UpdateBulk<T1>(IEnumerable<T1> entityList) where T1 : BaseEntity, T, IUpdatable
         {
             if (entityList == null) throw new ArgumentNullException("Entity list cannot be null");
             entityList.Select(u =>

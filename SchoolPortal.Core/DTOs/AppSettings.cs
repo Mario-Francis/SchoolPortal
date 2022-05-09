@@ -10,7 +10,10 @@ namespace SchoolPortal.Core.DTOs
         public string AppBaseUrl { get; set; }
         public int MaxUploadSize { get; set; }
         public int DefaultTimeZoneOffset { get; set; }
+        public int NotificationServiceExecutionInterval { get; set; }
+        public bool NotificationServiceEnabled { get; set; }
         public int ReminderServiceExecutionInterval { get; set; }
+        public bool ReminderServiceEnabled { get; set; }
         public EmailSMTPConfig EmailSMTPConfig { get; set; }
         public int MailRetentionPeriod { get; set; }
         public int EmailVerificationTokenExpiryPeriod { get; set; }

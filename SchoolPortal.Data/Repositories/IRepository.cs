@@ -19,9 +19,9 @@ namespace SchoolPortal.Data.Repositories
         Task InsertRange(IEnumerable<T> entityList, bool save = true);
         Task InsertBulk(IEnumerable<T> entityList);
         Task InsertOrUpdateBulk(IEnumerable<T> entityList);
-        Task Update<T1>(T1 entity, bool save = true) where T1 : BaseEntity, IUpdatable;
-        Task UpdateRange<T1>(IEnumerable<T1> entityList, bool save = true) where T1 : BaseEntity, IUpdatable;
-        Task UpdateBulk<T1>(IEnumerable<T1> entityList) where T1 : BaseEntity, IUpdatable;
+        Task Update<T1>(T1 entity, bool save = true) where T1 : BaseEntity, T, IUpdatable;
+        Task UpdateRange<T1>(IEnumerable<T1> entityList, bool save = true) where T1 : BaseEntity, T, IUpdatable;
+        Task UpdateBulk<T1>(IEnumerable<T1> entityList) where T1 : BaseEntity, T, IUpdatable;
         Task Delete(long id, bool save = true);
         Task DeleteRange(IEnumerable<long> ids, bool save = true);
         Task DeleteWhere(Expression<Func<T, bool>> expression, bool save = true);

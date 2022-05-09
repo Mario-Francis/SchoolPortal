@@ -35,5 +35,7 @@ namespace SchoolPortal.Services
         Task BatchCreateStudent(IEnumerable<Student> students);
         byte[] ExportStudentsToExcel(int id);
         IEnumerable<Student> SearchStudents(string searchParam, long? classRoomId = null, int max = 50);
+        Task<bool> VerifyEmail(long studentId, string token);
+
     }
 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SchoolPortal.Web.Controllers
 {
+    [NonController]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

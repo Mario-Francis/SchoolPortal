@@ -5,6 +5,7 @@ using SchoolPortal.Data;
 using SchoolPortal.Data.Repositories;
 using SchoolPortal.Data.Repositories.Implementations;
 using SchoolPortal.Services;
+using SchoolPortal.Services.BackgroundServices;
 using SchoolPortal.Services.Implementations;
 using System;
 
@@ -52,23 +53,18 @@ namespace SchoolPortal.Root
 
 
 
-            //services.AddSingleton<IBackgroundTaskQueue>(ctx => {
-            //    if (!int.TryParse(config["TaskQueueCapacity"], out var queueCapacity))
-            //        queueCapacity = 50;
-            //    return new ReviewerMappingTaskQueue(queueCapacity);
-            //});
+            services.AddSingleton<IBackgroundTaskQueue>(ctx =>
+            {
+                if (!int.TryParse(config["TaskQueueCapacity"], out var queueCapacity))
+                    queueCapacity = 50;
+                return new TaskQueue(queueCapacity);
+            });
 
-            //services.AddScoped<IRoleManagerService, RoleManagerService>();
-            //services.AddScoped<IUserManagerService, UserManagerService>();
-
-            //services.AddScoped<IEmailService, EmailService>();
-            //services.AddScoped<IPasswordService, PasswordService>();
-            //services.AddScoped<ITokenService, TokenService>();
 
             // Background services
-            // services.AddHostedService<SyncMyHREmployeesService>();
-            //services.AddHostedService<EmployeeStatusUpdateService>(); // not required 
-            //services.AddHostedService<ReviewerMappingQueuedService>();
+            services.AddHostedService<QueuedService>();
+            services.AddHostedService<NotificationService>();
+            services.AddHostedService<ReminderService>();
 
         }
     }
