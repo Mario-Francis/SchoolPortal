@@ -132,10 +132,14 @@
                             </div>
                             <div class="item-content">
                                 <ul class="settings-list">
-                                    <li><a asp-controller="Profile" asp-action="Index"><i class="flaticon-user"></i>My Profile</a></li>
+                                    @if (service.UserSession.IsInitialPasswordChanged)
+                                    {
+                                        <li><a asp-controller="Profile" asp-action="Index"><i class="flaticon-user"></i>My Profile</a></li>
+                                        <li><a asp-controller="Profile" asp-action="ChangePassword"><i class="fa fa-lock"></i>Change Password</a></li>
+                                    }
                                     @*<li><a href="#"><i class="flaticon-list"></i>Task</a></li>
-                                        <li><a href="#"><i class="flaticon-chat-comment-oval-speech-bubble-with-text-lines"></i>Message</a></li>
-                                        <li><a href="#"><i class="flaticon-gear-loading"></i>Account Settings</a></li>*@
+        <li><a href="#"><i class="flaticon-chat-comment-oval-speech-bubble-with-text-lines"></i>Message</a></li>
+        <li><a href="#"><i class="flaticon-gear-loading"></i>Account Settings</a></li>*@
                                     <li><a asp-action="Logout" asp-controller="Auth"><i class="flaticon-turn-off"></i>Log Out</a></li>
                                 </ul>
                             </div>
@@ -307,6 +311,8 @@
                         </a>
                     </div>
                 </div>
+                @if (service.UserSession.IsInitialPasswordChanged)
+                {
                 <div class="sidebar-menu-content">
                     <ul class="nav nav-sidebar-menu sidebar-toggle-view">
                         <li class="nav-item">
@@ -694,6 +700,7 @@
         </li>*@
                     </ul>
                 </div>
+                }
                 <div class="nav-pad"></div>
             </div>
             <!-- Sidebar Area End Here -->

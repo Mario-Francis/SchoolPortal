@@ -49,6 +49,12 @@ $(() => {
             },
             {
                 data: {
+                    "filter": "AdmissionNo",
+                    "display": "admissionNo"
+                }
+            },
+            {
+                data: {
                     "filter": "Email",
                     "display": "email"
                 }, "render": function (data, type, row, meta) {
@@ -83,7 +89,7 @@ $(() => {
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 6
+                }, orderData: 7
             },
             {
                 data: {
@@ -101,7 +107,7 @@ $(() => {
                 data: {
                     "filter": "FormattedUpdatedDate",
                     "display": "formattedUpdatedDate"
-                }, orderData: 9
+                }, orderData: 10
             },
             {
                 data: {
@@ -167,6 +173,12 @@ $(() => {
             },
             {
                 data: {
+                    "filter": "AdmissionNo",
+                    "display": "admissionNo"
+                }
+            },
+            {
+                data: {
                     "filter": "Email",
                     "display": "email"
                 }, "render": function (data, type, row, meta) {
@@ -201,7 +213,7 @@ $(() => {
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 6
+                }, orderData: 7
             },
             {
                 data: {
@@ -219,7 +231,7 @@ $(() => {
                 data: {
                     "filter": "FormattedUpdatedDate",
                     "display": "formattedUpdatedDate"
-                }, orderData: 9
+                }, orderData: 10
             },
             {
                 data: {
@@ -285,6 +297,12 @@ $(() => {
             },
             {
                 data: {
+                    "filter": "AdmissionNo",
+                    "display": "admissionNo"
+                }
+            },
+            {
+                data: {
                     "filter": "Email",
                     "display": "email"
                 }, "render": function (data, type, row, meta) {
@@ -319,7 +337,7 @@ $(() => {
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 6
+                }, orderData: 7
             },
             {
                 data: {
@@ -337,7 +355,7 @@ $(() => {
                 data: {
                     "filter": "FormattedUpdatedDate",
                     "display": "formattedUpdatedDate"
-                }, orderData: 9
+                }, orderData: 10
             },
             {
                 data: {

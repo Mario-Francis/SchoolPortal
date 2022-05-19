@@ -283,6 +283,41 @@ namespace SchoolPortal.Services.Implementations
             //    currentUser.UserId);
         }
 
+        public async Task SetupPassword(PasswordRequestObject req)
+        {
+            if (req == null)
+            {
+                throw new AppException("Password object is required");
+            }
+            var user = await userRepo.GetById(req.UserId);
+            if (user == null)
+            {
+                throw new AppException($"User with id '{req.UserId}' does not exist");
+            }
+
+            if (!passwordService.ValidatePassword(req.NewPassword, out string passwordValidationMessage))
+            {
+                throw new AppException($"New password validation error: {passwordValidationMessage}");
+            }
+            if (!req.NewPasswordMatch)
+            {
+                throw new AppException($"New passwords don't match");
+            }
+            //var currentUser = accessor.HttpContext.GetUserSession();
+            var _oldUser = user.Clone<User>();
+
+            user.Password = passwordService.Hash(req.NewPassword);
+            user.UpdatedBy = user.Username;
+            user.IsPasswordChanged = true;
+            user.UpdatedDate = DateTimeOffset.Now;
+
+            await userRepo.Update(user, false);
+
+            // log action
+            await logger.LogActivity(ActivityActionType.SETUP_USER_PASSWORD,
+                     user.Username, userRepo.TableName, _oldUser, user, "Setup user password");
+        }
+
         // reset password
         public async Task ResetPassword(long userId)
         {
@@ -344,6 +379,7 @@ namespace SchoolPortal.Services.Implementations
 
             user.Password = passwordService.Hash(req.NewPassword);
             user.PasswordRecoveryToken = null;
+            user.IsPasswordChanged = true;
             user.UpdatedBy = user.Username;
             user.UpdatedDate = DateTimeOffset.Now;
 

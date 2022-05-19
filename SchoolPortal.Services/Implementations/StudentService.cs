@@ -312,6 +312,40 @@ namespace SchoolPortal.Services.Implementations
             //    currentUser.StudentId);
         }
 
+        public async Task SetupPassword(PasswordRequestObject req)
+        {
+            if (req == null)
+            {
+                throw new AppException("Password object is required");
+            }
+            var student = await studentRepo.GetById(req.UserId);
+            if (student == null)
+            {
+                throw new AppException($"Student with id '{req.UserId}' does not exist");
+            }
+
+            if (!passwordService.ValidatePassword(req.NewPassword, out string passwordValidationMessage))
+            {
+                throw new AppException($"New password validation error: {passwordValidationMessage}");
+            }
+            if (!req.NewPasswordMatch)
+            {
+                throw new AppException($"New passwords don't match");
+            }
+            var _oldStudent = student.Clone<Student>();
+
+            student.Password = passwordService.Hash(req.NewPassword);
+            student.IsPasswordChanged = true;
+            student.UpdatedBy = student.Username;
+            student.UpdatedDate = DateTimeOffset.Now;
+
+            await studentRepo.Update(student, false);
+
+            // log action
+            await logger.LogActivity(ActivityActionType.SETUP_STUDENT_PASSWORD,
+                     student.Username, studentRepo.TableName, _oldStudent, student, "Setup student password");
+        }
+
         // reset password
         public async Task ResetPassword(long studentId)
         {
@@ -375,6 +409,7 @@ namespace SchoolPortal.Services.Implementations
 
             student.Password = passwordService.Hash(req.NewPassword);
             student.PasswordRecoveryToken = null;
+            student.IsPasswordChanged = true;
             student.UpdatedBy = student.Username;
             student.UpdatedDate = DateTimeOffset.Now;
 

@@ -13,6 +13,7 @@ namespace SchoolPortal.Services
         Task<long> CreateUser(User user);
         Task UpdateUser(User user);
         Task UpdatePassword(PasswordRequestObject req);
+        Task SetupPassword(PasswordRequestObject req);
         Task<bool> IsUserAuthentic(LoginCredential credential);
         Task<User> GetUser(long userId);
         Task<User> GetUser(string email);

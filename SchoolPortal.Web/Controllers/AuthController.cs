@@ -100,7 +100,7 @@ namespace SchoolPortal.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginVM model)
+        public async Task<IActionResult> Login(LoginVM model) 
         {
             try
             {
@@ -122,6 +122,10 @@ namespace SchoolPortal.Web.Controllers
                         if (model.Type == "staff" && !user.UserRoles.Any(ur => ur.RoleId == (long)AppRoles.ADMINISTRATOR || ur.RoleId == (long)AppRoles.HEAD_TEACHER || ur.RoleId == (long)AppRoles.TEACHER))
                         {
                             throw new AppException($"Invalid credentials");
+                        }
+                        if (!user.IsActive)
+                        {
+                            throw new AppException($"Your account has been deactivated! Kindly contact your system administrator");
                         }
 
                         var sessionObject = SessionObject.FromUser(user);
@@ -148,6 +152,12 @@ namespace SchoolPortal.Web.Controllers
                     {
                         var isValid = await studentService.IsStudentAuthentic(new LoginCredential { Email = model.Username, Password = model.Password });
                         var student = await studentService.GetStudent(model.Username);
+
+                        if (!student.IsActive)
+                        {
+                            throw new AppException($"Your account has been deactivated! Kindly contact your system administrator");
+                        }
+
                         var sessionObject = SessionObject.FromStudent(student);
 
                         ClaimsIdentity identity = new ClaimsIdentity(Constants.AUTH_COOKIE_ID);
@@ -176,15 +186,15 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (AppException ex)
             {
-                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
             catch (Exception ex)
             {
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
-                logger.LogError(ex, "An error was encountered during initial app setup");
+                logger.LogError(ex, "An error was encountered during login");
 
-                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
 

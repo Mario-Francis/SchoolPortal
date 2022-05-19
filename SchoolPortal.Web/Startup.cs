@@ -100,6 +100,7 @@ namespace SchoolPortal.Web
 
             app.UseAuthentication();
             app.UseMiddleware<SessionMiddleware>();
+            app.UseMiddleware<PasswordChangeCheckMiddleware>();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -12,6 +12,7 @@ namespace SchoolPortal.Services
         Task UpdateStudent(Student student);
         Task UpdateStudentProfile(Student student);
         Task UpdatePassword(PasswordRequestObject req);
+        Task SetupPassword(PasswordRequestObject req);
         Task ResetPassword(long studentId);
         Task ResetPassword(PasswordRequestObject req);
         Task<bool> IsStudentAuthentic(LoginCredential credential);

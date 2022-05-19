@@ -81,7 +81,10 @@ namespace SchoolPortal.Core
 
         ADDED_GRADE,
         UPDATED_GRADE,
-        DELETED_GRADE
+        DELETED_GRADE,
+
+        SETUP_USER_PASSWORD,
+        SETUP_STUDENT_PASSWORD
 
     }
 

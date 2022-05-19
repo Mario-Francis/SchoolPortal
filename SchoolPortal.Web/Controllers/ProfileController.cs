@@ -190,5 +190,50 @@ namespace SchoolPortal.Web.Controllers
                 return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
+
+        //===== Channge Password =======
+        [HttpGet("ChangePassword")]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errs = ModelState.Values.Where(v => v.Errors.Count > 0).Select(v => v.Errors.First().ErrorMessage);
+                    return StatusCode(400, new { IsSuccess = false, Message = "One or more fields failed validation", ErrorItems = errs });
+                }
+                else
+                {
+                    model.UserId = HttpContext.GetUserSession().Id;
+                    if (HttpContext.GetUserSession().UserType.ToLower() == Constants.USER_TYPE_STUDENT.ToLower())
+                    {
+                        await studentService.UpdatePassword(model.ToPasswordRequestObject());
+                    }
+                    else
+                    {
+                        await userService.UpdatePassword(model.ToPasswordRequestObject());
+                    }
+
+                    return Ok(new { IsSuccess = true, Message = "Password changed successfully", ErrorItems = new string[] { } });
+                }
+            }
+            catch (AppException ex)
+            {
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails(), ErrorItems = ex.ErrorItems });
+            }
+            catch (Exception ex)
+            {
+                logger.LogException(ex);
+                logger.LogError(ex.GetErrorDetails());
+
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
+            }
+        }
     }
 }

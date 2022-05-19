@@ -19,6 +19,7 @@ namespace SchoolPortal.Core.DTOs
         public long ClassRoomId { get; set; }
         public string ClassRoomName { get; set; }
         public bool HasClassRoom { get; set; }
+        public bool IsInitialPasswordChanged { get; set; }
 
 
         public static SessionObject FromUser(User user)
@@ -33,7 +34,8 @@ namespace SchoolPortal.Core.DTOs
                 Id = user.Id,
                 Roles = user.UserRoles.Select(er => RoleObject.FromRole(er.Role)).ToList(),
                 PhotoPath=user.PhotoPath,
-                UserType = Constants.USER_TYPE_USER
+                UserType = Constants.USER_TYPE_USER,
+                IsInitialPasswordChanged=user.IsPasswordChanged
             };
 
             if(user.UserRoles.Any(ur=> ur.RoleId == (long)AppRoles.TEACHER))
@@ -74,7 +76,8 @@ namespace SchoolPortal.Core.DTOs
                 UserType = Constants.USER_TYPE_STUDENT,
                 HasClassRoom=true,
                 ClassRoomId = classroom.Id,
-                ClassRoomName = $"{classroom.Class.ClassType.Name} {classroom.Class.ClassGrade} {classroom.RoomCode}"
+                ClassRoomName = $"{classroom.Class.ClassType.Name} {classroom.Class.ClassGrade} {classroom.RoomCode}",
+                IsInitialPasswordChanged=student.IsPasswordChanged
             };
         }
     }
