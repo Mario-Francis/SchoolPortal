@@ -174,8 +174,8 @@ namespace SchoolPortal.Web.Controllers
 
             dtResults.TotalScoreObtained = results.Select(r => r.Total).Sum();
             dtResults.TotalScoreObtainable = 40 * results.Count();
-            dtResults.Percentage = Math.Round(dtResults.TotalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
-            dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.FIRST_HALF).Code;
+            dtResults.Percentage = Math.Round((dtResults.TotalScoreObtained / dtResults.TotalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
+            dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
 
             return Ok(dtResults);
         }
@@ -194,7 +194,7 @@ namespace SchoolPortal.Web.Controllers
 
             dtResults.TotalScoreObtained = results.Select(r => r.TermTotal).Sum();
             dtResults.TotalScoreObtainable = 100 * results.Count();
-            dtResults.Percentage = Math.Round(dtResults.TotalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            dtResults.Percentage = Math.Round((dtResults.TotalScoreObtained / dtResults.TotalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
 
             return Ok(dtResults);
@@ -214,7 +214,7 @@ namespace SchoolPortal.Web.Controllers
 
             dtResults.TotalScoreObtained = results.Select(r => r.AverageScore).Sum();
             dtResults.TotalScoreObtainable = 100 * results.Count();
-            dtResults.Percentage = Math.Round(dtResults.TotalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            dtResults.Percentage = Math.Round((dtResults.TotalScoreObtained / dtResults.TotalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
 
             return Ok(dtResults);
@@ -261,8 +261,8 @@ namespace SchoolPortal.Web.Controllers
 
             var totalScoreObtained = results.Select(r => r.Total).Sum();
             var totalScoreObtainable = 40 * results.Count();
-            var percentage = Math.Round(totalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
-            var percentageGrade = gradeService.GetGrade(percentage, TermSections.FIRST_HALF).Code;
+            var percentage = Math.Round((totalScoreObtained / totalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
+            var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
 
             var midTermResult = await resultService.GetMidTermResult(results.First().Id);
             var classRoom = midTermResult.ClassRoom;
@@ -310,7 +310,7 @@ namespace SchoolPortal.Web.Controllers
 
             var totalScoreObtained = results.Select(r => r.TermTotal).Sum();
             var totalScoreObtainable = 100 * results.Count();
-            var percentage = Math.Round(totalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            var percentage = Math.Round((totalScoreObtained / totalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
 
             var endTermResult = await resultService.GetEndTermResult(results.First().Id);
@@ -371,7 +371,7 @@ namespace SchoolPortal.Web.Controllers
 
             var totalScoreObtained = results.Select(r => r.AverageScore).Sum();
             var totalScoreObtainable = 100 * results.Count();
-            var percentage = Math.Round(totalScoreObtained / results.Count(), MidpointRounding.AwayFromZero);
+            var percentage = Math.Round((totalScoreObtained / totalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
 
             var endTermResult = await resultService.GetEndTermResult(results.First().Id);
