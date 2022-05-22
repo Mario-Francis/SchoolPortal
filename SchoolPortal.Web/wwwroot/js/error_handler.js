@@ -2,7 +2,7 @@
     console.error(req);
     let res = req.responseJSON;
     if (req.status == 401) {
-        notify(res.message, 'danger', "Unauthorized");
+        notify(res?.message ?? 'Not authorized', 'danger', "Unauthorized");
     } else if (req.status == 400) {
         let eItems = '';
         if (res) {

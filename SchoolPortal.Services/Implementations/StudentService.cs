@@ -80,14 +80,14 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException("Student object is required");
             }
-            if (!await emailService.IsEmailValidAsync(student.Email))
+            if (!string.IsNullOrEmpty(student.Email) && !await emailService.IsEmailValidAsync(student.Email))
             {
                 throw new AppException($"Email '{student.Email}' is not valid");
             }
-            if (await studentRepo.AnyAsync(u => u.Email == student.Email))
-            {
-                throw new AppException($"A student with email '{student.Email}' already exist");
-            }
+            //if (await studentRepo.AnyAsync(u => u.Email == student.Email))
+            //{
+            //    throw new AppException($"A student with email '{student.Email}' already exist");
+            //}
             if (await studentRepo.AnyAsync(u => u.AdmissionNo == student.AdmissionNo))
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already exist");
@@ -116,7 +116,7 @@ namespace SchoolPortal.Services.Implementations
                 return x;
             }).ToList();
 
-           
+            student.Email = string.IsNullOrEmpty(student.Email) ? null : student.Email;
             student.Username = await GenerateUsername(student.FirstName, student.Surname);
             student.Password = passwordService.Hash(Constants.DEFAULT_NEW_USER_PASSWORD);
             student.IsActive = true;
@@ -169,14 +169,14 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Student with id '{student.Id}' does not exist");
             }
-            if (!await emailService.IsEmailValidAsync(student.Email))
+            if (!string.IsNullOrEmpty(student.Email) && !await emailService.IsEmailValidAsync(student.Email))
             {
                 throw new AppException($"Email '{student.Email}' is not valid");
             }
-            if (await studentRepo.AnyAsync(u => u.Email == student.Email) && student.Email != _student.Email)
-            {
-                throw new AppException($"A student with email '{student.Email}' already exist");
-            }
+            //if (await studentRepo.AnyAsync(u => u.Email == student.Email) && student.Email != _student.Email)
+            //{
+            //    throw new AppException($"A student with email '{student.Email}' already exist");
+            //}
             if (await studentRepo.AnyAsync(u => u.AdmissionNo == student.AdmissionNo) && student.AdmissionNo != _student.AdmissionNo)
             {
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already exist");
@@ -195,7 +195,7 @@ namespace SchoolPortal.Services.Implementations
             _student.MiddleName = student.MiddleName;
             _student.Surname = student.Surname;
             _student.PhoneNumber = student.PhoneNumber;
-            _student.Email = student.Email;
+            _student.Email = string.IsNullOrEmpty(student.Email) ? null : student.Email;
             _student.Gender = student.Gender;
             _student.DateOfBirth = student.DateOfBirth;
             _student.AdmissionNo = student.AdmissionNo;
@@ -238,14 +238,14 @@ namespace SchoolPortal.Services.Implementations
             {
                 throw new AppException($"Student with id '{student.Id}' does not exist");
             }
-            if (!await emailService.IsEmailValidAsync(student.Email))
+            if (!string.IsNullOrEmpty(student.Email) && !await emailService.IsEmailValidAsync(student.Email))
             {
                 throw new AppException($"Email '{student.Email}' is not valid");
             }
-            if (await studentRepo.AnyAsync(u => u.Email == student.Email) && student.Email != _student.Email)
-            {
-                throw new AppException($"A student with email '{student.Email}' already exist");
-            }
+            //if (await studentRepo.AnyAsync(u => u.Email == student.Email) && student.Email != _student.Email)
+            //{
+            //    throw new AppException($"A student with email '{student.Email}' already exist");
+            //}
            
 
             var currentUser = accessor.HttpContext.GetUserSession();
@@ -256,7 +256,7 @@ namespace SchoolPortal.Services.Implementations
             _student.MiddleName = student.MiddleName;
             _student.Surname = student.Surname;
             _student.PhoneNumber = student.PhoneNumber;
-            _student.Email = student.Email;
+            _student.Email = string.IsNullOrEmpty(student.Email) ? null : student.Email;
             _student.Gender = student.Gender;
             _student.DateOfBirth = student.DateOfBirth;
 
@@ -425,16 +425,16 @@ namespace SchoolPortal.Services.Implementations
         {
             if (string.IsNullOrEmpty(credential?.Email))
             {
-                throw new AppException($"Email/Username is required");
+                throw new AppException($"Username/Admission number is required");
             }
             if (string.IsNullOrEmpty(credential?.Password))
             {
                 throw new AppException($"Password is required");
             }
-            var student = await studentRepo.GetSingleWhereAsync(u => u.Email == credential.Email || u.Username == credential.Email);
+            var student = await studentRepo.GetSingleWhereAsync(u => u.AdmissionNo == credential.Email || u.Username == credential.Email);
             if (student == null)
             {
-                throw new AppException($"Email/username is invalid");
+                throw new AppException($"Username/Admission number is invalid");
             }
             if (!passwordService.Verify(credential.Password, student.Password))
             {
@@ -453,11 +453,16 @@ namespace SchoolPortal.Services.Implementations
                 return student;
         }
 
-        public async Task<Student> GetStudent(string email)
+        /// <summary>
+        /// Get by username or admission number
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public async Task<Student> GetStudent(string username)
         {
-            var student = await studentRepo.GetSingleWhereAsync(u => u.Email == email || u.Username == email);
+            var student = await studentRepo.GetSingleWhereAsync(u => u.AdmissionNo == username || u.Username == username);
             if (student == null)
-                throw new AppException($"Student with email or username: '{email}' does not exist");
+                throw new AppException($"Student with admission number or username: '{username}' does not exist");
             else
                 return student;
         }
@@ -472,7 +477,11 @@ namespace SchoolPortal.Services.Implementations
             }
             return students;
         }
-
+        public IEnumerable<Student> GetStudents(string email)
+        {
+            var students = studentRepo.GetWhere(u => u.Email == email);
+            return students;
+        }
         public async Task SendPasswordRecoveryMail(string email)
         {
             var student = await studentRepo.GetSingleWhereAsync(s => s.Email == email || s.Username == email);
@@ -834,7 +843,7 @@ namespace SchoolPortal.Services.Implementations
             else if (!string.IsNullOrEmpty(Convert.ToString(row[6]).Trim()) && !(await emailService.IsEmailValidAsync(Convert.ToString(row[6]).Trim(), false))) // email
             {
                 isValid = false;
-                err = $"Invalid value for {headers[6]} at row {index}. Field is required.";
+                err = $"Invalid value for {headers[6]} at row {index}. Valid email is required.";
             }
             else if (row[7] == null || Convert.ToString(row[7]).Trim() == "") // phone number
             {
@@ -1058,19 +1067,19 @@ namespace SchoolPortal.Services.Implementations
                 u.UpdatedDate = DateTimeOffset.Now;
                 u.UpdatedByType = currentUser.UserType;
 
-                //  validate email and username for duplicate
-                if (_students.Any(usr => usr.Email == u.Email))
-                {
-                    throw new AppException($"A student with email '{u.Email}' already exists on excel");
-                }
+                //  validate admission no and username for duplicate
+                //if (_students.Any(usr => usr.Email == u.Email))
+                //{
+                //    throw new AppException($"A student with email '{u.Email}' already exists on excel");
+                //}
                 if (_students.Any(usr => usr.AdmissionNo == u.AdmissionNo))
                 {
                     throw new AppException($"A student with admission number '{u.AdmissionNo}' already exists on excel");
                 }
-                if (await studentRepo.AnyAsync(usr => usr.Email == u.Email))
-                {
-                    throw new AppException($"A student with email '{u.Email}' already exists");
-                }
+                //if (await studentRepo.AnyAsync(usr => usr.Email == u.Email))
+                //{
+                //    throw new AppException($"A student with email '{u.Email}' already exists");
+                //}
                 if (await studentRepo.AnyAsync(usr => usr.AdmissionNo == u.AdmissionNo))
                 {
                     throw new AppException($"A student with admission number '{u.AdmissionNo}' already exist");

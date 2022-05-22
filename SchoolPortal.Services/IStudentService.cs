@@ -17,8 +17,9 @@ namespace SchoolPortal.Services
         Task ResetPassword(PasswordRequestObject req);
         Task<bool> IsStudentAuthentic(LoginCredential credential);
         Task<Student> GetStudent(long studentId);
-        Task<Student> GetStudent(string email);
+        Task<Student> GetStudent(string username);
         IEnumerable<Student> GetStudents(bool includeInactive = true);
+        IEnumerable<Student> GetStudents(string email);
         Task SendPasswordRecoveryMail(string email);
         Task DeleteStudent(long studentId);
         Task<string> GenerateUsername(string firstName, string lastName);

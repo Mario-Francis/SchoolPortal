@@ -62,6 +62,9 @@ namespace SchoolPortal.Data
                 .HasIndex(x => x.Username).IsUnique();
 
             modelBuilder.Entity<User>()
+                .HasIndex(x => x.Email).IsUnique();
+
+            modelBuilder.Entity<User>()
                 .HasMany(x => x.UserRoles)
                 .WithOne(x => x.User);
 
@@ -81,6 +84,12 @@ namespace SchoolPortal.Data
             modelBuilder.Entity<User>()
                 .HasMany(x => x.StudentGuardians)
                 .WithOne(x => x.Guardian);
+
+            modelBuilder.Entity<Student>()
+               .HasIndex(x => x.Username).IsUnique();
+
+            modelBuilder.Entity<Student>()
+                .HasIndex(x => x.AdmissionNo).IsUnique();
 
             modelBuilder.Entity<Student>()
                 .HasMany(x => x.MidTermResults)
