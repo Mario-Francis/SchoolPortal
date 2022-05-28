@@ -28,7 +28,7 @@ namespace SchoolPortal.Services.Implementations
         private readonly IOptionsSnapshot<AppSettings> appSettingsDelegate;
         private readonly IRepository<EndTermResult> endTermResultRepo;
         private List<string> headers = new List<string>() { "SN", "Student Admission No" };
-        private string[] validRatings = new string[] { "Very Good", "Good", "Fair", "Poor", "Very Poor" };
+        private string[] validRatings = new string[] { "Excellent", "Very Good", "Good", "Fairly Good", "Fair" };
 
         public BehaviouralRatingService(
             IRepository<BehaviouralRating> behaviouralRatingRepo,
