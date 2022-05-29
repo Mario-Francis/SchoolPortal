@@ -85,6 +85,10 @@ namespace SchoolPortal.Services.Implementations
             }
 
             //var user = req.ToUser();
+            user.FirstName = user.FirstName.Trim();
+            user.MiddleName = string.IsNullOrEmpty(user.MiddleName) ? null : user.MiddleName.Trim();
+            user.Surname = user.Surname.Trim();
+
             user.Password = passwordService.Hash(user.Password);
             user.Username = await GenerateUsername(user.FirstName, user.Surname);
             user.IsActive = true;
@@ -135,6 +139,11 @@ namespace SchoolPortal.Services.Implementations
             }
 
             var currentUser = accessor.HttpContext.GetUserSession();
+
+            user.FirstName = user.FirstName.Trim();
+            user.MiddleName = string.IsNullOrEmpty(user.MiddleName) ? null : user.MiddleName.Trim();
+            user.Surname = user.Surname.Trim();
+
             user.Username = await GenerateUsername(user.FirstName, user.Surname);
             user.Password = passwordService.Hash(Constants.DEFAULT_NEW_USER_PASSWORD);
             user.IsActive = true;
@@ -519,7 +528,7 @@ namespace SchoolPortal.Services.Implementations
         // generate username
         public async Task<string> GenerateUsername(string firstName, string lastName)
         {
-            var uname = $"{firstName.ToLower()}.{lastName.ToLower()}";
+            var uname = $"{firstName.ToLower()}.{lastName.ToLower()}".Replace(" ", "");
             var cnt = 1;
             while (await userRepo.AnyAsync(u => u.Username == uname))
             {
@@ -938,6 +947,9 @@ namespace SchoolPortal.Services.Implementations
 
             foreach (var u in users)
             {
+                u.FirstName = u.FirstName.Trim();
+                u.MiddleName = string.IsNullOrEmpty(u.MiddleName) ? null : u.MiddleName.Trim();
+                u.Surname = u.Surname.Trim();
 
                 u.Password = passwordService.Hash(password);
                 u.IsActive = true;

@@ -115,6 +115,9 @@ namespace SchoolPortal.Services.Implementations
 
                 return x;
             }).ToList();
+            student.FirstName = student.FirstName.Trim();
+            student.MiddleName = string.IsNullOrEmpty(student.MiddleName) ? null : student.MiddleName.Trim();
+            student.Surname = student.Surname.Trim();
 
             student.Email = string.IsNullOrEmpty(student.Email) ? null : student.Email;
             student.Username = await GenerateUsername(student.FirstName, student.Surname);
@@ -560,7 +563,7 @@ namespace SchoolPortal.Services.Implementations
         // generate username
         public async Task<string> GenerateUsername(string firstName, string lastName)
         {
-            var uname = $"{firstName.ToLower()}.{lastName.ToLower()}";
+            var uname = $"{firstName.ToLower()}.{lastName.ToLower()}".Replace(" ", "");
             var cnt = 1;
             while (await studentRepo.AnyAsync(u => u.Username == uname))
             {
@@ -1058,7 +1061,11 @@ namespace SchoolPortal.Services.Implementations
 
             foreach (var u in students)
             {
-                u.Username = await GenerateUsername(u.FirstName, u.Surname);
+                u.FirstName = u.FirstName.Trim();
+                u.MiddleName = string.IsNullOrEmpty(u.MiddleName) ? null : u.MiddleName.Trim();
+                u.Surname = u.Surname.Trim();
+
+                //u.Username = await GenerateUsername(u.FirstName, u.Surname);
                 u.Password = passwordService.Hash(password);
                 u.IsActive = true;
                 u.CreatedBy = currentUser.Username;
