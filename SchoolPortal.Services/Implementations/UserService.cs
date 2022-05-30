@@ -849,7 +849,7 @@ namespace SchoolPortal.Services.Implementations
                 isValid = false;
                 err = $"Invalid value for {headers[4]} at row {index}. Value can either be 'Male' or 'Female'.";
             }
-            else if (row[5] != null && !DateTimeOffset.TryParse(Convert.ToString(row[5]).Trim(), out DateTimeOffset _))
+            else if (row[5] != null && !string.IsNullOrEmpty(Convert.ToString(row[5] ?? "").Trim()) && !DateTimeOffset.TryParse(Convert.ToString(row[5]).Trim(), out DateTimeOffset _))
             {
                 isValid = false;
                 err = $"Invalid value for {headers[5]} at row {index}. A valid date value expected.";
@@ -920,7 +920,7 @@ namespace SchoolPortal.Services.Implementations
                             MiddleName = Convert.ToString(rows[i][2]),
                             Surname = Convert.ToString(rows[i][3]),
                             Gender = Convert.ToString(rows[i][4]),
-                            DateOfBirth = string.IsNullOrEmpty(Convert.ToString(rows[i][5])) ? (DateTimeOffset?)null : DateTimeOffset.Parse(Convert.ToString(rows[i][5])),
+                            DateOfBirth = string.IsNullOrEmpty(Convert.ToString(rows[i][5] ?? "").Trim()) ? (DateTimeOffset?)null : DateTimeOffset.Parse(Convert.ToString(rows[i][5])),
                             Email = Convert.ToString(rows[i][6]),
                             PhoneNumber = Convert.ToString(rows[i][7])
                         };
