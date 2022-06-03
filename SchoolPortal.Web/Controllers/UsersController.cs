@@ -413,7 +413,7 @@ namespace SchoolPortal.Web.Controllers
             }
             catch (AppException ex)
             {
-                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(400, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
             catch (Exception ex)
             {
@@ -421,7 +421,7 @@ namespace SchoolPortal.Web.Controllers
                 //await loggerService.LogException(ex);
                 //await loggerService.LogError(ex.GetErrorDetails());
 
-                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = JsonSerializer.Serialize(ex.InnerException) });
+                return StatusCode(500, new { IsSuccess = false, Message = ex.Message, ErrorDetail = ex.GetErrorDetails() });
             }
         }
 

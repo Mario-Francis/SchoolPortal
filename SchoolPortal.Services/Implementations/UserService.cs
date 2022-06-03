@@ -921,7 +921,7 @@ namespace SchoolPortal.Services.Implementations
                             Surname = Convert.ToString(rows[i][3]),
                             Gender = Convert.ToString(rows[i][4]),
                             DateOfBirth = string.IsNullOrEmpty(Convert.ToString(rows[i][5] ?? "").Trim()) ? (DateTimeOffset?)null : DateTimeOffset.Parse(Convert.ToString(rows[i][5])),
-                            Email = Convert.ToString(rows[i][6]),
+                            Email = Convert.ToString(rows[i][6]).Trim().ToLower(),
                             PhoneNumber = Convert.ToString(rows[i][7])
                         };
                         users.Add(user);
@@ -960,11 +960,11 @@ namespace SchoolPortal.Services.Implementations
                 u.UserRoles = new List<UserRole> { new UserRole { RoleId = roleId, CreatedBy = currentUser.Username } };
 
                 //  validate email and username for duplicate
-                if (_users.Any(usr => usr.Email == u.Email))
+                if (_users.Any(usr => usr.Email.Trim().ToLower() == u.Email.Trim().ToLower()))
                 {
                     throw new AppException($"A user with email '{u.Email}' already exists on excel");
                 }
-                if (await userRepo.AnyAsync(usr => usr.Email == u.Email))
+                if (await userRepo.AnyAsync(usr => usr.Email.ToLower().Trim() == u.Email.ToLower().Trim()))
                 {
                     throw new AppException($"A user with email '{u.Email}' already exists");
                 }

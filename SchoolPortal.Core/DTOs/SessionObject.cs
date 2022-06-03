@@ -40,7 +40,7 @@ namespace SchoolPortal.Core.DTOs
 
             if(user.UserRoles.Any(ur=> ur.RoleId == (long)AppRoles.TEACHER))
             {
-                var classroom = user.ClassRoomTeachers?.FirstOrDefault().ClassRoom;
+                var classroom = user.ClassRoomTeachers?.FirstOrDefault()?.ClassRoom;
                 if (classroom != null)
                 {
                     sessionObject.ClassRoomName = $"{classroom.Class.ClassType.Name} {classroom.Class.ClassGrade} {classroom.RoomCode}";
