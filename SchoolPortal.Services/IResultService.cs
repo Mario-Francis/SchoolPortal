@@ -22,14 +22,14 @@ namespace SchoolPortal.Services
         Task<IEnumerable<MidTermResult>> ExtractMidTermData(IFormFile file);
         Task BatchCreateMidTermResults(IEnumerable<MidTermResult> results, long examId, long subjectId, long classId);
 
-        Task CreateEndTermResult(EndTermResult result);
+        Task CreateEndTermResult(EndTermResult result, bool force = false);
         Task DeleteEndTermResult(long resultId);
-        Task UpdateEndTermResult(EndTermResult result);
+        Task UpdateEndTermResult(EndTermResult result, bool force = false);
         IEnumerable<EndTermResult> GetEndTermResults();
         IEnumerable<EndTermResultViewObject> GetEndTermResultViewObjects();
         Task<EndTermResult> GetEndTermResult(long id);
         Task<EndTermResultViewObject> GetEndTermResultViewObject(long id);
         Task<IEnumerable<EndTermResult>> ExtractEndTermData(IFormFile file);
-        Task BatchCreateEndTermResults(IEnumerable<EndTermResult> results, long examId, long subjectId, long classId);
+        Task BatchCreateEndTermResults(IEnumerable<EndTermResult> results, long examId, long subjectId, long classId, bool force = false);
     }
 }

@@ -45,6 +45,7 @@ namespace SchoolPortal.Data
         public DbSet<RoomCode> RoomCodes { get; set; }
         public DbSet<ExamType> ExamTypes { get; set; }
         public DbSet<CourseWork> CourseWorks { get; set; }
+        public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
 
         // Audit Table
         public DbSet<ActivityLog> ActivityLogs { get; set; }
@@ -55,6 +56,7 @@ namespace SchoolPortal.Data
         public DbSet<MidTermResultViewObject> MidTermResultViewObjects { get; set; }
         public DbSet<EndTermResultViewObject> EndTermResultViewObjects { get; set; }
         public DbSet<EndOfSessionResultViewObject> EndOfSessionResultViewObjects { get; set; }
+        public DbSet<EndOfSecondTermResultViewObject> EndOfSecondTermResultViewObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -208,6 +210,11 @@ namespace SchoolPortal.Data
             .WithMany()
             .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<AttendanceRecord>()
+             .HasOne(x => x.Term)
+             .WithMany()
+             .OnDelete(DeleteBehavior.NoAction);
+
             // view
             modelBuilder.Entity<MidTermResultViewObject>(
             x =>
@@ -228,6 +235,13 @@ namespace SchoolPortal.Data
            {
                x.HasNoKey();
                x.ToView("EndOfSessionResults_View");
+           });
+
+            modelBuilder.Entity<EndOfSecondTermResultViewObject>(
+           x =>
+           {
+               x.HasNoKey();
+               x.ToView("EndOfSecondTermResults_View");
            });
 
             SeeData(modelBuilder);

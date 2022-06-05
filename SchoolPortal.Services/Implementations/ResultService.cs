@@ -423,7 +423,7 @@ namespace SchoolPortal.Services.Implementations
 
         #region End-Term Results
         // add result
-        public async Task CreateEndTermResult(EndTermResult result)
+        public async Task CreateEndTermResult(EndTermResult result, bool force=false)
         {
             if (result == null)
             {
@@ -459,11 +459,14 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' does not belong to specified class");
             }
 
-            var exam = await examRepo.GetById(result.ExamId);
-            if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
-            && er.ClassId == result.ClassId && er.SubjectId == result.SubjectId && er.StudentId == result.StudentId))
+            if (!force)
             {
-                throw new AppException($"There is no corresponding mid-term result for this end-term result. Please upload the mid-term result first");
+                var exam = await examRepo.GetById(result.ExamId);
+                if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
+                && er.ClassId == result.ClassId && er.SubjectId == result.SubjectId && er.StudentId == result.StudentId))
+                {
+                    throw new AppException($"There is no corresponding mid-term result for this end-term result. Please upload the mid-term result first");
+                }
             }
 
             if (await endTermResultRepo.AnyAsync(mr => mr.ExamId == result.ExamId && mr.SubjectId == result.SubjectId && mr.StudentId == result.StudentId))
@@ -507,7 +510,7 @@ namespace SchoolPortal.Services.Implementations
         }
 
         // update 
-        public async Task UpdateEndTermResult(EndTermResult result)
+        public async Task UpdateEndTermResult(EndTermResult result, bool force=false)
         {
             var _result = await endTermResultRepo.GetById(result.Id);
             if (_result == null)
@@ -552,13 +555,15 @@ namespace SchoolPortal.Services.Implementations
                 throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result");
             }
 
-            var exam = await examRepo.GetById(result.ExamId);
-            if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
-            && er.ClassId == result.ClassId && er.SubjectId == result.SubjectId && er.StudentId == result.StudentId))
+            if (!force)
             {
-                throw new AppException($"There is no corresponding mid-term result for this end-term result (admission number: {student.AdmissionNo}). Please upload the mid-term result first");
+                var exam = await examRepo.GetById(result.ExamId);
+                if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
+                && er.ClassId == result.ClassId && er.SubjectId == result.SubjectId && er.StudentId == result.StudentId))
+                {
+                    throw new AppException($"There is no corresponding mid-term result for this end-term result (admission number: {student.AdmissionNo}). Please upload the mid-term result first");
+                }
             }
-
 
             var currentUser = accessor.HttpContext.GetUserSession();
             var _oldresult = _result.Clone<EndTermResult>();
@@ -722,7 +727,7 @@ namespace SchoolPortal.Services.Implementations
             return results;
         }
 
-        public async Task BatchCreateEndTermResults(IEnumerable<EndTermResult> results, long examId, long subjectId, long classId)
+        public async Task BatchCreateEndTermResults(IEnumerable<EndTermResult> results, long examId, long subjectId, long classId, bool force=false)
         {
             if (!await subjectRepo.AnyAsync(s => s.Id == subjectId))
             {
@@ -765,11 +770,14 @@ namespace SchoolPortal.Services.Implementations
                     throw new AppException($"A student with admission number '{student.AdmissionNo}' already have an existing result on excel");
                 }
 
-                var exam = await examRepo.GetById(r.ExamId);
-                if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
-                && er.ClassId == r.ClassId && er.SubjectId == r.SubjectId && er.StudentId == r.StudentId))
+                if (!force)
                 {
-                    throw new AppException($"There is no corresponding mid-term result for this end-term result (admission number: {student.AdmissionNo}). Please upload the mid-term result first");
+                    var exam = await examRepo.GetById(r.ExamId);
+                    if (!await midTermResultRepo.AnyAsync(er => er.Exam.Session == exam.Session && er.Exam.TermId == exam.TermId
+                    && er.ClassId == r.ClassId && er.SubjectId == r.SubjectId && er.StudentId == r.StudentId))
+                    {
+                        throw new AppException($"There is no corresponding mid-term result for this end-term result (admission number: {student.AdmissionNo}). Please upload the mid-term result first");
+                    }
                 }
 
                 if (await endTermResultRepo.AnyAsync(mr => mr.ExamId == examId && mr.SubjectId == subjectId && mr.StudentId == r.StudentId))

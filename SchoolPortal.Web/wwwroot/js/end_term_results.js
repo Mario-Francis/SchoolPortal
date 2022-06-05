@@ -109,7 +109,7 @@ $(() => {
                     "filter": "MidTermTotal",
                     "display": "midTermTotal"
                 }, "render": function (data, type, row, meta) {
-                    return `${data}`;
+                    return `${data ?? '---'}`;
                 }
             },
             {
@@ -210,6 +210,7 @@ $(() => {
         $('#addModal').modal({ backdrop: 'static', keyboard: false }, 'show');
     });
     $('#batchAddBtn').on('click', (e) => {
+        $('#uploadBtn').attr('force', false);
         $('#batchUploadModal').modal({ backdrop: 'static', keyboard: false }, 'show');
     });
 
@@ -446,6 +447,7 @@ $(() => {
         try {
             let form = $("form")[2];
             if (validateForm(form)) {
+                let force = btn.attr('force');
                 let examId = $('#b_examId').val();
                 let classId = $('#b_classId').val();
                 let subjectId = $('#b_subjectId').val();
@@ -462,6 +464,7 @@ $(() => {
                     formData.append('classId', classId);
                     formData.append('subjectId', subjectId);
                     formData.append('file', files[0]);
+                    formData.append('force', force);
 
                     $('fieldset').prop('disabled', true);
                     btn.html('<i class="fa fa-circle-notch fa-spin"></i> Uploading file...');
@@ -531,6 +534,17 @@ $(() => {
     });
 
 });
+
+function uploadForStudentsWithoutMidTerm(){
+    bootConfirm('Kindly ensure the results you wish to upload are strictly for students that resumed in the <b>2nd half</b> of the term. Not adhering to this can compromise the integrity of the records on this system. <br /><br />Do you still wish to continue?', {
+        title: 'Confirm Action', size: 'medium', callback: async (res) => {
+            if (res) {
+                $('#uploadBtn').attr('force', true);
+                $('#batchUploadModal').modal({ backdrop: 'static', keyboard: false }, 'show');
+            }
+        }
+    });
+}
 
 async function updateSubjectdd(classdd) {
     var classId = classdd.val();

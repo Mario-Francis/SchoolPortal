@@ -15,8 +15,8 @@ namespace SchoolPortal.Web.ViewModels
         public long ClassRoomId { get; set; }
         public long SubjectId { get; set; }
         public long StudentId { get; set; }
-        public long MidTermResultId { get; set; }
-        public decimal MidTermTotal { get; set; }
+        public long? MidTermResultId { get; set; }
+        public decimal? MidTermTotal { get; set; }
         public decimal ClassWorkScore { get; set; }
         public decimal TestScore { get; set; }
         public decimal ExamScore { get; set; }
@@ -61,6 +61,8 @@ namespace SchoolPortal.Web.ViewModels
             if (result == null)
                 return null;
             else
+            {
+                var termTotal = result.MidTermTotal != null ? (result.MidTermTotal + result.Total) : Math.Round(((result.Total / 60) * 100), MidpointRounding.AwayFromZero);
                 return new EndTermResultViewObjectVM
                 {
                     Id = result.Id,
@@ -84,12 +86,14 @@ namespace SchoolPortal.Web.ViewModels
                     Total = result.Total,
                     MidTermTotal = result.MidTermTotal,
                     MidTermResultId = result.MidTermResultId,
-                    TermTotal = result.MidTermTotal + result.Total,
+                    TermTotal = termTotal.Value,
                     UpdatedBy = result.UpdatedBy,
                     CreatedDate = clientTimeOffset == null ? result.CreatedDate : result.CreatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
                     UpdatedDate = clientTimeOffset == null ? result.UpdatedDate : result.UpdatedDate.ToOffset(TimeSpan.FromMinutes(clientTimeOffset.Value)),
-                    Grade = gradeService == null ? (result.MidTermTotal + result.Total).ToString() : gradeService.GetGrade((result.MidTermTotal + result.Total), Core.TermSections.SECOND_HALF).Code
+                    Grade = gradeService == null ? (result.MidTermTotal + result.Total).ToString() : gradeService.GetGrade(termTotal.Value, Core.TermSections.SECOND_HALF).Code
                 };
+            }
+               
         }
     }
 }

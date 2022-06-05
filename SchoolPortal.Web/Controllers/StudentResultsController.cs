@@ -172,7 +172,7 @@ namespace SchoolPortal.Web.Controllers
             var parser = new Parser<StudentResultItemVM>(Request.Form, results.AsQueryable());
             var dtResults = StudentResultDataTableResultVM.FromDTResults(parser.Parse());
 
-            dtResults.TotalScoreObtained = results.Select(r => r.Total).Sum();
+            dtResults.TotalScoreObtained = Math.Round(results.Select(r => r.Total).Sum(), 0, MidpointRounding.AwayFromZero);
             dtResults.TotalScoreObtainable = 40 * results.Count();
             dtResults.Percentage = Math.Round((dtResults.TotalScoreObtained / dtResults.TotalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
@@ -192,7 +192,7 @@ namespace SchoolPortal.Web.Controllers
             var parser = new Parser<StudentResultItemVM>(Request.Form, results.AsQueryable());
             var dtResults = StudentResultDataTableResultVM.FromDTResults(parser.Parse());
 
-            dtResults.TotalScoreObtained = results.Select(r => r.TermTotal).Sum();
+            dtResults.TotalScoreObtained = Math.Round(results.Select(r => r.TermTotal).Sum(), 0, MidpointRounding.AwayFromZero);
             dtResults.TotalScoreObtainable = 100 * results.Count();
             dtResults.Percentage = Math.Round((dtResults.TotalScoreObtained / dtResults.TotalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
@@ -212,7 +212,27 @@ namespace SchoolPortal.Web.Controllers
             var parser = new Parser<StudentResultItemVM>(Request.Form, results.AsQueryable());
             var dtResults = StudentResultDataTableResultVM.FromDTResults(parser.Parse());
 
-            dtResults.TotalScoreObtained = results.Select(r => r.AverageScore).Sum();
+            dtResults.TotalScoreObtained = Math.Round(results.Select(r => r.AverageScore).Sum(), 0, MidpointRounding.AwayFromZero);
+            dtResults.TotalScoreObtainable = 100 * results.Count();
+            dtResults.Percentage = Math.Round((dtResults.TotalScoreObtained / dtResults.TotalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
+            dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
+
+            return Ok(dtResults);
+        }
+
+        [HttpPost("{studentId}/EndOfSecondTermResultsDataTable")]
+        public IActionResult EndOfSecondTermResultsDataTable(long? studentId, string session)
+        {
+            var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
+                appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
+
+            var results = studentResultService.GetEndOfSecondTermResults(studentId.Value, session)
+                .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.SECOND_HALF, gradeService));
+
+            var parser = new Parser<StudentResultItemVM>(Request.Form, results.AsQueryable());
+            var dtResults = StudentResultDataTableResultVM.FromDTResults(parser.Parse());
+
+            dtResults.TotalScoreObtained = Math.Round(results.Select(r => r.AverageScore).Sum(), 0, MidpointRounding.AwayFromZero);
             dtResults.TotalScoreObtainable = 100 * results.Count();
             dtResults.Percentage = Math.Round((dtResults.TotalScoreObtained / dtResults.TotalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             dtResults.PercentageGrade = gradeService.GetGrade(dtResults.Percentage, TermSections.SECOND_HALF).Code;
@@ -259,7 +279,7 @@ namespace SchoolPortal.Web.Controllers
             var results = studentResultService.GetMidTermResults(studentId.Value, session, termId.Value)
                .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.FIRST_HALF, gradeService));
 
-            var totalScoreObtained = results.Select(r => r.Total).Sum();
+            var totalScoreObtained = Math.Round(results.Select(r => r.Total).Sum(), 0, MidpointRounding.AwayFromZero);
             var totalScoreObtainable = 40 * results.Count();
             var percentage = Math.Round((totalScoreObtained / totalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
@@ -308,7 +328,7 @@ namespace SchoolPortal.Web.Controllers
             var results = studentResultService.GetEndTermResults(studentId.Value, session, termId.Value)
                .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.SECOND_HALF, gradeService));
 
-            var totalScoreObtained = results.Select(r => r.TermTotal).Sum();
+            var totalScoreObtained = Math.Round(results.Select(r => r.TermTotal).Sum(), 0, MidpointRounding.AwayFromZero);
             var totalScoreObtainable = 100 * results.Count();
             var percentage = Math.Round((totalScoreObtained / totalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
@@ -369,7 +389,68 @@ namespace SchoolPortal.Web.Controllers
             var results = studentResultService.GetEndOfSessionResults(studentId.Value, session)
                .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.SECOND_HALF, gradeService));
 
-            var totalScoreObtained = results.Select(r => r.AverageScore).Sum();
+            var totalScoreObtained = Math.Round(results.Select(r => r.AverageScore).Sum(), 0, MidpointRounding.AwayFromZero);
+            var totalScoreObtainable = 100 * results.Count();
+            var percentage = Math.Round((totalScoreObtained / totalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
+            var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
+
+            var endTermResult = await resultService.GetEndTermResult(results.First().Id);
+            var classRoom = endTermResult.ClassRoom;
+            var exam = endTermResult.Exam;
+
+            var grades = gradeService.GetGrades(TermSections.SECOND_HALF);
+
+            // remark 
+            var remark = await remarkService.GetRemark(exam.Id, student.Id);
+
+            // behavioural ratings
+            var affective = behaviouralRatingService.GetBehaviouralResults(session, termId.Value, student.Id)
+                .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Affective.ToString());
+
+            var psychomotor = behaviouralRatingService.GetBehaviouralResults(session, termId.Value, student.Id)
+                .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Psychomotor.ToString());
+
+            var healthRecord = await healthRecordService.GetRecord(session, termId.Value, student.Id);
+
+            var exportViewData = new EndTermResultExportVM
+            {
+                ResultItems = results,
+                Percentage = percentage,
+                PercentageGrade = percentageGrade,
+                TotalScoreObtained = totalScoreObtained,
+                TotalScoreObtainable = totalScoreObtainable,
+                Exam = ExamVM.FromExam(exam),
+                Student = StudentVM.FromStudent(student),
+                ClassRoom = ClassRoomVM.FromClassRoom(classRoom),
+                Grades = grades.Select(g => GradeVM.FromGrade(g)),
+                HeadTeacherComment = remark?.HeadTeacherRemark,
+                TeacherComment = remark?.TeacherRemark,
+                AffectiveDomainBehaviouralRatings = affective.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
+                PsychoMotorDomainBehaviouralRatings = psychomotor.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
+                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord)
+            };
+
+            return View(exportViewData);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{studentId}/EndSecondTermResult/ExportView")]
+        public async Task<IActionResult> EndSecondTermResultExportView(long? studentId, string session, long? termId = (int)Terms.SECOND)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var results = studentResultService.GetEndOfSecondTermResults(studentId.Value, session)
+               .Select(r => StudentResultItemVM.FromStudentResultItem(r, TermSections.SECOND_HALF, gradeService));
+
+            var totalScoreObtained = Math.Round(results.Select(r => r.AverageScore).Sum(), MidpointRounding.AwayFromZero);
             var totalScoreObtainable = 100 * results.Count();
             var percentage = Math.Round((totalScoreObtained / totalScoreObtainable) * 100, MidpointRounding.AwayFromZero);
             var percentageGrade = gradeService.GetGrade(percentage, TermSections.SECOND_HALF).Code;
@@ -459,7 +540,7 @@ namespace SchoolPortal.Web.Controllers
 
         [AllowAnonymous]
         [HttpGet("{studentId}/EndSessionResult/Export")]
-        public async Task<IActionResult> EndSessionResultExport(long? studentId, string session, long? termId)
+        public async Task<IActionResult> EndSessionResultExport(long? studentId, string session, long? termId = (int)Terms.THIRD)
         {
             if (studentId == null)
             {
@@ -474,6 +555,27 @@ namespace SchoolPortal.Web.Controllers
             var url = $"{appSettingsDelegate.Value.LocalBaseUrl}StudentResults/{student.Id}/EndSessionResult/ExportView?session={session}&termId={termId}";
             var pdfBuffer = pdfGeneratorService.GeneratePdfFromUrl(url);
             var fileName = $"{student.FirstName} {student.MiddleName} {student.Surname} ({student.AdmissionNo}) End-Session Result for {session} - {DateTime.Now.ToString("dd-MM-yyyy hh-mm-ss")}.pdf".ToLower().Replace(" ", "_");
+
+            return File(pdfBuffer, MimeTypes.GetMimeType(fileName), fileName);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("{studentId}/EndSecondTermResult/Export")]
+        public async Task<IActionResult> EndSecondTermResultExport(long? studentId, string session, long? termId = (int)Terms.SECOND)
+        {
+            if (studentId == null)
+            {
+                return NotFound(new { IsSuccess = true, Message = "Student is not found", ErrorItems = new string[] { } });
+            }
+            var student = await studentService.GetStudent(studentId.Value);
+            if (student == null)
+            {
+                return NotFound("Student is not found");
+            }
+
+            var url = $"{appSettingsDelegate.Value.LocalBaseUrl}StudentResults/{student.Id}/EndSecondTermResult/ExportView?session={session}&termId={termId}";
+            var pdfBuffer = pdfGeneratorService.GeneratePdfFromUrl(url);
+            var fileName = $"{student.FirstName} {student.MiddleName} {student.Surname} ({student.AdmissionNo}) End-Second Term Result for {session} - {DateTime.Now.ToString("dd-MM-yyyy hh-mm-ss")}.pdf".ToLower().Replace(" ", "_");
 
             return File(pdfBuffer, MimeTypes.GetMimeType(fileName), fileName);
         }

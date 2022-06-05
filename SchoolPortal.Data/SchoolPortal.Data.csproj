@@ -35,6 +35,8 @@
     <Compile Remove="Migrations\20220402132404_check.Designer.cs" />
     <Compile Remove="Migrations\20220522064220_Add unique constraints for username and email field for users and admission no and username field for students.cs" />
     <Compile Remove="Migrations\20220522064220_Add unique constraints for username and email field for users and admission no and username field for students.Designer.cs" />
+    <Compile Remove="Migrations\20220604145327_test.cs" />
+    <Compile Remove="Migrations\20220604145327_test.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Audit.EntityFramework.Core.v3" Version="18.1.6" />

@@ -311,7 +311,7 @@ namespace SchoolPortal.Web.Controllers
                     {
                         var results = await resultService.ExtractEndTermData(model.File);
 
-                        await resultService.BatchCreateEndTermResults(results, model.ExamId, model.SubjectId, model.ClassId);
+                        await resultService.BatchCreateEndTermResults(results, model.ExamId, model.SubjectId, model.ClassId, model.Force);
 
                         return Ok(new { IsSuccess = true, Message = "File uploaded and read successfully", ErrorItems = new string[] { } });
 
@@ -332,7 +332,7 @@ namespace SchoolPortal.Web.Controllers
         }
 
         [HttpPost("[controller]/endterm/AddResult")]
-        public async Task<IActionResult> AddEndTermResult(EndTermResultVM resultVM)
+        public async Task<IActionResult> AddEndTermResult(EndTermResultVM resultVM, bool force = false)
         {
             try
             {
@@ -343,7 +343,7 @@ namespace SchoolPortal.Web.Controllers
                 }
                 else
                 {
-                    await resultService.CreateEndTermResult(resultVM.ToEndTermResult());
+                    await resultService.CreateEndTermResult(resultVM.ToEndTermResult(), force);
                     return Ok(new { IsSuccess = true, Message = "End-term result added succeessfully", ErrorItems = new string[] { } });
                 }
             }
@@ -361,7 +361,7 @@ namespace SchoolPortal.Web.Controllers
         }
 
         [HttpPost("[controller]/endterm/UpdateResult")]
-        public async Task<IActionResult> UpdateEndTermResult(EndTermResultVM resultVM)
+        public async Task<IActionResult> UpdateEndTermResult(EndTermResultVM resultVM, bool force = false)
         {
             try
             {
@@ -376,7 +376,7 @@ namespace SchoolPortal.Web.Controllers
                 }
                 else
                 {
-                    await resultService.UpdateEndTermResult(resultVM.ToEndTermResult());
+                    await resultService.UpdateEndTermResult(resultVM.ToEndTermResult(), force);
                     return Ok(new { IsSuccess = true, Message = "End-term result updated succeessfully", ErrorItems = new string[] { } });
                 }
             }

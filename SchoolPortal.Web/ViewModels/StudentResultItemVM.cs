@@ -12,7 +12,7 @@ namespace SchoolPortal.Web.ViewModels
     {
         public long Id { get; set; }
         public long SubjectId { get; set; }
-        public decimal MidTermTotal { get; set; }
+        public decimal? MidTermTotal { get; set; }
         public decimal ClassWorkScore { get; set; }
         public decimal TestScore { get; set; }
         public decimal ExamScore { get; set; }
@@ -26,13 +26,13 @@ namespace SchoolPortal.Web.ViewModels
         //public long FirstEndTermResultId { get; set; }
         //public decimal FirstMidTermTotal { get; set; }
         //public decimal FirstEndTermTotal { get; set; }
-        public decimal FirstTermTotal { get; set; }
+        public decimal? FirstTermTotal { get; set; }
 
         //public long SecondMidTermResultId { get; set; }
         //public long SecondEndTermResultId { get; set; }
         //public decimal SecondMidTermTotal { get; set; }
         //public decimal SecondEndTermTotal { get; set; }
-        public decimal SecondTermTotal { get; set; }
+        public decimal? SecondTermTotal { get; set; }
 
         public decimal TermTotal { get; set; }
         public decimal AverageScore { get; set; }
@@ -52,12 +52,12 @@ namespace SchoolPortal.Web.ViewModels
                 Total = item.Total,
                 Subject = SubjectVM.FromSubject(item.Subject),
                 SubjectName = item.SubjectName,
-                AverageScore = Math.Round(item.AverageScore, 0, MidpointRounding.AwayFromZero),
+                AverageScore = item.AverageScore ?? 0,
                 FirstTermTotal = item.FirstTermTotal,
                 MidTermTotal = item.MidTermTotal,
                 SecondTermTotal = item.SecondTermTotal,
-                TermTotal = item.TermTotal,
-                Grade = gradeService.GetGrade(Math.Round(item.AverageScore==0?(item.TermTotal==0?item.Total:item.TermTotal):item.AverageScore, 0, MidpointRounding.AwayFromZero), section).Code
+                TermTotal = item.TermTotal ?? item.Total,
+                Grade = gradeService.GetGrade(Math.Round((item.AverageScore ?? item.TermTotal ?? item.Total), 0, MidpointRounding.AwayFromZero), section).Code
             };
         }
        

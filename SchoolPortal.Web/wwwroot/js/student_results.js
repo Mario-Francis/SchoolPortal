@@ -1,5 +1,5 @@
 ﻿const studentId = $('#studentId').val();
-var midTermResultsTable, endTermResultsTable, sEndTermResultsTable;
+var midTermResultsTable, endTermResultsTable, sEndTermResultsTable, t2EndTermResultsTable;
 var lastSearchedSession, lastSearchedTermId;
 
 $(() => {
@@ -510,6 +510,11 @@ $(() => {
         location.assign(url);
     });
 
+    $('#t2ExportBtn').on('click', e => {
+        let url = $base + `studentResults/${studentId}/EndSecondTermResult/Export?session=${lastSearchedSession}&termId=${lastSearchedTermId}`;
+        location.assign(url);
+    });
+
 });
 
 
@@ -599,8 +604,10 @@ function populateResultData(resultObj) {
         let midTerm = resultObj.midTermResult;
         let endTerm = resultObj.endTermResult;
 
+        let session = midTerm ? midTerm.session : endTerm.session;
+        let term = midTerm ? midTerm.term : endTerm.term;
         // set title
-        let title = capitalize(`${midTerm.session} ${midTerm.term.name} Term Results`);
+        let title = capitalize(`${session} ${term.name} Term Results`);
         $('#resultTitle').html(title);
 
         // populate midterm section
@@ -711,20 +718,27 @@ function initializeMidTermDataTable() {
 }
 
 function populateMidTerm(data) {
-    // data table
-    $('#midSessionSpan').html(data.session);
-    $('#midTermSpan').html(data.term.name);
-    $('#midClassSpan').html(`${data.classRoom.class} ${data.classRoom.roomCode}`);
-    $('#midExamId').val(data.exam.id);
-    initializeMidTermDataTable();
-
-    // comment
-    if (data.resultComment != null) {
-        $('#midCommentId').val(data.resultComment.id);
-        $('#midTeacherComment').val(data.resultComment.teacherComment);
-        $('#midHeadTeacherComment').val(data.resultComment.headTeacherComment);
+    if (data == null) {
+        $('#nav-end-tab').tab('show');
+        $('#nav-mid-tab').addClass('disabled').hide();
     } else {
-        $('#midCommentId').val('0');
+        $('#nav-mid-tab').tab('show');
+        $('#nav-mid-tab').removeClass('disabled').show();
+        // data table
+        $('#midSessionSpan').html(data.session);
+        $('#midTermSpan').html(data.term.name);
+        $('#midClassSpan').html(`${data.classRoom.class} ${data.classRoom.roomCode}`);
+        $('#midExamId').val(data.exam.id);
+        initializeMidTermDataTable();
+
+        // comment
+        if (data.resultComment != null) {
+            $('#midCommentId').val(data.resultComment.id);
+            $('#midTeacherComment').val(data.resultComment.teacherComment);
+            $('#midHeadTeacherComment').val(data.resultComment.headTeacherComment);
+        } else {
+            $('#midCommentId').val('0');
+        }
     }
 }
 
@@ -804,6 +818,12 @@ function initializeEndTermDataTable() {
             },
             {
                 data: {
+                    "filter": "Total",
+                    "display": "total"
+                }
+            },
+            {
+                data: {
                     "filter": "TermTotal",
                     "display": "termTotal"
                 }
@@ -865,8 +885,8 @@ function initializeEndOfSessionDataTable() {
                         + '<div class="dropdown-menu f14">'
                         // + `<a class="dropdown-item" href="#" cid="${row.id}">View Classrooms</a>`
                         // + `<div class="dropdown-divider"></div>`
-                        + `<a class="dropdown-item edit" href="javascript:void(0)" cid="${row.id}">Edit</a>`
-                        + `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
+                        + `<a class="dropdown-item e_edit" href="javascript:void(0)" rid="${row.id}">Edit</a>`
+                        //+ `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
                         + '</div>'
                         + '</div>';
                 }
@@ -899,6 +919,12 @@ function initializeEndOfSessionDataTable() {
                 data: {
                     "filter": "ExamScore",
                     "display": "examScore"
+                }
+            },
+            {
+                data: {
+                    "filter": "Total",
+                    "display": "total"
                 }
             },
             {
@@ -946,6 +972,130 @@ function initializeEndOfSessionDataTable() {
 
 }
 
+function initializeEndOfSecondTermDataTable() {
+    if ($.fn.DataTable.isDataTable('#t2EndTermResultsTable')) {
+        t2EndTermResultsTable.destroy();
+    }
+    t2EndTermResultsTable = $('#t2EndTermResultsTable').DataTable({
+        serverSide: true,
+        processing: true,
+        ajax: {
+            url: $base + `StudentResults/${studentId}/EndOfSecondTermResultsDataTable?session=${lastSearchedSession}&termId=${lastSearchedTermId}`,
+            type: "POST"
+        },
+        "order": [[2, "asc"]],
+        "lengthMenu": [10, 20],
+        "paging": true,
+        autoWidth: false,
+        //rowId: 'id',
+        columns: [
+            {
+                data: {
+                    "filter": "Id",
+                    "display": "id"
+                }, "orderable": true, "render": function (data, type, row, meta) {
+                    return (meta.row + 1 + meta.settings._iDisplayStart) + '.';
+                }
+            },
+            {
+                data: {
+                    "filter": "Id",
+                    "display": "id"
+                }, "orderable": false, "render": function (data, type, row, meta) {
+                    return '<div class="dropdown f14">'
+                        + '<button type="button" class="btn px-3 f12" data-toggle="dropdown">'
+                        + '<i class="fa fa-ellipsis-v"></i>'
+                        + '</button>'
+                        + '<div class="dropdown-menu f14">'
+                        // + `<a class="dropdown-item" href="#" cid="${row.id}">View Classrooms</a>`
+                        // + `<div class="dropdown-divider"></div>`
+                        + `<a class="dropdown-item e_edit" href="javascript:void(0)" rid="${row.id}">Edit</a>`
+                        //+ `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
+                        + '</div>'
+                        + '</div>';
+                }
+            },
+            {
+                data: {
+                    "filter": "SubjectName",
+                    "display": "subjectName"
+                }, visible: true
+            },
+            {
+                data: {
+                    "filter": "MidTermTotal",
+                    "display": "midTermTotal"
+                }
+            },
+            {
+                data: {
+                    "filter": "ClassWorkScore",
+                    "display": "classWorkScore"
+                }
+            },
+            {
+                data: {
+                    "filter": "TestScore",
+                    "display": "testScore"
+                }
+            },
+            {
+                data: {
+                    "filter": "ExamScore",
+                    "display": "examScore"
+                }
+            },
+            {
+                data: {
+                    "filter": "Total",
+                    "display": "total"
+                }
+            },
+            {
+                data: {
+                    "filter": "TermTotal",
+                    "display": "termTotal"
+                }
+            },
+            {
+                data: {
+                    "filter": "FirstTermTotal",
+                    "display": "firstTermTotal"
+                }
+            },
+            //{
+            //    data: {
+            //        "filter": "SecondTermTotal",
+            //        "display": "secondTermTotal"
+            //    }
+            //},
+            {
+                data: {
+                    "filter": "AverageScore",
+                    "display": "averageScore"
+                }
+            },
+            {
+                data: {
+                    "filter": "Grade",
+                    "display": "grade"
+                }
+            }
+
+        ]
+    }).on('xhr.dt', (e, settings, json, xhr) => {
+        if (json != null) {
+            console.log(json);
+            $('#t2EndTmoSpan').html(json.totalScoreObtained);
+            $('#t2EndTmoSpan2').html(json.totalScoreObtainable);
+            $('#t2EndAvgSpan').html(json.percentage);
+            $('#t2EndAvgGradeSpan').html(json.percentageGrade);
+        }
+    });
+
+
+}
+
 
 function populateEndTerm(data) {
     if (data == null) {
@@ -956,6 +1106,12 @@ function populateEndTerm(data) {
             $('#v-pills-session-tab').addClass('disabled').hide();
         } else {
             $('#v-pills-session-tab').removeClass('disabled').show();
+        }
+
+        if (data.term.id != 2) {
+            $('#v-pills-second-tab').addClass('disabled').hide();
+        } else {
+            $('#v-pills-second-tab').removeClass('disabled').show();
         }
 
         // data table
@@ -972,6 +1128,14 @@ function populateEndTerm(data) {
             $('#sEndClassSpan').html(`${data.classRoom.class} ${data.classRoom.roomCode}`);
             $('#sEndExamId').val(data.exam.id);
             initializeEndOfSessionDataTable();
+        }
+
+        if (data.term.id == 2) {
+            $('#t2EndSessionSpan').html(data.session);
+            $('#t2EndTermSpan').html(data.term.name);
+            $('#t2EndClassSpan').html(`${data.classRoom.class} ${data.classRoom.roomCode}`);
+            $('#t2EndExamId').val(data.exam.id);
+            initializeEndOfSecondTermDataTable();
         }
 
         // end term comment
@@ -1030,6 +1194,14 @@ function clearResult() {
         sEndTermResultsTable.destroy();
     }
 
+    $('#t2EndSessionSpan').html('');
+    $('#t2EndTermSpan').html('');
+    $('#t2EndClassSpan').html('');
+    $('#t2EndExamId').val('');
+    if ($.fn.DataTable.isDataTable('#t2EndTermResultsTable')) {
+        t2EndTermResultsTable.destroy();
+    }
+
     // clear end term table
     $('#endSessionSpan').html('');
     $('#endTermSpan').html('');
@@ -1052,6 +1224,10 @@ function clearResult() {
     if ($.fn.DataTable.isDataTable('#midTermResultsTable')) {
         midTermResultsTable.destroy();
     }
+
+    $('#nav-mid-tab').tab('show');
+    $('#v-pills-ecognitive-tab').tab('show');
+    $('#v-pills-cognitive-tab').tab('show');
 
     $('#resultsCard').slideUp(300);
 }

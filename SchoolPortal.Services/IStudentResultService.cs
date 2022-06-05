@@ -15,6 +15,7 @@ namespace SchoolPortal.Services
         IEnumerable<StudentResultItem> GetEndTermResults(long studentId, string session, long termId);
         IEnumerable<BehaviouralResult> GetEndTermBehaviouralRatings(long studentId, string session, long termId);
         IEnumerable<StudentResultItem> GetEndOfSessionResults(long studentId, string session);
+        IEnumerable<StudentResultItem> GetEndOfSecondTermResults(long studentId, string session);
         Task<StudentResult> GetStudentResult(long studentId, string session, long termId);
 
     }

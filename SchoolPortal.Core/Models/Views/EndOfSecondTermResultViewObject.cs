@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SchoolPortal.Core.Models.Views
 {
-    public class EndOfSessionResultViewObject:BaseEntity
+    public class EndOfSecondTermResultViewObject : BaseEntity
     {
         public long? FirstMidTermResultId { get; set; }
         public long? FirstEndTermResultId { get; set; }
@@ -16,14 +16,6 @@ namespace SchoolPortal.Core.Models.Views
         [Column(TypeName = "decimal(10, 2)")]
         public decimal? FirstTermTotal { get; set; }
 
-        public long? SecondMidTermResultId { get; set; }
-        public long? SecondEndTermResultId { get; set; }
-        [Column(TypeName = "decimal(10, 2)")]
-        public decimal? SecondMidTermTotal { get; set; }
-        [Column(TypeName = "decimal(10, 2)")]
-        public decimal? SecondEndTermTotal { get; set; }
-        [Column(TypeName = "decimal(10, 2)")]
-        public decimal? SecondTermTotal { get; set; }
 
         [Column(TypeName = "decimal(10, 2)")]
         public decimal? TermTotal { get; set; }

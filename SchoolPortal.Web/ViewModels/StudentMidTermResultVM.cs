@@ -16,7 +16,7 @@ namespace SchoolPortal.Web.ViewModels
 
         public static StudentMidTermResultVM FromStudentMidTermResult(StudentMidTermResult result)
         {
-            return new StudentMidTermResultVM
+            return result==null?null: new StudentMidTermResultVM
             {
                 ClassRoom = ClassRoomVM.FromClassRoom(result.ClassRoom),
                 Exam = ExamVM.FromExam(result.Exam),

@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>@Model.Student.FullName - End of Session Result | Caleb International School</title>
+    <title>@Model.Student.FullName - End of Second Term Result | Caleb International School</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Favicon -->
@@ -153,7 +153,6 @@
                             <th colspan="4">2nd Half </th>
                             <th rowspan="2">Term Total</th>
                             <th rowspan="2">1st Term</th>
-                            <th rowspan="2">2nd Term</th>
                             <th rowspan="2">Average</th>
                             <th rowspan="3">GRADE</th>
                             <th rowspan="3">REMARKS</th>
@@ -173,7 +172,6 @@
                             <th>100</th>
                             <th>100</th>
                             <th>100</th>
-                            <th>100</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -188,7 +186,6 @@
                             <td>@r.Total</td>
                             <td>@r.TermTotal</td>
                             <td>@r.FirstTermTotal</td>
-                            <td>@r.SecondTermTotal</td>
                             <td>@r.AverageScore</td>
                             <td>@r.Grade</td>
                             <td>@(Model.Grades.FirstOrDefault(g=>g.Code == r.Grade).Description)</td>
@@ -199,7 +196,6 @@
                         <tr>
                             <th>TOTAL MARK OBTAINED</th>
                             <th>@Model.TotalScoreObtained</th>
-                            <th class="border-0"></th>
                             <th class="border-0"></th>
                             <th class="border-0"></th>
                             <th class="border-0"></th>

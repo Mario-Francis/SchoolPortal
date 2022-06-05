@@ -178,6 +178,7 @@
                                     <div class="nav flex-column nav-pills" id="v-pills-end-tab" role="tablist" aria-orientation="vertical">
                                         <a class="nav-link active" id="v-pills-ecognitive-tab" data-toggle="pill" href="#v-pills-ecognitive" role="tab" aria-controls="v-pills-ecognitive" aria-selected="true">Cognitive&nbsp;Domain</a>
                                         <a class="nav-link" id="v-pills-session-tab" data-toggle="pill" href="#v-pills-session" role="tab" aria-controls="v-pills-session" aria-selected="false">Cognitive&nbsp;(Aggregated)</a>
+                                        <a class="nav-link" id="v-pills-second-tab" data-toggle="pill" href="#v-pills-second" role="tab" aria-controls="v-pills-second" aria-selected="false">Cognitive&nbsp;(Aggregated)</a>
                                         <a class="nav-link" id="v-pills-behavioural-tab" data-toggle="pill" href="#v-pills-behavioural" role="tab" aria-controls="v-pills-behavioural" aria-selected="false">Behavioural&nbsp;Ratings</a>
                                         <a class="nav-link" id="v-pills-health-tab" data-toggle="pill" href="#v-pills-health" role="tab" aria-controls="v-pills-health" aria-selected="false">Health&nbsp;Records</a>
                                         <a class="nav-link" id="v-pills-ecomment-tab" data-toggle="pill" href="#v-pills-ecomment" role="tab" aria-controls="v-pills-ecomment" aria-selected="false">Comments</a>
@@ -216,6 +217,7 @@
                                                             <th>Test</th>
                                                             <th>Exam</th>
                                                             <th>Total</th>
+                                                            <th>Term Total</th>
                                                             <th>Grade</th>
                                                         </tr>
                                                     </thead>
@@ -229,6 +231,7 @@
                                                             <td class="px-4 py-3 "><span id="endTmoSpan"></span></td>
                                                             <td></td>
                                                             <td></td>
+                                                            <td></td>
                                                             <td class="px-4 py-3  mini-bold">Percentage</td>
                                                             <td class="px-4 py-3"><span id="endAvgSpan"></span></td>
 
@@ -239,6 +242,7 @@
                                                             <td></td>
                                                             <td class="px-4 py-3 mini-bold">Total Mark Obtainable</td>
                                                             <td class="px-4 py-3 "><span id="endTmoSpan2"></span></td>
+                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
@@ -280,6 +284,7 @@
                                                             <th>Test</th>
                                                             <th>Exam</th>
                                                             <th>Total</th>
+                                                            <th>Term Total</th>
                                                             <th>1st&nbsp;Term</th>
                                                             <th>2nd&nbsp;Term</th>
                                                             <th>Average</th>
@@ -294,6 +299,7 @@
                                                             <td></td>
                                                             <td class="px-4 py-3 mini-bold">Total Mark Obtained</td>
                                                             <td class="px-4 py-3 "><span id="sEndTmoSpan"></span></td>
+                                                            <td></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
@@ -316,11 +322,86 @@
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
+                                                            <td></td>
                                                         </tr>
                                                     </tfoot>
                                                 </table>
                                             </div>
                                         </div>
+
+                                        <div class="tab-pane fade" id="v-pills-second" role="tabpanel" aria-labelledby="v-pills-second-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">End of Second Term Aggregated Result</h5>
+                                                <hr class="my-2" />
+                                                <div class="row f14">
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold">Session:</b> <span id="t2EndSessionSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Term:</b> <span id="t2EndTermSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Class:</b> <span id="t2EndClassSpan"></span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="my-1">
+                                                <button type="button" id="t2ExportBtn" class="btn btn-primary2 f12 rounded"><i class="fa fa-file-pdf"></i> &nbsp;Export Result</button>
+                                            </p>
+                                            <div class="table-responsive">
+                                                <table id="t2EndTermResultsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:28px">#</th>
+                                                            <th>&nbsp;</th>
+                                                            <th>Subject</th>
+                                                            <th>1st&nbsp;Half</th>
+                                                            <th>Classwork</th>
+                                                            <th>Test</th>
+                                                            <th>Exam</th>
+                                                            <th>Total</th>
+                                                            <th>Term Total</th>
+                                                            <th>1st&nbsp;Term</th>
+                                                            <th>Average</th>
+                                                            <th>Grade</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                    <tfoot class="f14">
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtained</td>
+                                                            <td class="px-4 py-3 "><span id="t2EndTmoSpan"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3  mini-bold">Percentage</td>
+                                                            <td class="px-4 py-3 "><span id="t2EndAvgSpan"></span></td>
+                                                            <td class="px-4 py-3 "><span id="t2EndAvgGradeSpan"></span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtainable</td>
+                                                            <td class="px-4 py-3 "><span id="t2EndTmoSpan2"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+
                                         <div class="tab-pane fade" id="v-pills-behavioural" role="tabpanel" aria-labelledby="v-pills-behavioural-tab">
                                             <div class="jumbotron py-4">
                                                 <h5 class="m-0">Behavioural Ratings</h5>
@@ -419,7 +500,7 @@
                                                     </div>
                                                     <div class="form-group @(isAdminOrHeadTeacher?"":"d-none")">
                                                         <label for="endHeadTeacherComment" class="f14">* Head Teacher's Comment</label>
-                                                        <textarea id="endHeadTeacherComment" class="form-control" placeholder="Enter head teacher's comment" @(isAdminOrHeadTeacher?"required":"") rows="3"></textarea>
+                                                        <textarea id="endHeadTeacherComment" class="form-control" placeholder="Enter head teacher's comment" @(isAdminOrHeadTeacher ? "required" : "") rows="3"></textarea>
                                                     </div>
                                                     <hr />
                                                     <p class="text-right">

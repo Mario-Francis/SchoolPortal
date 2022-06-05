@@ -12,9 +12,9 @@ namespace SchoolPortal.Core.Models.Views
         public long ClassRoomId { get; set; }
         public long SubjectId { get; set; }
         public long StudentId { get; set; }
-        public long MidTermResultId { get; set; }
+        public long? MidTermResultId { get; set; }
         [Column(TypeName = "decimal(10, 2)")]
-        public decimal MidTermTotal { get; set; }
+        public decimal? MidTermTotal { get; set; }
         [Column(TypeName = "decimal(10, 2)")]
         public decimal ClassWorkScore { get; set; }
         [Column(TypeName = "decimal(10, 2)")]

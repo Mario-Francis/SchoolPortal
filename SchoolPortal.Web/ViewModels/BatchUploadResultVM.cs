@@ -17,5 +17,6 @@ namespace SchoolPortal.Web.ViewModels
         public long SubjectId { get; set; }
         [Required]
         public IFormFile File { get; set; }
+        public bool Force { get; set; }
     }
 }

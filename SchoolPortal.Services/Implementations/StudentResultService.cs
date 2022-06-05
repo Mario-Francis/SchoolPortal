@@ -18,6 +18,7 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<EndTermResult> endTermResultRepo;
         private readonly IRepository<EndTermResultViewObject> endTermResultViewObjectRepo;
         private readonly IRepository<EndOfSessionResultViewObject> endOfSessionResultViewObjectRepo;
+        private readonly IRepository<EndOfSecondTermResultViewObject> endOfSecondTermResultViewObjectRepo;
         private readonly IRepository<Exam> examRepo;
         private readonly ILoggerService<StudentResultService> logger;
         private readonly IRepository<PerformanceRemark> performanceRemarkRepo;
@@ -29,6 +30,7 @@ namespace SchoolPortal.Services.Implementations
             IRepository<EndTermResult> endTermResultRepo,
             IRepository<EndTermResultViewObject> endTermResultViewObjectRepo,
             IRepository<EndOfSessionResultViewObject> endOfSessionResultViewObjectRepo,
+            IRepository<EndOfSecondTermResultViewObject> endOfSecondTermResultViewObjectRepo,
             IRepository<Exam>  examRepo,
             ILoggerService<StudentResultService> logger,
             IRepository<PerformanceRemark> performanceRemarkRepo,
@@ -40,6 +42,7 @@ namespace SchoolPortal.Services.Implementations
             this.endTermResultRepo = endTermResultRepo;
             this.endTermResultViewObjectRepo = endTermResultViewObjectRepo;
             this.endOfSessionResultViewObjectRepo = endOfSessionResultViewObjectRepo;
+            this.endOfSecondTermResultViewObjectRepo = endOfSecondTermResultViewObjectRepo;
             this.examRepo = examRepo;
             this.logger = logger;
             this.performanceRemarkRepo = performanceRemarkRepo;
@@ -50,17 +53,29 @@ namespace SchoolPortal.Services.Implementations
         // get student result sessions
         public IEnumerable<string> GetResultSessions(long studentId)
         {
-            var sessions = midTermResultRepo.GetWhere(r => r.StudentId == studentId)
-                .Select(r => r.Exam.Session).Distinct().OrderByDescending(s => s);
+            var msessions = midTermResultRepo.GetWhere(r => r.StudentId == studentId)
+                .Select(r => r.Exam.Session).Distinct().ToList();
 
-            return sessions;
+            var esessions = endTermResultRepo.GetWhere(r => r.StudentId == studentId)
+                .Select(r => r.Exam.Session).Distinct().ToList();
+
+            msessions.AddRange(esessions);
+            msessions = msessions.Distinct().OrderByDescending(s => s).ToList();
+
+            return msessions;
         }
 
         // get available terms
         public IEnumerable<Term> GetResultSessionTerms(long studentId, string session)
         {
             var terms = midTermResultRepo.GetWhere(r => r.Exam.Session == session && r.StudentId == studentId)
-                .Select(r => r.Exam.Term).Distinct().OrderByDescending(t => t.Id);
+                .Select(r => r.Exam.Term).Distinct().ToList();
+
+            var eterms = endTermResultRepo.GetWhere(r => r.Exam.Session == session && r.StudentId == studentId)
+                .Select(r => r.Exam.Term).Distinct();
+
+            terms.AddRange(eterms);
+            terms = terms.Distinct().OrderByDescending(t => t.Id).ToList();
 
             return terms;
         }
@@ -124,12 +139,22 @@ namespace SchoolPortal.Services.Implementations
             return results;
         }
 
+        // get end of second term results
+        public IEnumerable<StudentResultItem> GetEndOfSecondTermResults(long studentId, string session)
+        {
+            var results = endOfSecondTermResultViewObjectRepo.GetWhere(r => r.StudentId == studentId && r.Session == session)
+                .Select(r => StudentResultItem.FromEndOfSecondTermResultViewObject(r));
+
+            return results;
+        }
+
         // get results
         public async Task<StudentResult> GetStudentResult(long studentId, string session, long termId)
         {
             var mResult = await midTermResultRepo.GetSingleWhereAsync(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId);
             var eResult = await endTermResultRepo.GetSingleWhereAsync(r => r.StudentId == studentId && r.Exam.Session == session && r.Exam.TermId == termId);
-            var midTermResult = new StudentMidTermResult
+            
+            var midTermResult = mResult==null?null: new StudentMidTermResult
             {
                 ClassRoom = mResult.ClassRoom,
                 Exam = mResult.Exam,
