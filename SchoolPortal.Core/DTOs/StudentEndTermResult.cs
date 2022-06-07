@@ -14,6 +14,7 @@ namespace SchoolPortal.Core.DTOs
         public Exam Exam { get; set; }
         public ResultCommentObject ResultComment { get; set; }
         public HealthRecordObject HealthRecord { get; set; }
+        public AttendanceRecordObject AttendanceRecord { get; set; }
         public IEnumerable<BehaviouralResult> BehaviouralResults { get; set; }
     }
 }

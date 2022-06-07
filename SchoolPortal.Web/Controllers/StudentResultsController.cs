@@ -29,6 +29,7 @@ namespace SchoolPortal.Web.Controllers
         private readonly IPerformanceRemarkService remarkService;
         private readonly IPdfGeneratorService pdfGeneratorService;
         private readonly IHealthRecordService healthRecordService;
+        private readonly IAttendanceRecordService attendanceRecordService;
 
         public StudentResultsController(
             IStudentService studentService,
@@ -40,7 +41,8 @@ namespace SchoolPortal.Web.Controllers
             IGradeService gradeService,
             IPerformanceRemarkService remarkService,
             IPdfGeneratorService pdfGeneratorService,
-            IHealthRecordService healthRecordService
+            IHealthRecordService healthRecordService,
+            IAttendanceRecordService attendanceRecordService
             )
         {
             this.studentService = studentService;
@@ -53,6 +55,7 @@ namespace SchoolPortal.Web.Controllers
             this.remarkService = remarkService;
             this.pdfGeneratorService = pdfGeneratorService;
             this.healthRecordService = healthRecordService;
+            this.attendanceRecordService = attendanceRecordService;
         }
         //public IActionResult Index()
         //{
@@ -350,6 +353,7 @@ namespace SchoolPortal.Web.Controllers
                 .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Psychomotor.ToString());
 
             var healthRecord = await healthRecordService.GetRecord(session, termId.Value, student.Id);
+            var attendanceRecord = await attendanceRecordService.GetRecord(session, termId.Value, student.Id);
 
             var exportViewData = new EndTermResultExportVM
             {
@@ -366,7 +370,8 @@ namespace SchoolPortal.Web.Controllers
                 TeacherComment = remark?.TeacherRemark,
                 AffectiveDomainBehaviouralRatings = affective.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
                 PsychoMotorDomainBehaviouralRatings = psychomotor.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
-                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord)
+                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord),
+                AttendanceRecord = AttendanceRecordVM.FromAttendanceRecord(attendanceRecord)
             };
 
             return View(exportViewData);
@@ -411,6 +416,7 @@ namespace SchoolPortal.Web.Controllers
                 .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Psychomotor.ToString());
 
             var healthRecord = await healthRecordService.GetRecord(session, termId.Value, student.Id);
+            var attendanceRecord = await attendanceRecordService.GetRecord(session, termId.Value, student.Id);
 
             var exportViewData = new EndTermResultExportVM
             {
@@ -427,7 +433,8 @@ namespace SchoolPortal.Web.Controllers
                 TeacherComment = remark?.TeacherRemark,
                 AffectiveDomainBehaviouralRatings = affective.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
                 PsychoMotorDomainBehaviouralRatings = psychomotor.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
-                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord)
+                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord),
+                AttendanceRecord = AttendanceRecordVM.FromAttendanceRecord(attendanceRecord)
             };
 
             return View(exportViewData);
@@ -472,6 +479,7 @@ namespace SchoolPortal.Web.Controllers
                 .Where(r => r.BehaviouralRating.Category == BehaviouralRatingCategory.Psychomotor.ToString());
 
             var healthRecord = await healthRecordService.GetRecord(session, termId.Value, student.Id);
+            var attendanceRecord = await attendanceRecordService.GetRecord(session, termId.Value, student.Id);
 
             var exportViewData = new EndTermResultExportVM
             {
@@ -488,7 +496,8 @@ namespace SchoolPortal.Web.Controllers
                 TeacherComment = remark?.TeacherRemark,
                 AffectiveDomainBehaviouralRatings = affective.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
                 PsychoMotorDomainBehaviouralRatings = psychomotor.Select(r => BehaviouralResultVM.FromBehaviouralResult(r)),
-                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord)
+                HealthRecord = HealthRecordVM.FromHealthRecord(healthRecord),
+                AttendanceRecord = AttendanceRecordVM.FromAttendanceRecord(attendanceRecord)
             };
 
             return View(exportViewData);

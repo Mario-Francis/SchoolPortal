@@ -347,7 +347,7 @@ $(() => {
         let id = $('#endCommentId').val();
         let examId = $('#endExamId').val();
         try {
-            let form = $("form")[4];
+            let form = $("form")[5];
             if (validateForm(form)) {
                 let tcomment = $.trim($('#endTeacherComment').val());
                 let htcomment = $.trim($('#endHeadTeacherComment').val());
@@ -421,6 +421,57 @@ $(() => {
                         endWeight
                     };
                     let message = await saveHealthRecords(data, id == '0' ? 'add' : 'update');
+                    notify(message + '.', 'success');
+                    form.reset();
+
+                    btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Records');
+                    $('fieldset').prop('disabled', false);
+
+                    $('#searchBtn').trigger('click');
+                }
+            }
+        } catch (ex) {
+            console.error(ex);
+            if (ex != null) {
+                if (typeof (ex) == 'string') {
+                    notify(ex, 'danger');
+                } else {
+                    notify(ex.message, 'danger');
+                }
+            }
+
+            btn.html('<i class="fa fa-check-circle"></i> &nbsp;Save Records');
+            $('fieldset').prop('disabled', false);
+        }
+    });
+
+    $('#endSaveARecord').on('click', async (e) => {
+        e.preventDefault();
+        let btn = $(e.currentTarget);
+        let id = $('#endARecordId').val();
+        let session = lastSearchedSession;
+        let termId = lastSearchedTermId;
+        try {
+            let form = $("form")[4];
+            if (validateForm(form)) {
+                let schoolOpenCount = $.trim($('#openCount').val());
+                let presentCount = $.trim($('#presentCount').val());
+
+                if (schoolOpenCount == '' || presentCount == '') {
+                    notify('All fields are required', 'warning');
+                } else {
+                    $('fieldset').prop('disabled', true);
+                    btn.html('<i class="fa fa-circle-notch fa-spin"></i> Saving records...');
+
+                    let data = {
+                        id,
+                        session,
+                        termId,
+                        studentId,
+                        schoolOpenCount,
+                        presentCount
+                    };
+                    let message = await saveAttendanceRecords(data, id == '0' ? 'add' : 'update');
                     notify(message + '.', 'success');
                     form.reset();
 
@@ -1158,6 +1209,15 @@ function populateEndTerm(data) {
             $('#endRecordId').val('0');
         }
 
+        // attendance record
+        if (data.attendanceRecord != null) {
+            $('#endARecordId').val(data.attendanceRecord.id);
+            $('#openCount').val(data.attendanceRecord.schoolOpenCount);
+            $('#presentCount').val(data.attendanceRecord.presentCount);
+        } else {
+            $('#endARecordId').val('0');
+        }
+
         //behavioural ratings
         if (data.behaviouralResults.length > 0) {
             data.behaviouralResults.forEach((r, i) => {
@@ -1179,6 +1239,10 @@ function clearResult() {
     $('#endHeight').val('');
     $('#startWeight').val('');
     $('#endWeight').val('');
+
+    $('#endARecordId').val(0);
+    $('#openCount').val('');
+    $('#presentCount').val('');
 
     // clear end term comment
     $('#endCommentId').val(0);
@@ -1333,6 +1397,40 @@ function saveHealthRecords(record = null, type = 'update') {
     });
     return promise;
 }
+
+function saveAttendanceRecords(record = null, type = 'update') {
+    var promise = new Promise((resolve, reject) => {
+        try {
+            if (record == null) {
+                reject('Record object is required');
+            } else {
+                let url = $base + (type == 'update' ? 'attendanceRecords/updateRecord' : 'attendanceRecords/addRecord');
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: record,
+                    success: (response) => {
+                        if (response.isSuccess) {
+                            resolve(response.message);
+                        } else {
+                            reject(response.message);
+                        }
+                    },
+                    error: (req, status, err) => {
+                        ajaxErrorHandler(req, status, err, {});
+                    }
+                });
+            }
+
+        } catch (ex) {
+            console.error(ex);
+            //notify(ex.message, 'danger');
+            reject(ex.message);
+        }
+    });
+    return promise;
+}
+
 function getMidTermResult(id) {
     var promise = new Promise((resolve, reject) => {
         try {

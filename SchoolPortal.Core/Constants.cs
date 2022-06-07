@@ -84,8 +84,12 @@ namespace SchoolPortal.Core
         DELETED_GRADE,
 
         SETUP_USER_PASSWORD,
-        SETUP_STUDENT_PASSWORD
+        SETUP_STUDENT_PASSWORD,
 
+        CREATED_ATTENDANCE_RECORD,
+        UPDATED_ATTENDANCE_RECORD,
+        DELETED_ATTENDANCE_RECORD,
+        BATCH_ADDED_ATTENDANCE_RECORD
     }
 
     public class Constants

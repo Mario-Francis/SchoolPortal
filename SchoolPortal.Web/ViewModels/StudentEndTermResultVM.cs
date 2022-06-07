@@ -14,6 +14,7 @@ namespace SchoolPortal.Web.ViewModels
         public ExamVM Exam { get; set; }
         public ResultCommentVM ResultComment { get; set; }
         public HealthRecordVM HealthRecord { get; set; }
+        public AttendanceRecordVM AttendanceRecord { get; set; }
         public IEnumerable<BehaviouralResultVM> BehaviouralResults { get; set; }
 
         public static StudentEndTermResultVM FromStudentEndTermResult(StudentEndTermResult result)
@@ -32,6 +33,7 @@ namespace SchoolPortal.Web.ViewModels
                     Session = result.Session,
                     Term = new ItemVM { Id = result.Term.Id, Name = result.Term.Name },
                     HealthRecord = HealthRecordVM.FromHealthRecordObject(result.HealthRecord),
+                    AttendanceRecord=AttendanceRecordVM.FromAttendanceRecordObject(result.AttendanceRecord),
                     BehaviouralResults = result.BehaviouralResults.Select(r => BehaviouralResultVM.FromBehaviouralResult(r))
                 };
             }

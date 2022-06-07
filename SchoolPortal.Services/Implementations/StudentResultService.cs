@@ -24,6 +24,7 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<PerformanceRemark> performanceRemarkRepo;
         private readonly IRepository<BehaviouralResult> behaviouralResultRepo;
         private readonly IRepository<HealthRecord> healthRecordRepo;
+        private readonly IRepository<AttendanceRecord> attendanceRecordRepo;
 
         public StudentResultService(IRepository<Student> studentRepo,
             IRepository<MidTermResult>  midTermResultRepo,
@@ -35,7 +36,8 @@ namespace SchoolPortal.Services.Implementations
             ILoggerService<StudentResultService> logger,
             IRepository<PerformanceRemark> performanceRemarkRepo,
             IRepository<BehaviouralResult> behaviouralResultRepo,
-            IRepository<HealthRecord> healthRecordRepo)
+            IRepository<HealthRecord> healthRecordRepo,
+            IRepository<AttendanceRecord> attendanceRecordRepo)
         {
             this.studentRepo = studentRepo;
             this.midTermResultRepo = midTermResultRepo;
@@ -48,6 +50,7 @@ namespace SchoolPortal.Services.Implementations
             this.performanceRemarkRepo = performanceRemarkRepo;
             this.behaviouralResultRepo = behaviouralResultRepo;
             this.healthRecordRepo = healthRecordRepo;
+            this.attendanceRecordRepo = attendanceRecordRepo;
         }
 
         // get student result sessions
@@ -130,6 +133,13 @@ namespace SchoolPortal.Services.Implementations
             return HealthRecordObject.FromHealthRecord(record);
         }
 
+        private async Task<AttendanceRecordObject> GetEndTermAttendanceRecord(long studentId, string session, long termId)
+        {
+            var record = await attendanceRecordRepo.GetSingleWhereAsync(r => r.StudentId == studentId && r.Session == session && r.TermId == termId);
+
+            return AttendanceRecordObject.FromAttendanceRecord(record);
+        }
+
         // get end of session results
         public IEnumerable<StudentResultItem> GetEndOfSessionResults(long studentId, string session)
         {
@@ -171,7 +181,8 @@ namespace SchoolPortal.Services.Implementations
                 Term = eResult.Exam.Term,
                 ResultComment = await GetEndTermComments(studentId, session, termId),
                 HealthRecord = await GetEndTermHealthRecord(studentId, session, termId),
-                BehaviouralResults = GetEndTermBehaviouralRatings(studentId, session, termId)
+                BehaviouralResults = GetEndTermBehaviouralRatings(studentId, session, termId),
+                AttendanceRecord = await GetEndTermAttendanceRecord(studentId, session, termId)
             };
 
             return new StudentResult

@@ -187,6 +187,7 @@
                                         <a class="nav-link" id="v-pills-second-tab" data-toggle="pill" href="#v-pills-second" role="tab" aria-controls="v-pills-second" aria-selected="false">Cognitive&nbsp;(Aggregated)</a>
                                         <a class="nav-link" id="v-pills-behavioural-tab" data-toggle="pill" href="#v-pills-behavioural" role="tab" aria-controls="v-pills-behavioural" aria-selected="false">Behavioural&nbsp;Ratings</a>
                                         <a class="nav-link" id="v-pills-health-tab" data-toggle="pill" href="#v-pills-health" role="tab" aria-controls="v-pills-health" aria-selected="false">Health&nbsp;Records</a>
+                                        <a class="nav-link" id="v-pills-attendance-tab" data-toggle="pill" href="#v-pills-attendance" role="tab" aria-controls="v-pills-attendance" aria-selected="false">Attendance&nbsp;Records</a>
                                         <a class="nav-link" id="v-pills-ecomment-tab" data-toggle="pill" href="#v-pills-ecomment" role="tab" aria-controls="v-pills-ecomment" aria-selected="false">Comments</a>
                                     </div>
                                 </div>
@@ -482,6 +483,40 @@
                                                 </fieldset>
                                             </form>
                                         </div>
+
+                                        <div class="tab-pane fade" id="v-pills-attendance" role="tabpanel" aria-labelledby="v-pills-attendance-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">Attendance Records</h5>
+                                                <hr class="my-2" />
+                                                <p class="f14"><i class="fa fa-info-circle"></i> Kindly provide student attendance record.</p>
+                                            </div>
+                                            <form>
+                                                <fieldset>
+                                                    <input type="hidden" id="endARecordId" value="" />
+                                                    @*<input type="hidden" id="endRExamId" value="" />*@
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="openCount" class="f14">* Times School Opened</label>
+                                                                <p id="openCount" class="f14">---</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="presentCount" class="f14">* Times Present</label>
+                                                                <p id="presentCount" class="f14">---</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <hr class="d-none" />
+                                                    <p class="text-right d-none">
+                                                        <button type="submit" id="endSaveARecord" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Save Records</button>
+                                                    </p>
+                                                </fieldset>
+                                            </form>
+                                        </div>
+
                                         <div class="tab-pane fade" id="v-pills-ecomment" role="tabpanel" aria-labelledby="v-pills-ecomment-tab">
                                             <div class="jumbotron py-4">
                                                 <h5 class="m-0">Comments</h5>

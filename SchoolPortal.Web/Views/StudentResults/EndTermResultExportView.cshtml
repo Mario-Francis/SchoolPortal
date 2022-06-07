@@ -129,19 +129,41 @@
                     </div>
                 </div>
             </div>
-            <div class="alert alert-light border text-dark mt-2">
-                <p class="text-center text-dark f12 font-weight-bold">GRADING SYSTEM</p>
-                <hr class="my-1" />
-                <div class="row f12">
-                    @foreach (var g in Model.Grades)
-                    {
-                        <div class="col-lg-4 col-md-4 col-sm-6 col-12">
-                            <span class="font-weight-bold">@g.Code</span> (@g.From - @g.To) - @g.Description
-                        </div>
-                    }
+            <div class="row">
+                <div class="col-8">
+                    <div class="alert alert-light border text-dark mt-2">
+                        <p class="text-center text-dark f12 font-weight-bold">GRADING SYSTEM</p>
+                        <hr class="my-1" />
+                        <div class="row f12">
+                            @foreach (var g in Model.Grades)
+                            {
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-12">
+                                    <span class="font-weight-bold">@g.Code</span> (@g.From - @g.To) - @g.Description
+                                </div>
+                            }
 
+                        </div>
+                    </div>
                 </div>
+                @if (Model.AttendanceRecord != null)
+                {
+                    <div class="col-4">
+                        <div class="alert alert-light border text-dark mt-2">
+                            <p class="text-center text-dark f12 font-weight-bold">ATTENDANCE</p>
+                            <hr class="my-1" />
+                            <div class="row f12">
+                                <div class="col-12">
+                                    <p>No. of times school opened: <b>@Model.AttendanceRecord.SchoolOpenCount</b></p>
+                                    <p>No. of times present: <b style="margin-left:38px;">@Model.AttendanceRecord.PresentCount</b></p>
+                                    <p>No. of times absent: <b style="margin-left:42px;">@(Model.AttendanceRecord.SchoolOpenCount - Model.AttendanceRecord.PresentCount)</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
             </div>
+           
 
             <h6 class="text-center font-weight-bold py-2 text-dark m-0 f14">COGNITIVE DOMAIN</h6>
             <div class="table-responsive">

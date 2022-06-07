@@ -1,11 +1,11 @@
 ﻿
 @inject IDropdownService dropdownService
 @{
-    ViewData["Title"] = "Health Records";
+    ViewData["Title"] = "Attendance Records";
 }
 <!-- Breadcubs Area Start Here -->
 <div class="breadcrumbs-area">
-    <h3>Health Records</h3>
+    <h3>Attendance Records</h3>
     <ul>
         <li>
             <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
@@ -13,7 +13,7 @@
         <li>
             <a asp-action="Index" asp-controller="Results">Results</a>
         </li>
-        <li>Health Records</li>
+        <li>Attendance Records</li>
     </ul>
 </div>
 <!-- Breadcubs Area End Here -->
@@ -21,7 +21,7 @@
 <div class="card height-auto">
     <div class="card-body">
         <div class="text-right mb-3">
-           @* <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Record</button>*@
+            @* <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Record</button>*@
             <button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Upload Records</button>
         </div>
         <div>
@@ -37,10 +37,8 @@
                         <th>Session</th>
                         <th>Term</th>
                         <th>Class</th>
-                        <th>Start&nbsp;Height</th>
-                        <th>End&nbsp;Height</th>
-                        <th>Start&nbsp;Weight</th>
-                        <th>End&nbsp;Weight</th>
+                        <th>Times&nbsp;School&nbsp;Opened</th>
+                        <th>Times&nbsp;Present</th>
                         <th>Date&nbsp;Created</th>
                         <th>Date&nbsp;Created</th>
                         <th>Updated&nbsp;By</th>
@@ -59,10 +57,8 @@
                         <th>Session</th>
                         <th>Term</th>
                         <th>Class</th>
-                        <th>Start&nbsp;Height</th>
-                        <th>End&nbsp;Height</th>
-                        <th>Start&nbsp;Weight</th>
-                        <th>End&nbsp;Weight</th>
+                        <th>Times&nbsp;School&nbsp;Opened</th>
+                        <th>Times&nbsp;Present</th>
                         <th>Date&nbsp;Created</th>
                         <th>Date&nbsp;Created</th>
                         <th>Updated&nbsp;By</th>
@@ -84,7 +80,7 @@
 
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Edit Health Record<span></span></h4>
+                <h4 class="modal-title">Edit Attendance Record<span></span></h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
@@ -95,26 +91,14 @@
                         <div class="row mt-2">
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="startHeight" class="f14">* Start Height (mtrs)</label>
-                                    <input id="startHeight" type="number" min="1" step=".01" class="form-control" required />
+                                    <label for="openCount" class="f14">* Times School Opened</label>
+                                    <input id="openCount" type="number" min="1" step="1" class="form-control" required />
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label for="endHeight" class="f14">* End Height (mtrs)</label>
-                                    <input id="endHeight" type="number" min="1" step=".01" class="form-control" required />
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="startWeight" class="f14">* Start Weight (kg)</label>
-                                    <input id="startWeight" type="number" min="1" step=".01" class="form-control" required />
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="endWeight" class="f14">* End Weight (kg)</label>
-                                    <input id="endWeight" type="number" min="1" step=".01" class="form-control" required />
+                                    <label for="presentCount" class="f14">* Times Present</label>
+                                    <input id="presentCount" type="number" min="1" step="1" class="form-control" required />
                                 </div>
                             </div>
 
@@ -141,10 +125,9 @@
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <h4 class="modal-title">Batch Upload Health Records<span></span></h4>
+                <h4 class="modal-title">Batch Upload Attendance Records<span></span></h4>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-
 
             <!-- Modal body -->
             <div class="modal-body">
@@ -153,9 +136,9 @@
                         <div class="alert alert-info f14">
                             <h6 class="mb-1 f14 font-weight-bold"><i class="fa fa-info-circle"></i> &nbsp;Important Information</h6>
                             <p class="m-0">
-                                Kindly ensure the health records excel list you wish to upload complies with the template. To download the excel template, click the download button below.
+                                Kindly ensure the attendance records excel list you wish to upload complies with the template. To download the excel template, click the download button below.
                             </p>
-                            <p class="text-right mt-3"><a href="~/templates/Batch Upload Health Records.xlsx" download="Batch Health Records Template.xlsx" class="btn btn-info f12"><i class="fa fa-download"></i> Download template</a></p>
+                            <p class="text-right mt-3"><a href="~/templates/Batch Upload Attendance Records.xlsx" download="Batch Attendance Records Template.xlsx" class="btn btn-info f12"><i class="fa fa-download"></i> Download template</a></p>
                         </div>
                         <div class="row mt-2">
                             <div class="col-md-12">
@@ -168,7 +151,10 @@
                                     <select class="form-control custom-select" id="termId" asp-items="@dropdownService.GetTerms()" required>
                                     </select>
                                 </div>
-
+                                <div class="form-group">
+                                    <label for="schoolOpenCount" class="f14">* Times School Opened</label>
+                                    <input id="schoolOpenCount" type="number" min="1" step="1" class="form-control" required placeholder="Enter no. of times school opened" />
+                                </div>
                                 <div class="form-group">
                                     <label for="file" class="f14">* File</label>
                                     <div class="input-group mb-3 custom_file">
@@ -211,6 +197,6 @@
     <script>
 
     </script>
-    <script src="~/js/health_records.js" asp-append-version="true"></script>
+    <script src="~/js/attendance_records.js" asp-append-version="true"></script>
 
 }

@@ -50,6 +50,7 @@ namespace SchoolPortal.Root
             services.AddScoped<ICourseWorkService, CourseWorkService>();
             services.AddScoped<IGradeService, GradeService>();
             services.AddScoped<IPdfGeneratorService, PdfGeneratorService>();
+            services.AddScoped<IAttendanceRecordService, AttendanceRecordService>();
 
 
 

@@ -36,5 +36,6 @@ namespace SchoolPortal.Web.ViewModels
 
         // Health records
         public HealthRecordVM HealthRecord { get; set; }
+        public AttendanceRecordVM AttendanceRecord { get; set; }
     }
 }

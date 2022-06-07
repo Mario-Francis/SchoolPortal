@@ -1156,6 +1156,15 @@ function populateEndTerm(data) {
             $('#endRecordId').val('0');
         }
 
+        // attendance record
+        if (data.attendanceRecord != null) {
+            $('#endARecordId').val(data.attendanceRecord.id);
+            $('#openCount').html(data.attendanceRecord.schoolOpenCount);
+            $('#presentCount').html(data.attendanceRecord.presentCount);
+        } else {
+            $('#endARecordId').val('0');
+        }
+
         //behavioural ratings
         if (data.behaviouralResults.length > 0) {
             data.behaviouralResults.forEach((r, i) => {
@@ -1177,6 +1186,10 @@ function clearResult() {
     $('#endHeight').html('---');
     $('#startWeight').html('---');
     $('#endWeight').html('---');
+
+    $('#endARecordId').val(0);
+    $('#openCount').html('---');
+    $('#presentCount').html('---');
 
     // clear end term comment
     $('#endCommentId').val(0);
