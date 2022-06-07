@@ -23,8 +23,9 @@
         <div class="text-right mb-3">
             @if (service.IsAdmin)
             {
-            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add User</button>
-            <button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Add User</button>
+                <a asp-controller="Users" asp-action="Export" class="btn btn-outline-success btn-md px-4 py-2 f12 my-3 float-left"><i class="fa fa-file-excel"></i>&nbsp; Export</a>
+                <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add User</button>
+                <button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Add User</button>
             }
         </div>
         <div>

@@ -382,7 +382,12 @@
         </li>*@
                         @if (service.IsAdmin || service.IsHeadTeacher)
                         {
-                            <li class="nav-item sidebar-nav-item">
+                            <li class="nav-item">
+                                <a asp-controller="Students" asp-action="Index" class="nav-link">
+                                    <i class="flaticon-classmates"></i><span>Students</span>
+                                </a>
+                            </li>
+                            @*<li class="nav-item sidebar-nav-item">
                                 <a href="#" class="nav-link"><i class="flaticon-classmates"></i><span>Students</span></a>
                                 <ul class="nav sub-group-menu">
                                     <li class="nav-item">
@@ -402,7 +407,7 @@
                                         </a>
                                     </li>
                                 </ul>
-                            </li>
+                            </li>*@
                         }
 
 

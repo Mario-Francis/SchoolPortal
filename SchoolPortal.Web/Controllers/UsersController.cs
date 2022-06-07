@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MimeKit;
 using SchoolPortal.Core;
 using SchoolPortal.Core.DTOs;
 using SchoolPortal.Core.Extensions;
@@ -558,6 +559,15 @@ namespace SchoolPortal.Web.Controllers
             }
 
             return View(user);
+        }
+
+        [HttpGet("[controller]/Export")]
+        public IActionResult Export()
+        {
+            var file = userService.ExportUsersToExcel();
+
+            var fileName = $"users_{DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss")}.xlsx";
+            return File(file, MimeTypes.GetMimeType(fileName), fileName);
         }
     }
 }

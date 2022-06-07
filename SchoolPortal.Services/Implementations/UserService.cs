@@ -1016,7 +1016,7 @@ namespace SchoolPortal.Services.Implementations
         }
 
 
-        public byte[] ExportUsersToExcel(int id)
+        public byte[] ExportUsersToExcel()
         {
             var users = userRepo.GetAll();
 

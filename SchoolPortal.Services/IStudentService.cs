@@ -35,7 +35,7 @@ namespace SchoolPortal.Services
         bool ValidateFile(IFormFile file, out List<string> errorItems);
         Task<IEnumerable<Student>> ExtractData(IFormFile file);
         Task BatchCreateStudent(IEnumerable<Student> students);
-        byte[] ExportStudentsToExcel(int id);
+        byte[] ExportStudentsToExcel();
         IEnumerable<Student> SearchStudents(string searchParam, long? classRoomId = null, int max = 50);
         Task<bool> VerifyEmail(long studentId, string token);
 

@@ -21,6 +21,7 @@
 <div class="card height-auto">
     <div class="card-body">
         <div class="text-right mb-3">
+            <a asp-controller="Students" asp-action="Export" class="btn btn-outline-success btn-md px-4 py-2 f12 my-3 float-left"><i class="fa fa-file-excel"></i>&nbsp; Export</a>
             <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Student</button>
             <button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Add Student</button>
         </div>
@@ -28,8 +29,8 @@
             <nav>
                 <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
                     <a class="nav-link active" id="nav-all-tab" data-toggle="tab" href="#nav-all" role="tab" aria-controls="nav-home" aria-selected="true">All Students</a>
-                    <a class="nav-link" id="nav-under-graduates-tab" data-toggle="tab" href="#nav-under-graduates" role="tab" aria-controls="nav-profile" aria-selected="false">Under Graduates</a>
-                    <a class="nav-link" id="nav-graduates-tab" data-toggle="tab" href="#nav-graduates" role="tab" aria-controls="nav-contact" aria-selected="false">Graduates</a>
+                    <a class="nav-link d-none" id="nav-under-graduates-tab" data-toggle="tab" href="#nav-under-graduates" role="tab" aria-controls="nav-profile" aria-selected="false">Under Graduates</a>
+                    <a class="nav-link d-none" id="nav-graduates-tab" data-toggle="tab" href="#nav-graduates" role="tab" aria-controls="nav-contact" aria-selected="false">Graduates</a>
                 </div>
             </nav>
             <div class="tab-content px-3 p-3" id="nav-tabContent">
