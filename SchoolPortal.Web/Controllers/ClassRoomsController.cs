@@ -39,6 +39,8 @@ namespace SchoolPortal.Web.Controllers
             this.studentService = studentService;
             this.logger = logger;
         }
+       
+        [Authorize(Roles = "Administrator, Head Teacher")]
         public IActionResult Index()
         {
             return View();
@@ -244,6 +246,7 @@ namespace SchoolPortal.Web.Controllers
             }
         }
         
+        [Authorize(Roles = "Administrator, Head Teacher")]
         [HttpGet("{id}")]
         public async Task<IActionResult> ViewClassRoom(long? id)
         {
@@ -320,7 +323,7 @@ namespace SchoolPortal.Web.Controllers
         }
 
         #region teachers
-
+        [Authorize(Roles = "Teacher")]
         [HttpGet("/MyClassRoom")]
         public async Task<IActionResult> MyClassRoom()
         {
@@ -350,8 +353,8 @@ namespace SchoolPortal.Web.Controllers
             var classroom = await classService.GetClassRoom(classRoomId);
             var teachers = classroom.ClassRoomTeachers.Select(ct => UserVM.FromUser(ct.Teacher));
             var subjects = classroom.Class.Subjects.Select(s => SubjectVM.FromSubject(s));
-            var maleCount = classroom.ClassRoomStudents.Count(rs => rs.Student.Gender == "Male");
-            var femaleCount = classroom.ClassRoomStudents.Count(rs => rs.Student.Gender == "Female");
+            var maleCount = classroom.ClassRoomStudents.Count(rs => rs.Student.Gender.ToLower() == "male");
+            var femaleCount = classroom.ClassRoomStudents.Count(rs => rs.Student.Gender.ToLower() == "female");
 
 
             ViewData["teachers"] = teachers;

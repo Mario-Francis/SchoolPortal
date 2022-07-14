@@ -1,5 +1,4 @@
 {
-  "version": "1.0",
   "defaultProvider": "cdnjs",
   "libraries": [
     {
@@ -99,14 +98,6 @@
       ]
     },
     {
-      "library": "moment.js@2.29.1",
-      "destination": "wwwroot/lib/moment.js/",
-      "files": [
-        "moment.min.js",
-        "moment.js"
-      ]
-    },
-    {
       "library": "Chart.js@3.4.1",
       "destination": "wwwroot/lib/Chart.js/",
       "files": [
@@ -150,6 +141,10 @@
       ]
     },
     {
+      "library": "pdfmake@0.2.4",
+      "destination": "wwwroot/lib/pdfmake/"
+    },
+    {
       "library": "normalize@8.0.1",
       "destination": "wwwroot/lib/normalize/"
     },
@@ -189,6 +184,23 @@
     {
       "library": "cropperjs@1.5.12",
       "destination": "wwwroot/lib/cropperjs/"
+    },
+    {
+      "library": "datatables.net-buttons-bs4@2.2.3",
+      "destination": "wwwroot/lib/datatables.net-buttons-bs4/"
+    },
+    {
+      "library": "moment.js@2.29.4",
+      "destination": "wwwroot/lib/moment.js/"
+    },
+    {
+      "library": "jszip@3.10.0",
+      "destination": "wwwroot/lib/jszip/"
+    },
+    {
+      "library": "datatables-buttons@2.2.3",
+      "destination": "wwwroot/lib/datatables-buttons/"
     }
-  ]
+  ],
+  "version": "1.0"
 }

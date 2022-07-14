@@ -19,9 +19,23 @@ $(() => {
             type: "POST"
         },
         "order": [[3, "desc"]],
-        "lengthMenu": [10, 20, 30, 50, 100],
+        "lengthMenu": [10, 20, 30, 50, 100, 500, 1000],
         "paging": true,
         autoWidth: false,
+        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+            "<'row'<'col-sm-12'B>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        buttons: [{
+            extend: 'excelHtml5',
+            text: `<i class="fa fa-file-excel"></i> Export to excel`,
+            className: 'f14 btn-success py-1 my-1',
+            autoFilter: true,
+            sheetName: 'Health Records',
+            exportOptions: {
+                columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13]
+            }
+        }],
         //rowId: 'id',
         initComplete: function () {
             var r = $('#recordsTable tfoot tr');
@@ -76,12 +90,12 @@ $(() => {
                     "display": "termName"
                 }
             },
-            {
-                data: {
-                    "filter": "Class",
-                    "display": "class"
-                }
-            },
+            //{
+            //    data: {
+            //        "filter": "Class",
+            //        "display": "class"
+            //    }
+            //},
             {
                 data: {
                     "filter": "StartHeight",
@@ -124,7 +138,7 @@ $(() => {
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 10
+                }, orderData: 9
             },
             {
                 data: {
@@ -142,7 +156,7 @@ $(() => {
                 data: {
                     "filter": "FormattedUpdatedDate",
                     "display": "formattedUpdatedDate"
-                }, orderData: 13
+                }, orderData: 12
             },
             {
                 data: {
@@ -163,7 +177,8 @@ $(() => {
                 }
             },
         ]
-    });
+    }).buttons().container()
+        .appendTo('#recordsTable_wrapper .col-md-6:eq(0)');
 
 
 

@@ -11,6 +11,20 @@
         "lengthMenu": [10, 20, 30, 50, 100],
         "paging": true,
         autoWidth: false,
+        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+            "<'row'<'col-sm-12'B>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        buttons: [{
+            extend: 'excelHtml5',
+            text: `<i class="fa fa-file-excel"></i> Export to excel`,
+            className: 'f14 btn-success py-1 my-1',
+            autoFilter: true,
+            sheetName: 'Classes',
+            exportOptions: {
+                columns: [0, 1, 2, 4, 5, 7]
+            }
+        }],
         //rowId: 'id',
         columns: [
             {
@@ -82,7 +96,8 @@
                 }
             },
         ]
-    });
+    }).buttons().container()
+        .appendTo('#classesTable_wrapper .col-md-6:eq(0)');
 
     $('#addBtn').on('click', (e) => {
         $('#addModal').modal({ backdrop: 'static', keyboard: false }, 'show');

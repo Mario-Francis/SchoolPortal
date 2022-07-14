@@ -39,7 +39,7 @@ namespace SchoolPortal.Web.Controllers
             this.appSettings = appSettings.Value;
             this.logger = logger;
         }
-
+        [Authorize(Roles = "Administrator, Head Teacher")]
         public IActionResult Index()
         {
             return View();
@@ -536,6 +536,7 @@ namespace SchoolPortal.Web.Controllers
             }
         }
 
+        [Authorize(Roles = "Student")]
         [HttpGet("/MyGuardians")]
         public async Task<IActionResult> MyGuardians()
         {

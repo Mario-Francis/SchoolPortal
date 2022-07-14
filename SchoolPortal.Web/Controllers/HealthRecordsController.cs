@@ -39,6 +39,7 @@ namespace SchoolPortal.Web.Controllers
             this.logger = logger;
         }
 
+        [Authorize(Roles = "Administrator, Head Teacher")]
         public IActionResult Index()
         {
             return View();
@@ -308,7 +309,7 @@ namespace SchoolPortal.Web.Controllers
         }
 
         #region Classroom health records
-
+        [Authorize(Roles = "Teacher")]
         [HttpGet("ClassRoomHealthRecords/{classRoomId}")]
         public async Task<IActionResult> ClassRoomHealthRecords(long classRoomId)
         {

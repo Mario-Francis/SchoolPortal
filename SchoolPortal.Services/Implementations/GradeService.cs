@@ -17,6 +17,7 @@ namespace SchoolPortal.Services.Implementations
         private readonly IRepository<Grade> gradeRepo;
         private readonly ILoggerService<GradeService> logger;
         private readonly IHttpContextAccessor accessor;
+        private IEnumerable<Grade> grades;
 
         public GradeService(IRepository<Grade> gradeRepo,
              ILoggerService<GradeService> logger,
@@ -25,6 +26,7 @@ namespace SchoolPortal.Services.Implementations
             this.gradeRepo = gradeRepo;
             this.logger = logger;
             this.accessor = accessor;
+            grades = gradeRepo.GetAll().ToList();
         }
 
         // add grade
@@ -118,7 +120,7 @@ namespace SchoolPortal.Services.Implementations
 
         public Grade GetGrade(decimal score, TermSections section)
         {
-            var grade = gradeRepo.GetSingleWhere(g => g.TermSectionId == 
+            var grade = this.grades.FirstOrDefault(g => g.TermSectionId == 
             (int)section && g.From <= score && g.To >= score);
 
             return grade;
@@ -136,6 +138,7 @@ namespace SchoolPortal.Services.Implementations
         public IEnumerable<Grade> GetGrades()
         {
             var grades = gradeRepo.GetAll().OrderByDescending(g=>g.From);
+            this.grades = grades;
 
             return grades;
         }

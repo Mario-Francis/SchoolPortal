@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SchoolPortal.Data;
 using SchoolPortal.Data.Repositories;
 using SchoolPortal.Data.Repositories.Implementations;
@@ -19,8 +20,11 @@ namespace SchoolPortal.Root
         {
             // inject dependencies here
             // db context 
-            services.AddDbContext<AppDbContext>(options => options.UseLazyLoadingProxies()
-            .UseSqlServer(config.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<AppDbContext>(options => 
+                options.UseLazyLoadingProxies()
+                .UseSqlServer(config.GetConnectionString("DefaultConnection"))
+               // .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+            );
 
             // repositories
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

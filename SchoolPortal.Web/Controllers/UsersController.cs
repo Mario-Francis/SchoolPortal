@@ -33,6 +33,7 @@ namespace SchoolPortal.Web.Controllers
             this.appSettings = appSettings.Value;
             this.logger = logger;
         }
+       [Authorize(Roles = "Administrator")]
         public IActionResult Index()
         {
             return View();

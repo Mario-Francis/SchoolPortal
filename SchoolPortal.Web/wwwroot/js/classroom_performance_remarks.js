@@ -19,9 +19,23 @@ $(() => {
             type: "POST"
         },
         "order": [[3, "desc"]],
-        "lengthMenu": [10, 20, 30, 50, 100],
+        "lengthMenu": [10, 20, 30, 50, 100, 500, 1000],
         "paging": true,
         autoWidth: false,
+        dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+            "<'row'<'col-sm-12'B>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        buttons: [{
+            extend: 'excelHtml5',
+            text: `<i class="fa fa-file-excel"></i> Export to excel`,
+            className: 'f14 btn-success py-1 my-1',
+            autoFilter: true,
+            sheetName: 'Performance Remarks',
+            exportOptions: {
+                columns: [0, 1, 2, 3, 4, 5, 7, 8, 10]
+            }
+        }],
         //rowId: 'id',
         initComplete: function () {
             var r = $('#remarksTable tfoot tr');
@@ -72,16 +86,10 @@ $(() => {
             },
             {
                 data: {
-                    "filter": "Class",
-                    "display": "class"
-                }
-            },
-            {
-                data: {
                     "filter": "TeacherRemark",
                     "display": "teacherRemark"
                 }, "render": function (data, type, row, meta) {
-                    return `${data ?? '---'}`;
+                    return `<p class="text-dark" style="min-width:240px;max-width:300px;white-space:break-spaces;">${data ?? '---'}</p>`;
                 }
             },
             {
@@ -89,7 +97,7 @@ $(() => {
                     "filter": "HeadTeacherRemark",
                     "display": "headTeacherRemark"
                 }, "render": function (data, type, row, meta) {
-                    return `${data ?? '---'}`;
+                    return `<p class="text-dark" style="min-width:200px;max-width:300px;white-space:break-spaces;">${data ?? '---'}</p>`;
                 }
             },
             {
@@ -102,7 +110,7 @@ $(() => {
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 7
+                }, orderData: 6
             },
             {
                 data: {
@@ -120,7 +128,7 @@ $(() => {
                 data: {
                     "filter": "FormattedUpdatedDate",
                     "display": "formattedUpdatedDate"
-                }, orderData: 10
+                }, orderData: 9
             },
             {
                 data: {
@@ -141,7 +149,8 @@ $(() => {
                 }
             },
         ]
-    });
+    }).buttons().container()
+        .appendTo('#remarksTable_wrapper .col-md-6:eq(0)');
 
 
 

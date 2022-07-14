@@ -30,7 +30,7 @@ namespace SchoolPortal.Web.Controllers
             this.examService = examService;
             this.logger = logger;
         }
-
+        [Authorize(Roles = "Administrator, Head Teacher")]
         public IActionResult Index()
         {
             return View();

@@ -11,8 +11,8 @@
             <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
         </li>
         @*<li>
-            <a asp-action="Index" asp-controller="Classes">Classes</a>
-        </li>*@
+                <a asp-action="Index" asp-controller="Classes">Classes</a>
+            </li>*@
         <li>Subjects</li>
     </ul>
 </div>
@@ -88,7 +88,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="description" class="f14">Description</label>
-                                    <textarea id="description" type="text" class="form-control"  placeholder="A brief description of the subject" rows="2"></textarea>
+                                    <textarea id="description" type="text" class="form-control" placeholder="A brief description of the subject" rows="2"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -162,13 +162,24 @@
 
 @section css{
     <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+
     <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.css" rel="stylesheet" />
 }
 
 @section js{
     <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+
     <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
     <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/lib/datatables-buttons/js/dataTables.buttons.js"></script>
+    <script src="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.js"></script>
+    <script src="~/lib/jszip/jszip.js"></script>
+    <script src="~/lib/pdfmake/pdfmake.js"></script>
+    <script src="~/lib/pdfmake/vfs_fonts.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.html5.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.print.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.colVis.js"></script>
     <script>
 
     </script>

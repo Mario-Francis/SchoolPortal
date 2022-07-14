@@ -38,13 +38,14 @@ namespace SchoolPortal.Web.Controllers
             this.gradeService = gradeService;
         }
 
+       
         public IActionResult Index()
         {
             return View();
         }
 
         #region Mid-term results
-
+        [Authorize(Roles = "Administrator, Head Teacher")]
         public IActionResult MidTermResults()
         {
             return View();
@@ -229,6 +230,7 @@ namespace SchoolPortal.Web.Controllers
         #endregion Mid-term results
 
         #region classroom mid-term results
+        [Authorize(Roles = "Teacher")]
         [HttpGet("[controller]/midterm/ClassRoomResults/{classRoomId}")]
         public async Task<IActionResult> ClassRoomMidTermResults(long classRoomId)
         {
@@ -252,7 +254,7 @@ namespace SchoolPortal.Web.Controllers
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
                 appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
-            var results = resultService.GetMidTermResultViewObjects().Where(r=> r.ClassRoomId==classRoomId).Select(r => MidTermResultViewObjectVM.FromMidTermResultViewObject(r, clientTimeOffset));
+            var results = resultService.GetMidTermResultViewObjects().Where(r=> r.ClassRoomId==classRoomId).Select(r => MidTermResultViewObjectVM.FromMidTermResultViewObject(r, clientTimeOffset, gradeService));
 
             var parser = new Parser<MidTermResultViewObjectVM>(Request.Form, results.AsQueryable())
                   .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))
@@ -265,7 +267,7 @@ namespace SchoolPortal.Web.Controllers
 
 
         #region End-term results
-
+        [Authorize(Roles = "Administrator, Head Teacher")]
         public IActionResult EndTermResults()
         {
             return View();
@@ -452,6 +454,7 @@ namespace SchoolPortal.Web.Controllers
 
 
         #region classroom end-term results
+        [Authorize(Roles = "Teacher")]
         [HttpGet("[controller]/endterm/ClassRoomResults/{classRoomId}")]
         public async Task<IActionResult> ClassRoomEndTermResults(long classRoomId)
         {
@@ -475,7 +478,7 @@ namespace SchoolPortal.Web.Controllers
             var clientTimeOffset = string.IsNullOrEmpty(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]) ?
                 appSettingsDelegate.Value.DefaultTimeZoneOffset : Convert.ToInt32(Request.Cookies[Core.Constants.CLIENT_TIMEOFFSET_COOKIE_ID]);
 
-            var results = resultService.GetEndTermResultViewObjects().Where(r=>r.ClassRoomId == classRoomId).Select(r => EndTermResultViewObjectVM.FromEndTermResultViewObject(r, clientTimeOffset));
+            var results = resultService.GetEndTermResultViewObjects().Where(r=>r.ClassRoomId == classRoomId).Select(r => EndTermResultViewObjectVM.FromEndTermResultViewObject(r, clientTimeOffset, gradeService));
 
             var parser = new Parser<EndTermResultViewObjectVM>(Request.Form, results.AsQueryable())
                   .SetConverter(x => x.UpdatedDate, x => x.UpdatedDate.ToString("MMM d, yyyy"))

@@ -23,7 +23,7 @@
         <div class="text-right mb-3">
             @if (service.IsAdmin)
             {
-                <a asp-controller="Users" asp-action="Export" class="btn btn-outline-success btn-md px-4 py-2 f12 my-3 float-left"><i class="fa fa-file-excel"></i>&nbsp; Export</a>
+                <a asp-controller="Users" asp-action="Export" class="btn btn-outline-success btn-md px-4 py-2 f12 my-3 float-left"><i class="fa fa-file-excel"></i>&nbsp; Export all to excel</a>
                 <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add User</button>
                 <button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Add User</button>
             }
@@ -388,7 +388,7 @@
                                         </div>
                                     </div>
                                 </div>
-                               @* <button type="submit" id="submitBtn" class="btn btn-primary d-block ml-auto px-3"><i class="fa fa-upload"></i> &nbsp; Upload file</button>*@
+                                @* <button type="submit" id="submitBtn" class="btn btn-primary d-block ml-auto px-3"><i class="fa fa-upload"></i> &nbsp; Upload file</button>*@
                             </div>
                         </div>
                     </div>
@@ -407,15 +407,26 @@
 
 @section css{
     <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
-    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
     <link href="~/lib/choices.js/choices.css" rel="stylesheet" />
+
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.css" rel="stylesheet" />
 }
 
 @section js{
     <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script src="~/lib/choices.js/choices.js"></script>
+
     <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
     <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
-    <script src="~/lib/choices.js/choices.js"></script>
+    <script src="~/lib/datatables-buttons/js/dataTables.buttons.js"></script>
+    <script src="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.js"></script>
+    <script src="~/lib/jszip/jszip.js"></script>
+    <script src="~/lib/pdfmake/pdfmake.js"></script>
+    <script src="~/lib/pdfmake/vfs_fonts.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.html5.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.print.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.colVis.js"></script>
     <script>
 
     </script>

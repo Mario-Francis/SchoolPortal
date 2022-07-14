@@ -75,29 +75,31 @@
                     <div class="card-body shadow p-2">
                         <h6 class="m-0 py-1 px-3">Class Subjects <span class="badge bg-claret rounded-pill py-1 px-2 text-white ml-2">@subjects.Count()</span></h6>
                         <hr class="my-2" />
-                        @if (subjects.Count() == 0)
-                        {
-                            <div class="alert alert-info">
-                                <p class="f14"><i class="fa fa-exclamation-circle"></i> There are no subjects created for this class.</p>
-                            </div>
-                        }
-                        else
-                        {
-                            foreach (var s in subjects)
+                        <div style="max-height:500px;" class="overflow-auto">
+                            @if (subjects.Count() == 0)
                             {
-                                <div class="border rounded p-3 d-flex flex-row mb-2 hover-light">
-                                    <div class="px-2">
-                                        <div class="bg-light text-dark border rounded-circle py-1" style="height:30px;width:30px">
-                                            <h6 class="text-dark text-center font-weight-bold mm-0">@s.Name[0]</h6>
-                                        </div>
-                                    </div>
-                                    <div class="flex-fill p-1">
-                                        <h6 class="mini-bold m-0 f12">@s.Name (@s.Code)</h6>
-                                        <p style="line-height:16px;" class="text-secondary f12">@s.Description</p>
-                                    </div>
+                                <div class="alert alert-info">
+                                    <p class="f14"><i class="fa fa-exclamation-circle"></i> There are no subjects created for this class.</p>
                                 </div>
                             }
-                        }
+                            else
+                            {
+                                foreach (var s in subjects)
+                                {
+                                    <div class="border rounded p-3 d-flex flex-row mb-2 hover-light">
+                                        <div class="px-2">
+                                            <div class="bg-light text-dark border rounded-circle py-1" style="height:30px;width:30px">
+                                                <h6 class="text-dark text-center font-weight-bold mm-0">@s.Name[0]</h6>
+                                            </div>
+                                        </div>
+                                        <div class="flex-fill p-1">
+                                            <h6 class="mini-bold m-0 f12">@s.Name (@s.Code)</h6>
+                                            <p style="line-height:16px;" class="text-secondary f12">@s.Description</p>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
 
                     </div>
                 </div>
@@ -110,15 +112,18 @@
     <div class="col-xl-8">
         <div class="row">
             <div class="col-12">
-                <div class="alert alert-info mb-3 f14 shadow">
+                @if (!service.IsStudent)
+                {
+                <div class="alert alert-info bg-white mb-3 f14 shadow" style="border-left: 3px solid var(--info);">
                     <h6  class="m-0 f16 mini-bold">Students Info</h6>
                     <hr class="my-2" />
-                    <p>Classroom contains a total of <b>@(maleCount+femaleCount)</b> students which comprises</p>
+                    <p>Classroom contains a total of <b>@(maleCount + femaleCount)</b> students which comprises</p>
                     <ul style="list-style-type:disc;" class="ml-5">
                         <li><b>@maleCount</b> Male(s)</li>
                         <li><b>@femaleCount</b> Female(s)</li>
                     </ul>
                 </div>
+                }
                 <div class="card bg-transparent">
                     <div class="card-body shadow p-0 bg-transparent">
 

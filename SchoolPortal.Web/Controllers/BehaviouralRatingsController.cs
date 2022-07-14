@@ -40,6 +40,8 @@ namespace SchoolPortal.Web.Controllers
             this.appSettingsDelegate = appSettingsDelegate;
             this.logger = logger;
         }
+
+        [Authorize(Roles = "Administrator, Head Teacher")]
         public IActionResult Index()
         {
             return View();
@@ -438,6 +440,7 @@ namespace SchoolPortal.Web.Controllers
 
 
         #region Classroom behavioural ratings
+        [Authorize(Roles = "Teacher")]
         [HttpGet("ClassRoomBehaviouralRatings/{classRoomId}")]
         public async Task<IActionResult> ClassRoomBehaviouralRatings(long classRoomId)
         {

@@ -31,16 +31,16 @@
 }
 else
 {
-<div class="p-3 bg-white shadow-sm mb-4">
-    <p class="f12 text-dark m-0  font-weight-bold">Quick Actions</p>
-    <hr class="mt-0 mb-2" />
-    <a href="/results/midterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Mid-Term Results</a>
-    <a href="/results/endterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">End-Term Results</a>
-    <a href="/BehaviouralRatings/ClassRoomBehaviouralRatings/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Behavioural Ratings</a>
-    <a href="/HealthRecords/ClassRoomHealthRecords/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Health Records</a>
-    <a href="/AttendanceRecords/ClassRoomAttendanceRecords/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Attendance Records</a>
-    <a href="/Remarks/ClassRoomRemarks/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Performance Records</a>
-</div>
+    <div class="p-3 bg-white shadow-sm mb-4">
+        <p class="f12 text-dark m-0  font-weight-bold">Quick Actions</p>
+        <hr class="mt-0 mb-2" />
+        <a href="/results/midterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Mid-Term Results</a>
+        <a href="/results/endterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">End-Term Results</a>
+        <a href="/BehaviouralRatings/ClassRoomBehaviouralRatings/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Behavioural Ratings</a>
+        <a href="/HealthRecords/ClassRoomHealthRecords/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Health Records</a>
+        <a href="/AttendanceRecords/ClassRoomAttendanceRecords/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Attendance Records</a>
+        <a href="/Remarks/ClassRoomRemarks/@service.UserSession.ClassRoomId" class="btn btn-primary2 mr-1 rounded f12">Performance Records</a>
+    </div>
     var teachers = ViewData["teachers"] as IEnumerable<UserVM>;
     var subjects = ViewData["subjects"] as IEnumerable<SubjectVM>;
     <input type="hidden" id="roomId" value="@Model.Id" />
@@ -95,29 +95,31 @@ else
                         <div class="card-body shadow p-2">
                             <h6 class="m-0 py-1 px-3">Class Subjects <span class="badge bg-claret rounded-pill py-1 px-2 text-white ml-2">@subjects.Count()</span></h6>
                             <hr class="my-2" />
-                            @if (subjects.Count() == 0)
-                            {
-                                <div class="alert alert-info">
-                                    <p class="f14"><i class="fa fa-exclamation-circle"></i> There are no subjects created for this class.</p>
-                                </div>
-                            }
-                            else
-                            {
-                                foreach (var s in subjects)
+                            <div style="max-height:500px;" class="overflow-auto">
+                                @if (subjects.Count() == 0)
                                 {
-                                    <div class="border rounded p-3 d-flex flex-row mb-2 hover-light">
-                                        <div class="px-2">
-                                            <div class="bg-light text-dark border rounded-circle py-1" style="height:30px;width:30px">
-                                                <h6 class="text-dark text-center font-weight-bold mm-0">@s.Name[0]</h6>
-                                            </div>
-                                        </div>
-                                        <div class="flex-fill p-1">
-                                            <h6 class="mini-bold m-0 f12">@s.Name (@s.Code)</h6>
-                                            <p style="line-height:16px;" class="text-secondary f12">@s.Description</p>
-                                        </div>
+                                    <div class="alert alert-info">
+                                        <p class="f14"><i class="fa fa-exclamation-circle"></i> There are no subjects created for this class.</p>
                                     </div>
                                 }
-                            }
+                                else
+                                {
+                                    foreach (var s in subjects)
+                                    {
+                                        <div class="border rounded p-3 d-flex flex-row mb-2 hover-light">
+                                            <div class="px-2">
+                                                <div class="bg-light text-dark border rounded-circle py-1" style="height:30px;width:30px">
+                                                    <h6 class="text-dark text-center font-weight-bold mm-0">@s.Name[0]</h6>
+                                                </div>
+                                            </div>
+                                            <div class="flex-fill p-1">
+                                                <h6 class="mini-bold m-0 f12">@s.Name (@s.Code)</h6>
+                                                <p style="line-height:16px;" class="text-secondary f12">@s.Description</p>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
 
                         </div>
                     </div>
@@ -330,11 +332,20 @@ else
 
     @section css{
         <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+        <link href="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.css" rel="stylesheet" />
     }
 
     @section js{
         <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
         <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+        <script src="~/lib/datatables-buttons/js/dataTables.buttons.js"></script>
+        <script src="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.js"></script>
+        <script src="~/lib/jszip/jszip.js"></script>
+        <script src="~/lib/pdfmake/pdfmake.js"></script>
+        <script src="~/lib/pdfmake/vfs_fonts.js"></script>
+        <script src="~/lib/datatables-buttons/js/buttons.html5.js"></script>
+        <script src="~/lib/datatables-buttons/js/buttons.print.js"></script>
+        <script src="~/lib/datatables-buttons/js/buttons.colVis.js"></script>
         <script>
 
         </script>
