@@ -150,15 +150,16 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                       // + `<a class="dropdown-item" href="${$base}Students/${row.id}" rid="${row.id}">View Exam Details</a>`
-                       // + `<div class="dropdown-divider"></div>`
+                        // + `<a class="dropdown-item" href="${$base}Students/${row.id}" rid="${row.id}">View Exam Details</a>`
+                        // + `<div class="dropdown-divider"></div>`
                         + `<a class="dropdown-item edit" href="javascript:void(0)" rid="${row.id}">Edit</a>`
                         + '</div>'
                         + '</div>';
                 }
             },
         ]
-    }).buttons().container()
+    });
+    resultsTable.buttons().container()
         .appendTo('#resultsTable_wrapper .col-md-6:eq(0)');
 
 

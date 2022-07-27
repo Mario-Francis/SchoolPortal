@@ -125,7 +125,8 @@
                 }
             },
         ]
-    }).buttons().container()
+    });
+    examsTable.buttons().container()
         .appendTo('#examsTable_wrapper .col-md-6:eq(0)');
 
     $('#addBtn').on('click', (e) => {

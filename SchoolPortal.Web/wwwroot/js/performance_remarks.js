@@ -154,7 +154,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    remarksTable.buttons().container()
         .appendTo('#remarksTable_wrapper .col-md-6:eq(0)');
 
 

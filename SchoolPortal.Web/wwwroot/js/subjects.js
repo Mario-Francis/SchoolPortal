@@ -58,7 +58,7 @@
                     "filter": "Description",
                     "display": "description"
                 }, "render": function (data, type, row, meta) {
-                    return `<p style="width:200px;white-space:normal;" class="text-dark">${data?data:''}</p>`;
+                    return `<p style="width:200px;white-space:normal;" class="text-dark">${data ? data : ''}</p>`;
                 }
             },
             {
@@ -102,9 +102,9 @@
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                       // + `<a class="dropdown-item" href="#" cid="${row.id}">View Mid-Term Results</a>`
+                        // + `<a class="dropdown-item" href="#" cid="${row.id}">View Mid-Term Results</a>`
                         //+ `<a class="dropdown-item" href="#" cid="${row.id}">View End-Term Results</a>`
-                       // + `<div class="dropdown-divider"></div>`
+                        // + `<div class="dropdown-divider"></div>`
                         + `<a class="dropdown-item edit" href="javascript:void(0)" sid="${row.id}">Edit</a>`
                         + `<a class="dropdown-item delete" href="javascript:void(0)" sid="${row.id}">Delete</a>`
                         + '</div>'
@@ -112,7 +112,8 @@
                 }
             },
         ]
-    }).buttons().container()
+    });
+    subjectsTable.buttons().container()
         .appendTo('#subjectsTable_wrapper .col-md-6:eq(0)');
 
     $('#addBtn').on('click', (e) => {

@@ -155,7 +155,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    resultsTable.buttons().container()
         .appendTo('#resultsTable_wrapper .col-md-6:eq(0)');
 
 

@@ -143,14 +143,15 @@ $(() => {
                         + (!status ? `<a class="dropdown-item activate" href="javascript:void(0)" uid="${row.id}">Activate</a>` : '')
                         + (status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
                         + `<a class="dropdown-item reset" href="javascript:void(0)" uid="${row.id}">Reset Password</a>`
-                       // + `<a class="dropdown-item edit" href="javascript:void(0)" uid="${row.id}">Edit</a>`
+                        // + `<a class="dropdown-item edit" href="javascript:void(0)" uid="${row.id}">Edit</a>`
                         + `<a class="dropdown-item delete" href="javascript:void(0)" uid="${row.id}">Delete</a>`
                         + '</div>'
                         + '</div>';
                 }
             },
         ]
-    }).buttons().container()
+    });
+    studentsTable.buttons().container()
         .appendTo('#studentsTable_wrapper .col-md-6:eq(0)');
 
     underGraduatesTable = $('#underGraduatesTable').DataTable({

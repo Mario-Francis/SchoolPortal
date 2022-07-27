@@ -176,7 +176,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    recordsTable.buttons().container()
         .appendTo('#recordsTable_wrapper .col-md-6:eq(0)');
 
 

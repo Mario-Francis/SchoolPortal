@@ -130,8 +130,8 @@ $(() => {
                         + '<i class="fa fa-ellipsis-v"></i>'
                         + '</button>'
                         + '<div class="dropdown-menu f14">'
-                         + `<a class="dropdown-item" download href="${$base}${row.filePath}">Download</a>`
-                         + `<div class="dropdown-divider"></div>`
+                        + `<a class="dropdown-item" download href="${$base}${row.filePath}">Download</a>`
+                        + `<div class="dropdown-divider"></div>`
                         + `<a class="dropdown-item edit" href="javascript:void(0)" cid="${row.id}">Edit</a>`
                         + `<a class="dropdown-item delete" href="javascript:void(0)" cid="${row.id}">Delete</a>`
                         + '</div>'
@@ -139,7 +139,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    courseWorksTable.buttons().container()
         .appendTo('#courseWorksTable_wrapper .col-md-6:eq(0)');
 
 

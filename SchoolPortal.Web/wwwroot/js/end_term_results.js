@@ -88,34 +88,34 @@ $(() => {
                     "display": "session"
                 }
             },
-             {
+            {
                 data: {
-                     "filter": "Term",
-                     "display": "term"
+                    "filter": "Term",
+                    "display": "term"
                 }
             },
-             {
+            {
                 data: {
-                     "filter": "ExamType",
-                     "display": "examType"
-                 }, visible:false
+                    "filter": "ExamType",
+                    "display": "examType"
+                }, visible: false
             },
-             {
+            {
                 data: {
-                     "filter": "Class",
-                     "display": "class"
+                    "filter": "Class",
+                    "display": "class"
                 }
             },
-             {
+            {
                 data: {
-                     "filter": "RoomCode",
-                     "display": "roomCode"
+                    "filter": "RoomCode",
+                    "display": "roomCode"
                 }
             },
-             {
+            {
                 data: {
-                     "filter": "Subject",
-                     "display": "subject"
+                    "filter": "Subject",
+                    "display": "subject"
                 }
             },
             {
@@ -216,7 +216,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    resultsTable.buttons().container()
         .appendTo('#resultsTable_wrapper .col-md-6:eq(0)');
 
 

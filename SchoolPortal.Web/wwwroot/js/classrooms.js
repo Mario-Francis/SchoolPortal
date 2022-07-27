@@ -119,7 +119,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    classroomsTable.buttons().container()
         .appendTo('#classroomsTable_wrapper .col-md-6:eq(0)');
 
     $('#addBtn').on('click', (e) => {

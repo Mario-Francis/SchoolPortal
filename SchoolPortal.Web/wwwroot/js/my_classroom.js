@@ -101,7 +101,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    studentsTable.buttons().container()
         .appendTo('#studentsTable_wrapper .col-md-6:eq(0)');
 
     // initialize datatable
@@ -206,7 +207,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    courseWorksTable.buttons().container()
         .appendTo('#courseWorksTable_wrapper .col-md-6:eq(0)');
 
     $('#addBtn').on('click', (e) => {

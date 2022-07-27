@@ -123,7 +123,7 @@ $(() => {
                 data: {
                     "filter": "FormattedCreatedDate",
                     "display": "formattedCreatedDate"
-                }, orderData: 8, visible:false
+                }, orderData: 8, visible: false
             },
             {
                 data: {
@@ -162,7 +162,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    recordsTable.buttons().container()
         .appendTo('#recordsTable_wrapper .col-md-6:eq(0)');
 
 

@@ -144,7 +144,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    usersTable.buttons().container()
         .appendTo('#usersTable_wrapper .col-md-6:eq(0)');
 
     adminsTable = $('#adminsTable').DataTable({
@@ -271,7 +272,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    adminsTable.buttons().container()
         .appendTo('#adminsTable_wrapper .col-md-6:eq(0)');
 
     teachersTable = $('#teachersTable').DataTable({
@@ -334,7 +336,7 @@ $(() => {
                     "filter": "ClassRoom",
                     "display": "classRoom"
                 }, "render": function (data, type, row, meta) {
-                    return (data!=null?`${data.class} ${data.roomCode}`:'');
+                    return (data != null ? `${data.class} ${data.roomCode}` : '');
                 }
             },
             {
@@ -400,13 +402,14 @@ $(() => {
                         + (isAdmin && status ? `<a class="dropdown-item deactivate" href="javascript:void(0)" uid="${row.id}">Deactivate</a>` : '')
                         + (isAdmin ? `<a class="dropdown-item reset" href="javascript:void(0)" uid="${row.id}">Reset Password</a>` : '')
                         + `<a class="dropdown-item edit" href="javascript:void(0)" uid="${row.id}">Edit</a>`
-                        + (isAdmin?`<a class="dropdown-item delete" href="javascript:void(0)" uid="${row.id}">Delete</a>`:'')
+                        + (isAdmin ? `<a class="dropdown-item delete" href="javascript:void(0)" uid="${row.id}">Delete</a>` : '')
                         + '</div>'
                         + '</div>';
                 }
             },
         ]
-    }).buttons().container()
+    });
+    teachersTable.buttons().container()
         .appendTo('#teachersTable_wrapper .col-md-6:eq(0)');
 
     parentsTable = $('#parentsTable').DataTable({
@@ -541,7 +544,8 @@ $(() => {
                 }
             },
         ]
-    }).buttons().container()
+    });
+    parentsTable.buttons().container()
         .appendTo('#parentsTable_wrapper .col-md-6:eq(0)');
 
 
