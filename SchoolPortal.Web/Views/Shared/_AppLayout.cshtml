@@ -1,0 +1,805 @@
+﻿@inject ISessionService service;
+
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>@ViewData["Title"] | Caleb International School</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="~/img/favicon.png">
+    <!-- Normalize CSS -->
+    <link rel="stylesheet" href="~/lib/normalize/normalize.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/css/main.css">
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="~/lib/twitter-bootstrap/css/bootstrap.css">
+    <link href="~/lib/boxicons/css/boxicons.css" rel="stylesheet" />
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css">
+    <!-- Flaticon CSS -->
+    <link rel="stylesheet" href="~/fonts/flaticon.css">
+    <!-- Full Calender CSS -->
+    <link rel="stylesheet" href="~/css/fullcalendar.min.css">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="~/lib/animate.css/animate.css">
+    <link href="~/lib/Zebra_datepicker/css/bootstrap/zebra_datepicker.css" rel="stylesheet" />
+    <link href="~/lib/simplebar/dist/simplebar.css" rel="stylesheet" />
+    <!-- Custom CSS -->
+    @RenderSection("css", false)
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/fonts.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
+
+    <!-- Modernize js -->
+    <script src="~/js/modernizr-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="overlay"></div>
+    <!-- Preloader Start Here -->
+    <div id="preloader"></div>
+    <!-- Preloader End Here -->
+    <div id="wrapper" class="wrapper bg-ash">
+        <!-- Header Menu Area Start Here -->
+        <div class="navbar navbar-expand-md header-menu-one bg-light">
+            <div class="nav-bar-header-one">
+                <div class="header-logo">
+                    <a href="index.html">
+                        <div class="d-flex flex-row pl-3 p-md-0">
+                            <div><img src="~/img/caleb_logo2.png" class="img-fluid" style="max-width: 46px;" alt="logo"></div>
+                            <div class="flex-fill title-div">
+                                <h3 class="mb-0 font-weight-bold text-center">CALEB</h3>
+                                <h6 class="mb-0 mt-n1 text-center">INTERNATIONAL SCHOOL, MAGODO</h6>
+                            </div>
+                        </div>
+
+                    </a>
+                </div>
+                <div class="toggle-button sidebar-toggle">
+                    <button type="button" class="item-link">
+                        <span class="btn-icon-wrap">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="d-md-none mobile-nav-bar">
+                <button class="navbar-toggler pulse-animation" type="button" data-toggle="collapse" data-target="#mobile-navbar" aria-expanded="false">
+                    <i class="far fa-arrow-alt-circle-down"></i>
+                </button>
+                <button type="button" class="navbar-toggler sidebar-toggle-mobile">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="header-main-menu collapse navbar-collapse" id="mobile-navbar">
+                <ul class="navbar-nav title2">
+                    <li class="navbar-item">
+                        <a href="index.html">
+                            <div class="d-flex flex-row">
+                                <div><img src="~/img/caleb_logo2.png" class="img-fluid" style="max-width: 46px;" alt="logo"></div>
+                                <div class="flex-fill title-div">
+                                    <h3 class="mb-0 font-weight-bold text-center">CALEB</h3>
+                                    <h6 class="mb-0 mt-n1 text-center">INTERNATIONAL SCHOOL, MAGODO</h6>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                <!-- <ul class="navbar-nav">
+                    <li class="navbar-item header-search-bar">
+                        <div class="input-group stylish-input-group">
+                            <span class="input-group-addon">
+                                <button type="submit">
+                                    <span class="flaticon-search" aria-hidden="true"></span>
+                                </button>
+                            </span>
+                            <input type="text" class="form-control" placeholder="Find Something . . .">
+                        </div>
+                    </li>
+                </ul> -->
+                <ul class="navbar-nav ml-auto">
+                    <li class="navbar-item dropdown header-admin">
+                        <a class="navbar-nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                           aria-expanded="false">
+                            <div class="admin-title">
+                                <h5 class="item-title">@User.Identity.Name</h5>
+                                <span>@service.DisplayRoles</span>
+                            </div>
+                            <div class="admin-img">
+                                @*<img src="~/img/admin_avatar2.png" style="width:40px;" alt="Admin">*@
+                                <div class="rounded-circle bg-claret font-weight-bold initial-box" @(service.UserSession.PhotoPath == null ? "style=padding-top:7px;" : "")>
+                                    @if (service.UserSession.PhotoPath != null)
+                                    {
+                                        <img class="img-fluid img-thumbnail" id="navImage" src="@($"{service.BaseUrl+service.UserSession.PhotoPath}")" />
+                                    }
+                                    else
+                                    {
+                                        <p class="text-center text-white m-0">@service.Initial</p>
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="item-header bg-claret">
+                                <h6 class="item-title">@service.UserSession.FirstName's Zone</h6>
+                            </div>
+                            <div class="item-content">
+                                <ul class="settings-list">
+                                    @if (service.UserSession.IsInitialPasswordChanged)
+                                    {
+                                        <li><a asp-controller="Profile" asp-action="Index"><i class="flaticon-user"></i>My Profile</a></li>
+                                        <li><a asp-controller="Profile" asp-action="ChangePassword"><i class="fa fa-lock"></i>Change Password</a></li>
+                                    }
+                                    @*<li><a href="#"><i class="flaticon-list"></i>Task</a></li>
+        <li><a href="#"><i class="flaticon-chat-comment-oval-speech-bubble-with-text-lines"></i>Message</a></li>
+        <li><a href="#"><i class="flaticon-gear-loading"></i>Account Settings</a></li>*@
+                                    <li><a asp-action="Logout" asp-controller="Auth"><i class="flaticon-turn-off"></i>Log Out</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="navbar-item dropdown header-message d-none">
+                        <a class="navbar-nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="far fa-envelope"></i>
+                            <div class="item-title d-md-none text-16 mg-l-10">Message</div>
+                            <span>5</span>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="item-header">
+                                <h6 class="item-title">05 Message</h6>
+                            </div>
+                            <div class="item-content">
+                                <div class="media">
+                                    <div class="item-img bg-skyblue author-online">
+                                        <img src="img/figure/student11.png" alt="img">
+                                    </div>
+                                    <div class="media-body space-sm">
+                                        <div class="item-title">
+                                            <a href="#">
+                                                <span class="item-name">Maria Zaman</span>
+                                                <span class="item-time">18:30</span>
+                                            </a>
+                                        </div>
+                                        <p>
+                                            What is the reason of buy this item.
+                                            Is it usefull for me.....
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="media">
+                                    <div class="item-img bg-yellow author-online">
+                                        <img src="img/figure/student12.png" alt="img">
+                                    </div>
+                                    <div class="media-body space-sm">
+                                        <div class="item-title">
+                                            <a href="#">
+                                                <span class="item-name">Benny Roy</span>
+                                                <span class="item-time">10:35</span>
+                                            </a>
+                                        </div>
+                                        <p>
+                                            What is the reason of buy this item.
+                                            Is it usefull for me.....
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="media">
+                                    <div class="item-img bg-pink">
+                                        <img src="img/figure/student13.png" alt="img">
+                                    </div>
+                                    <div class="media-body space-sm">
+                                        <div class="item-title">
+                                            <a href="#">
+                                                <span class="item-name">Steven</span>
+                                                <span class="item-time">02:35</span>
+                                            </a>
+                                        </div>
+                                        <p>
+                                            What is the reason of buy this item.
+                                            Is it usefull for me.....
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="media">
+                                    <div class="item-img bg-violet-blue">
+                                        <img src="img/figure/student11.png" alt="img">
+                                    </div>
+                                    <div class="media-body space-sm">
+                                        <div class="item-title">
+                                            <a href="#">
+                                                <span class="item-name">Joshep Joe</span>
+                                                <span class="item-time">12:35</span>
+                                            </a>
+                                        </div>
+                                        <p>
+                                            What is the reason of buy this item.
+                                            Is it usefull for me.....
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="navbar-item dropdown header-notification d-none">
+                        <a class="navbar-nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="far fa-bell"></i>
+                            <div class="item-title d-md-none text-16 mg-l-10">Notification</div>
+                            <span>8</span>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <div class="item-header">
+                                <h6 class="item-title">03 Notifiacations</h6>
+                            </div>
+                            <div class="item-content">
+                                <div class="media">
+                                    <div class="item-icon bg-skyblue">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="media-body space-sm">
+                                        <div class="post-title">Complete Today Task</div>
+                                        <span>1 Mins ago</span>
+                                    </div>
+                                </div>
+                                <div class="media">
+                                    <div class="item-icon bg-orange">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="media-body space-sm">
+                                        <div class="post-title">Director Metting</div>
+                                        <span>20 Mins ago</span>
+                                    </div>
+                                </div>
+                                <div class="media">
+                                    <div class="item-icon bg-violet-blue">
+                                        <i class="fas fa-cogs"></i>
+                                    </div>
+                                    <div class="media-body space-sm">
+                                        <div class="post-title">Update Password</div>
+                                        <span>45 Mins ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- <li class="navbar-item dropdown header-language">
+                        <a class="navbar-nav-link dropdown-toggle" href="#" role="button"
+                        data-toggle="dropdown" aria-expanded="false"><i class="fas fa-globe-americas"></i>EN</a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="#">English</a>
+                            <a class="dropdown-item" href="#">Spanish</a>
+                            <a class="dropdown-item" href="#">Franchis</a>
+                            <a class="dropdown-item" href="#">Chiness</a>
+                        </div>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <!-- Header Menu Area End Here -->
+        <!-- Page Area Start Here -->
+        <div class="dashboard-page-one">
+
+            <!-- Sidebar Area Start Here -->
+            <div class="sidebar-main sidebar-menu-one sidebar-expand-md sidebar-color" data-simplebar>
+                <div class="mobile-sidebar-header d-md-none">
+                    <div class="header-logo">
+                        <a href="javascript:void(0)">
+                            <!-- <img src="img/logo1.png" alt="logo"> -->
+                            <div class="d-block rounded-circle mx-auto bg-light overflow-hidden" style="width: 80px;height:80px;">
+                                @if (service.UserSession.PhotoPath != null)
+                                {
+                                    <img class="img-fluid img-thumbnail rounded-circle" id="navImage" src="@($"{service.BaseUrl+service.UserSession.PhotoPath}")" />
+                                }
+                                else
+                                {
+                                    <p class="py-3 mt-1 f30 text-claret text-center font-weight-bold">@service.Initial</p>
+                                }
+
+                            </div>
+                            <h6 class="m-0 text-center text-beige mt-3">@User.Identity.Name</h6>
+                            <p class="m-0 text-center small text-beige">@service.DisplayRoles</p>
+                        </a>
+                    </div>
+                </div>
+                @if (service.UserSession.IsInitialPasswordChanged)
+                {
+                <div class="sidebar-menu-content">
+                    <ul class="nav nav-sidebar-menu sidebar-toggle-view">
+                        <li class="nav-item">
+                            <a asp-controller="Dashboard" asp-action="" class="nav-link">
+                                <i class="flaticon-dashboard"></i><span>Dashboard</span>
+                            </a>
+                        </li>
+                        @if (service.IsTeacher)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="MyClassRoom" asp-action="" class="nav-link">
+                                    <i class="fa fa-chalkboard-teacher"></i><span>My Classroom</span>
+                                </a>
+                            </li>
+                        }
+                        @if (service.IsStudent)
+                        {
+                            if (service.UserSession.HasClassRoom)
+                            {
+                                <li class="nav-item">
+                                    <a href="@(service.BaseUrl)classrooms/wardClassroom/@(service.UserSession.ClassRoomId)" class="nav-link">
+                                        <i class="fa fa-chalkboard-teacher"></i><span>My Classroom</span>
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a href="@(service.BaseUrl)StudentResults/@(service.UserSession.Id)/View" class="nav-link">
+                                    <i class="fa fa-list-alt"></i><span>My Results</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-controller="MyGuardians" asp-action="" class="nav-link">
+                                    <i class="fa fa-users"></i><span>My Guardians</span>
+                                </a>
+                            </li>
+
+                        }
+                        @if (service.IsParent)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="MyWards" asp-action="" class="nav-link">
+                                    <i class="fa fa-user-friends"></i><span>My Wards</span>
+                                </a>
+                            </li>
+                        }
+
+                        @*<li class="nav-item sidebar-nav-item">
+            <a href="#" class="nav-link"><i class="flaticon-dashboard"></i><span>Dashboard</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link"><i class="fas fa-angle-right"></i>Admin</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index3.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Students
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="index4.html" class="nav-link"><i class="fas fa-angle-right"></i>Parents</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index5.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Teachers
+                    </a>
+                </li>
+            </ul>
+        </li>*@
+                        @if (service.IsAdmin || service.IsHeadTeacher)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Students" asp-action="Index" class="nav-link">
+                                    <i class="flaticon-classmates"></i><span>Students</span>
+                                </a>
+                            </li>
+                            @*<li class="nav-item sidebar-nav-item">
+                                <a href="#" class="nav-link"><i class="flaticon-classmates"></i><span>Students</span></a>
+                                <ul class="nav sub-group-menu">
+                                    <li class="nav-item">
+                                        <a asp-controller="Students" asp-action="Index" asp-route-tab="all" class="nav-link">
+                                            <i class="fas fa-angle-right"></i>All
+                                            Students
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Students" asp-action="Index" asp-route-tab="ugraduates" class="nav-link">
+                                            <i class="fas fa-angle-right"></i>Under Graduates
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Students" asp-action="Index" asp-route-tab="graduates" class="nav-link">
+                                            <i class="fas fa-angle-right"></i>Graduates
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>*@
+                        }
+
+
+                        @*<li class="nav-item">
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="all" class="nav-link">
+                <i class="flaticon-multiple-users-silhouette"></i><span>Users</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="teachers" class="nav-link">
+                <i class="flaticon-multiple-users-silhouette"></i><span>Teachers</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a asp-controller="Users" asp-action="Index" asp-route-tab="parents" class="nav-link">
+                <i class="flaticon-couple"></i><span>Parents</span>
+            </a>
+        </li>*@
+                        @if (service.IsAdmin || service.IsHeadTeacher)
+                        {
+
+
+                            <li class="nav-item sidebar-nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="flaticon-multiple-users-silhouette"></i><span>Users</span>
+                                </a>
+                                <ul class="nav sub-group-menu">
+                                    @if (service.IsAdmin)
+                                    {
+                                        <li class="nav-item">
+                                            <a asp-controller="Users" asp-action="Index" asp-route-tab="all" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>All
+                                                Users
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="Users" asp-action="Index" asp-route-tab="admins" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Administrators
+                                            </a>
+                                        </li>
+                                    }
+                                    <li class="nav-item">
+                                        <a asp-controller="Users" asp-action="Index" asp-route-tab="teachers" class="nav-link">
+                                            <i class="fas fa-angle-right"></i>Teachers
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Users" asp-action="Index" asp-route-tab="parents" class="nav-link">
+                                            <i class="fas fa-angle-right"></i>Parents
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+
+
+                        @*<li class="nav-item sidebar-nav-item">
+            <a href="#" class="nav-link"><i class="flaticon-couple"></i><span>Parents</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="all-parents.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>All
+                        Parents
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="parents-details.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Parents Details
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-parents.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Add
+                        Parent
+                    </a>
+                </li>
+            </ul>
+        </li>*@
+                        <li class="nav-item sidebar-nav-item d-none">
+                            <a href="#" class="nav-link disabled"><i class="flaticon-books"></i><span>Library</span></a>
+                            <ul class="nav sub-group-menu">
+                                <li class="nav-item">
+                                    <a href="all-book.html" class="nav-link">
+                                        <i class="fas fa-angle-right"></i>All
+                                        Book
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="add-book.html" class="nav-link">
+                                        <i class="fas fa-angle-right"></i>Add New
+                                        Book
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        @*<li class="nav-item sidebar-nav-item">
+            <a href="#" class="nav-link"><i class="flaticon-technological"></i><span>Acconunt</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="all-fees.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>All Fees
+                        Collection
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="all-expense.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Expenses
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-expense.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Add
+                        Expenses
+                    </a>
+                </li>
+            </ul>
+        </li>*@
+                        @if (service.IsAdmin)
+                        {
+                            <li class="nav-item sidebar-nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="flaticon-maths-class-materials-cross-of-a-pencil-and-a-ruler"></i><span>Classes</span>
+                                </a>
+                                <ul class="nav sub-group-menu">
+                                    <li class="nav-item">
+                                        <a asp-controller="Classes" asp-action="" class="nav-link">
+                                            <i class="fas fa-angle-right"></i>All
+                                            Classes
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Classrooms" asp-action="" class="nav-link">
+                                            <i class="fas fa-angle-right"></i>Classrooms
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+
+                            <li class="nav-item">
+                                <a asp-controller="Subjects" asp-action="" class="nav-link">
+                                    <i class="flaticon-open-book"></i><span>Subjects</span>
+                                </a>
+                            </li>
+                        }
+                        @if (service.IsAdmin || service.IsHeadTeacher)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="CourseWorks" asp-action="" class="nav-link">
+                                    <i class="fa fa-book-open"></i><span>Course Works</span>
+                                </a>
+                            </li>
+                        }
+                        @*<li class="nav-item">
+            <a href="class-routine.html" class="nav-link disabled">
+                <i class="flaticon-calendar"></i><span>
+                    Class
+                    Routine
+                </span>
+            </a>
+        </li>*@
+                        <li class="nav-item d-none">
+                            <a href="student-attendence.html" class="nav-link disabled">
+                                <i class="flaticon-checklist"></i><span>Attendence</span>
+                            </a>
+                        </li>
+                        @if (service.IsAdmin || service.IsHeadTeacher || (service.IsTeacher && service.UserSession.HasClassRoom))
+                        {
+                            <li class="nav-item sidebar-nav-item">
+                                <a href="#" class="nav-link"><i class="flaticon-shopping-list"></i><span>Exams & Records</span></a>
+                                <ul class="nav sub-group-menu">
+                                    @if (service.IsAdmin || service.IsHeadTeacher)
+                                    {
+                                        <li class="nav-item">
+                                            <a asp-controller="Exams" asp-action="" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Exam
+                                                Schedules
+                                            </a>
+                                        </li>
+                                    }
+                                    @if (service.IsAdmin || service.IsHeadTeacher)
+                                    {
+                                        <li class="nav-item">
+                                            <a asp-controller="Results" asp-action="MidTermResults" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Mid-term Results
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="Results" asp-action="EndTermResults" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>End-term Results
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="BehaviouralRatings" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Behavioural Ratings
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="HealthRecords" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Health Records
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="AttendanceRecords" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Attendance Records
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a asp-controller="Remarks" asp-action="Index" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Performance Remarks
+                                            </a>
+                                        </li>
+                                    }
+                                    else if (service.IsTeacher && service.UserSession.HasClassRoom)
+                                    {
+                                        <li class="nav-item">
+                                            <a href="/results/midterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Mid-term Results
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/results/endterm/ClassRoomResults/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>End-term Results
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/BehaviouralRatings/ClassRoomBehaviouralRatings/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Behavioural Ratings
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/HealthRecords/ClassRoomHealthRecords/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Health Records
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/AttendanceRecords/ClassRoomAttendanceRecords/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Attendance Records
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="/Remarks/ClassRoomRemarks/@service.UserSession.ClassRoomId" class="nav-link">
+                                                <i class="fas fa-angle-right"></i>Performance Remarks
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        <li class="nav-item d-none">
+                            <a href="transport.html" class="nav-link disabled">
+                                <i class="flaticon-bus-side-view"></i><span>Transport</span>
+                            </a>
+                        </li>
+                        <li class="nav-item d-none">
+                            <a href="hostel.html" class="nav-link disabled"><i class="flaticon-bed"></i><span>Hostel</span></a>
+                        </li>
+                        <li class="nav-item d-none">
+                            <a href="notice-board.html" class="nav-link disabled">
+                                <i class="flaticon-script"></i><span>Notice</span>
+                            </a>
+                        </li>
+                        <li class="nav-item d-none">
+                            <a href="messaging.html" class="nav-link disabled">
+                                <i class="flaticon-chat"></i><span>Messeage</span>
+                            </a>
+                        </li>
+                        @*<li class="nav-item sidebar-nav-item">
+            <a href="#" class="nav-link"><i class="flaticon-menu-1"></i><span>UI Elements</span></a>
+            <ul class="nav sub-group-menu">
+                <li class="nav-item">
+                    <a href="notification-alart.html" class="nav-link"><i class="fas fa-angle-right"></i>Alart</a>
+                </li>
+                <li class="nav-item">
+                    <a href="button.html" class="nav-link"><i class="fas fa-angle-right"></i>Button</a>
+                </li>
+                <li class="nav-item">
+                    <a href="grid.html" class="nav-link"><i class="fas fa-angle-right"></i>Grid</a>
+                </li>
+                <li class="nav-item">
+                    <a href="modal.html" class="nav-link"><i class="fas fa-angle-right"></i>Modal</a>
+                </li>
+                <li class="nav-item">
+                    <a href="progress-bar.html" class="nav-link"><i class="fas fa-angle-right"></i>Progress Bar</a>
+                </li>
+                <li class="nav-item">
+                    <a href="ui-tab.html" class="nav-link"><i class="fas fa-angle-right"></i>Tab</a>
+                </li>
+                <li class="nav-item">
+                    <a href="ui-widget.html" class="nav-link">
+                        <i class="fas fa-angle-right"></i>Widget
+                    </a>
+                </li>
+            </ul>
+        </li>*@
+                        @*<li class="nav-item">
+            <a href="map.html" class="nav-link">
+                <i class="flaticon-planet-earth"></i><span>Map</span>
+            </a>
+        </li>*@
+                        @*<li class="nav-item">
+            <a href="account-settings.html" class="nav-link">
+                <i class="flaticon-settings"></i><span>Account</span>
+            </a>
+        </li>*@
+                    </ul>
+                </div>
+                }
+                <div class="nav-pad"></div>
+            </div>
+            <!-- Sidebar Area End Here -->
+            <div class="dashboard-content-one" id="dashboardContent">
+                <div class="main-content">
+
+                    @RenderBody()
+
+
+                </div>
+                <!-- Footer Area Start Here -->
+                <footer class="footer-wrap-layout1">
+                    <div class="copyright f14">
+                        <div class="d-inline d-md-flex align-items-center justify-content-between">
+                            <div class="text-muted text-center text-md-left">&copy; Copyrights <a href="#">Caleb Internationl School</a> @(DateTime.Now.ToString("yyyy")). All rights reserved.@*<br /><span class="f12">Powered by eProcess Nigeria.</span>*@</div>
+                            <div class=" text-center text-md-right">
+                                @*<a href="#">Privacy Policy</a>
+                                    &middot;
+                                    <a href="#">Terms &amp; Conditions</a>*@
+                                Version 1.0.0
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+                <!-- Footer Area End Here -->
+            </div>
+        </div>
+        <!-- Page Area End Here -->
+    </div>
+    <!-- jquery-->
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <!-- Plugins js -->
+    <script src="~/js/plugins.js"></script>
+    <!-- Popper js -->
+    <script src="~/lib/popper.js/umd/popper.js"></script>
+    @*<script src="js/popper.min.js"></script>*@
+    <!-- Bootstrap js -->
+    <script src="~/lib/twitter-bootstrap/js/bootstrap.bundle.js"></script>
+    <!-- Counterup Js -->
+    <script src="~/js/jquery.counterup.min.js"></script>
+    <!-- Moment Js -->
+    <script src="~/lib/moment.js/moment.js"></script>
+    <!-- Waypoints Js -->
+    <script src="~/js/jquery.waypoints.min.js"></script>
+    <!-- Scroll Up Js -->
+    <script src="~/js/jquery.scrollUp.min.js"></script>
+    <!-- Full Calender Js -->
+    <script src="~/js/fullcalendar.min.js"></script>
+    <!-- Chart Js -->
+    <script src="~/lib/Chart.js/chart.js"></script>
+    <script src="~/lib/simplebar/dist/simplebar.js"></script>
+    <!-- Custom Js -->
+    <script>
+        const maxUploadsize = @service.AppSettings.MaxUploadSize;
+    </script>
+    <script src="~/lib/bootstrap-notify/bootstrap-notify.js"></script>
+    <script src="~/lib/sweetalert2/dist/sweetalert2.all.js"></script>
+    <script src="~/lib/bootbox.js/bootbox.js"></script>
+    <script src="~/lib/js-cookie/js.cookie.js"></script>
+    <script src="~/lib/accounting.js/accounting.js"></script>
+    <script src="~/js/notify.js" asp-append-version="true"></script>
+    <script src="~/lib/Zebra_datepicker/zebra_datepicker.min.js"></script>
+    <script src="~/js/error_handler.js" asp-append-version="true"></script>
+    <script src="~/js/utilities.js" asp-append-version="true"></script>
+    <script src="~/js/global.js" asp-append-version="true"></script>
+    <script>
+        $base = '@service.BaseUrl';
+
+        // roles
+        const isAdmin = @(service.IsAdmin.ToString().ToLower());
+        const isHeadTeacher = @(service.IsHeadTeacher.ToString().ToLower());
+        const isTeacher = @(service.IsTeacher.ToString().ToLower());
+        const isParent = @(service.IsParent.ToString().ToLower());
+        const isStudent = @(service.IsStudent.ToString().ToLower());
+
+        const Admin = 1;
+        const HeadTeacher = 2;
+        const Teacher = 3;
+        const Parent = 4;
+
+    </script>
+    @RenderSection("js", false)
+    <script src="~/js/main.js" asp-append-version="true"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,217 @@
+﻿@model StudentVM;
+@inject ISessionService service;
+@inject IDropdownService dropdownService
+@{
+    ViewData["Title"] = service.IsStudent?"My Profile":$"{Model.FullName}'s Profile";
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>@ViewData["Title"]</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        @if (service.IsParent)
+        {
+            <li>
+                <a asp-action="" asp-controller="MyWards">My wards</a>
+            </li>
+        }
+    <li>@ViewData["Title"]</li>
+    </ul>
+</div>
+<!-- Breadcubs Area End Here -->
+
+<div class="row">
+    <div class="col-xl-4 col-lg-5 col-md-12 col-sm-6">
+        <div class="card height-auto">
+            <div class="card-header bg-white py-4 pb-5">
+                <div style="width:200px;height:200px;" class=" d-block mx-auto">
+                    <img src="@(Model.PhotoPath==null?$"{service.BaseUrl+"img/avatar.png"}":$"{service.BaseUrl+Model.PhotoPath}")" id="profilePhoto" class="img-fluid w-100 img-thumbnail rounded-circle bg-light" />
+                </div>
+                <label for="file" id="editPhotoBtn" class="btn btn-info rounded-circle d-block position-relative f12 p-2" title="Edit Photo"
+                       style="height: 30px; width: 30px; z-index: 2; margin-top: -40px; margin-left: calc(50% + 50px);">
+                    <i class="fa fa-pencil-alt fa-1x fa-fw"></i>
+                </label>
+                <input type="file" id="file" accept=".jpeg,.jpg,.png" class="d-none" />
+            </div>
+            <div class="card-body">
+                <input type="hidden" id="studentId" value="@Model.Id" />
+                <h5 class="text-center mini-bold m-0">@Model.FullName</h5>
+                <p class="text-center m-0 f14">@Model.Username</p>
+                <hr class="my-2 mb-3" />
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Email</p>
+                    <p class="f16 text-dark">@Model.Email</p>
+                </div>
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Gender</p>
+                    <p class="f16 text-dark">@Model.Gender</p>
+                </div>
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Date of Birth</p>
+                    <p class="f16 text-dark">@(string.IsNullOrEmpty(Model.FormattedDateOfBirth)?"---": Model.FormattedDateOfBirth)</p>
+                </div>
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Phone Number</p>
+                    <p class="f16 text-dark">@(string.IsNullOrEmpty(Model.PhoneNumber)?"---": Model.PhoneNumber)</p>
+                </div>
+            </div>
+            <div class="card-footer bg-white text-right @(service.IsStudent?"d-none":"")">
+                <button class="btn btn-outline-info f12" id="editBtn"><i class="fa fa-pencil-alt"></i> &nbsp;Edit Profile</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-5 col-md-12 col-sm-6">
+        <div class="card height-auto">
+            <div class="card-body">
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Admission Number</p>
+                    <p class="f16 text-dark">@Model.AdmissionNo</p>
+                </div>
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Class</p>
+                    <p class="f16 text-dark">@Model.FormattedClassRoom</p>
+                </div>
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Enrollment Date</p>
+                    <p class="f16 text-dark">@Model.FormattedEnrollmentDate</p>
+                </div>
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Entry Session</p>
+                    <p class="f16 text-dark">@Model.EntrySession</p>
+                </div>
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Entry Term</p>
+                    <p class="f16 text-dark">@Model.EntryTerm</p>
+                </div>
+                <div class="py-2">
+                    <p class="f12 m-0" style="line-height:12px;">Entry Class</p>
+                    <p class="f16 text-dark">@Model.EntryClass</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Photo Modal -->
+<div class="modal fade" id="editPhotoModal">
+    <div class="modal-dialog modal-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New Photo <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body bg-dark border p-0 overflow-hidden">
+                <img class="img-fluid w-100 d-block" id="cropperImg" />
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                <button type="submit" id="uploadBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-upload"></i> &nbsp;Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Student <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname" class="f14">* First Name</label>
+                                    <input id="fname" type="text" class="form-control" placeholder="Enter student first name" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="mname" class="f14">* Middle Name</label>
+                                    <input id="mname" type="text" class="form-control" placeholder="Enter student middle name" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sname" class="f14">* Surname</label>
+                                    <input id="sname" type="text" class="form-control" placeholder="Enter student surname" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="gender" class="f14">* Geder</label>
+                                    <select id="gender" class="custom-select form-control" required>
+                                        <option value="">- Select gender -</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="dob" class="f14">* Date of Birth</label>
+                                    <input id="dob" type="text" class="form-control dob" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="f14">* Email</label>
+                                    <input id="email" type="email" class="form-control" placeholder="Enter student email" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="f14">Phone Number</label>
+                                    <input id="phone" type="text" class="form-control integer" placeholder="Enter student phone number" maxlength="15" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+@section css{
+    <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/cropperjs/cropper.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/lib/cropperjs/cropper.js"></script>
+    @*<script>
+        const maxUploadsize = @service.AppSettings.MaxUploadSize;
+    </script>*@
+    <script src="~/js/my_student_profile.js" asp-append-version="true"></script>
+
+}

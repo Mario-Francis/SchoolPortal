@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Setup";
+    Layout = "_AuthLayout";
+}
+<div class="row">
+    <div class="offset-xl-3 col-xl-6 offset-md-2 col-md-8 offset-sm-1 col-sm-10">
+        <div class="login-page-content w-100 p-0 m-0" style="margin-top: 7vh !important;">
+
+            <div class="login-box p-5 pb-0 w-100" style="padding-bottom: 0px !important;">
+                <div class="p-lg-3">
+                    <div class="item-logo">
+                        <!-- <img src="img/logo2.png" alt="logo"> -->
+                        <div class="d-flex flex-row pl-3 p-md-0 mx-auto" style="width: 250px;">
+                            <div><img src="~/img/caleb_logo2.png" class="img-fluid mt-3" style="max-width: 74px;" alt="logo"></div>
+                            <div class="flex-fill auth-title-div">
+                                <h3 class="mb-0 mt-2 font-weight-bold text-center">CALEB</h3>
+                                <h6 class="mb-0 mt-n2 text-center">INTERNATIONAL SCHOOL, MAGODO</h6>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="">
+                            <h4 class="text-uppercase font-weight-bold m-0 text-claret">Admin Setup</h4>
+                        </div>
+                        <hr />
+                    </div>
+
+
+                    <form class="login-form">
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="fname">* First Name</label>
+                                        <input id="fname" type="text" placeholder="Enter first name" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="mname"> Middle Name</label>
+                                        <input id="mname" type="text" placeholder="Enter middle name" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="sname">* Surname</label>
+                                        <input id="sname" type="text" placeholder="Enter surname" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="gender">* Gender</label>
+                                        <select id="gender" class="form-control custom-select" required>
+                                            <option value="">- Choose gender -</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="email">* Email</label>
+                                        <input id="email" type="email" placeholder="Enter email" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="phone">* Phone Number</label>
+                                        <input id="phone" type="text" placeholder="Enter phone number" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="password">* Password</label>
+                                        <input id="password" type="password" placeholder="Enter password" class="form-control" required>
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="cpassword">* Confirm Password</label>
+                                        <input id="cpassword" type="password" placeholder="Confirm password" class="form-control" required>
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" id="setupBtn" class="login-btn d-block ml-auto" style="max-width:250px;"><span class="fa fa-check-circle"></span> &nbsp;Setup</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section js{
+    <script src="~/js/setup.js" asp-append-version="true"></script>
+}

@@ -19,6 +19,141 @@ namespace SchoolPortal.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("SchoolPortal.Core.Models.AttendanceRecord", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("PresentCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SchoolOpenCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Session")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("TermId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("TermId");
+
+                    b.ToTable("AttendanceRecords");
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.Audit.ActivityLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ActionBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ActionType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IPAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActivityLogs");
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.Audit.AuditLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("ActivityLogId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<long?>("ItemId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TableName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityLogId")
+                        .IsUnique();
+
+                    b.ToTable("AuditLogs");
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.Audit.AuditLogChange", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("AuditLogId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ColumnName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("From")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("To")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditLogId");
+
+                    b.ToTable("AuditLogChanges");
+                });
+
             modelBuilder.Entity("SchoolPortal.Core.Models.BehaviouralRating", b =>
                 {
                     b.Property<long>("Id")
@@ -41,6 +176,152 @@ namespace SchoolPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BehaviouralRatings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Punctuality"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Neatness"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Politeness"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Leadership"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Obedience"
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Poise"
+                        },
+                        new
+                        {
+                            Id = 7L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Helping Others"
+                        },
+                        new
+                        {
+                            Id = 8L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Emotional Stability"
+                        },
+                        new
+                        {
+                            Id = 9L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Health"
+                        },
+                        new
+                        {
+                            Id = 10L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Attentiveness"
+                        },
+                        new
+                        {
+                            Id = 11L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Honesty"
+                        },
+                        new
+                        {
+                            Id = 12L,
+                            Category = "Affective",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Orderliness"
+                        },
+                        new
+                        {
+                            Id = 13L,
+                            Category = "Psychomotor",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Handwriting"
+                        },
+                        new
+                        {
+                            Id = 14L,
+                            Category = "Psychomotor",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Sports"
+                        },
+                        new
+                        {
+                            Id = 15L,
+                            Category = "Psychomotor",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Musical Skills"
+                        },
+                        new
+                        {
+                            Id = 16L,
+                            Category = "Psychomotor",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Drawing/Painting"
+                        },
+                        new
+                        {
+                            Id = 17L,
+                            Category = "Psychomotor",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Verbal Fluency"
+                        },
+                        new
+                        {
+                            Id = 18L,
+                            Category = "Psychomotor",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2022, 1, 23, 23, 43, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Handling Tools"
+                        });
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.BehaviouralResult", b =>
@@ -98,6 +379,9 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<int>("ClassGrade")
                         .HasColumnType("int");
 
+                    b.Property<long?>("ClassRoomId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("ClassTypeId")
                         .HasColumnType("bigint");
 
@@ -114,6 +398,8 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassRoomId");
 
                     b.HasIndex("ClassTypeId");
 
@@ -142,9 +428,6 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<string>("RoomCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("TeacherId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -154,8 +437,6 @@ namespace SchoolPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClassId");
-
-                    b.HasIndex("TeacherId");
 
                     b.ToTable("ClassRooms");
                 });
@@ -194,6 +475,40 @@ namespace SchoolPortal.Data.Migrations
                     b.ToTable("ClassRoomStudents");
                 });
 
+            modelBuilder.Entity("SchoolPortal.Core.Models.ClassRoomTeacher", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("ClassRoomId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<long>("TeacherId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassRoomId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("ClassRoomTeachers");
+                });
+
             modelBuilder.Entity("SchoolPortal.Core.Models.ClassType", b =>
                 {
                     b.Property<long>("Id")
@@ -213,20 +528,40 @@ namespace SchoolPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ClassTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Nursery"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Primary"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Secondary"
+                        });
                 });
 
-            modelBuilder.Entity("SchoolPortal.Core.Models.Course", b =>
+            modelBuilder.Entity("SchoolPortal.Core.Models.CourseWork", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("ClassId")
+                    b.Property<long>("ClassRoomId")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -237,8 +572,17 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("From")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("To")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -246,11 +590,14 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<DateTimeOffset>("UpdatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("WeekNo")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassId");
+                    b.HasIndex("ClassRoomId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("CourseWorks");
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.EndTermResult", b =>
@@ -260,11 +607,14 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("ClassWorkScore")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<long>("CourseId")
+                    b.Property<long>("ClassId")
                         .HasColumnType("bigint");
+
+                    b.Property<long>("ClassRoomId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("ClassWorkScore")
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -276,16 +626,19 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("ExamScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<long>("StudentId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("SubjectId")
+                        .HasColumnType("bigint");
+
                     b.Property<decimal>("TestScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -295,11 +648,15 @@ namespace SchoolPortal.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("ClassRoomId");
 
                     b.HasIndex("ExamId");
 
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("EndTermResults");
                 });
@@ -320,8 +677,8 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<DateTimeOffset>("EndDate")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("ExamTypeId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Session")
                         .HasColumnType("nvarchar(max)");
@@ -340,9 +697,48 @@ namespace SchoolPortal.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ExamTypeId");
+
                     b.HasIndex("TermId");
 
                     b.ToTable("Exams");
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.ExamType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExamTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Mid-Term"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "End-Term"
+                        });
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.Grade", b =>
@@ -367,10 +763,21 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<int>("From")
                         .HasColumnType("int");
 
+                    b.Property<long>("TermSectionId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("To")
                         .HasColumnType("int");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TermSectionId");
 
                     b.ToTable("Grades");
                 });
@@ -389,19 +796,19 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<decimal?>("EndHeight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<decimal?>("EndWeight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("Session")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("StartHeight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<decimal>("StartWeight")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<long>("StudentId")
                         .HasColumnType("bigint");
@@ -446,8 +853,17 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<bool>("IsSent")
                         .HasColumnType("bit");
 
+                    b.Property<DateTimeOffset?>("SentDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("Subject")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.HasKey("Id");
 
@@ -461,11 +877,14 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("ClassWorkScore")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<long>("CourseId")
+                    b.Property<long>("ClassId")
                         .HasColumnType("bigint");
+
+                    b.Property<long>("ClassRoomId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("ClassWorkScore")
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -477,16 +896,19 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("ExamScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<long>("StudentId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("SubjectId")
+                        .HasColumnType("bigint");
+
                     b.Property<decimal>("TestScore")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(10, 2)");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -496,11 +918,15 @@ namespace SchoolPortal.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("ClassRoomId");
 
                     b.HasIndex("ExamId");
 
                     b.HasIndex("StudentId");
+
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("MidTermResults");
                 });
@@ -585,6 +1011,87 @@ namespace SchoolPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Administrator"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Head Teacher"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Teacher"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Parent"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Student"
+                        });
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.RoomCode", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoomCodes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Code = "CHARITY",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Code = "PEACE",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0))
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Code = "LOVE",
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.SessionTermLog", b =>
@@ -635,7 +1142,7 @@ namespace SchoolPortal.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("AdmissionNo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -673,6 +1180,12 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsGraduated")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPasswordChanged")
+                        .HasColumnType("bit");
+
                     b.Property<string>("MiddleName")
                         .HasColumnType("nvarchar(max)");
 
@@ -685,8 +1198,8 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("PhotoPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
@@ -701,13 +1214,21 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdmissionNo")
+                        .IsUnique()
+                        .HasFilter("[AdmissionNo] IS NOT NULL");
 
                     b.HasIndex("EntryClassId");
 
                     b.HasIndex("EntryTermId");
+
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasFilter("[Username] IS NOT NULL");
 
                     b.ToTable("Students");
                 });
@@ -817,6 +1338,47 @@ namespace SchoolPortal.Data.Migrations
                     b.ToTable("StudentLoginHistories");
                 });
 
+            modelBuilder.Entity("SchoolPortal.Core.Models.Subject", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("ClassId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
+
+                    b.ToTable("Subjects");
+                });
+
             modelBuilder.Entity("SchoolPortal.Core.Models.Term", b =>
                 {
                     b.Property<long>("Id")
@@ -836,6 +1398,29 @@ namespace SchoolPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Terms");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "First"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Second"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Third"
+                        });
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.TermSection", b =>
@@ -857,6 +1442,22 @@ namespace SchoolPortal.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TermSections");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "First-Half"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            CreatedBy = "SYSTEM",
+                            CreatedDate = new DateTimeOffset(new DateTime(2021, 10, 29, 18, 38, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 1, 0, 0, 0)),
+                            Name = "Second-Half"
+                        });
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.User", b =>
@@ -876,7 +1477,7 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("EmailVerificationToken")
                         .HasColumnType("nvarchar(max)");
@@ -890,6 +1491,9 @@ namespace SchoolPortal.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsPasswordChanged")
+                        .HasColumnType("bit");
+
                     b.Property<string>("MiddleName")
                         .HasColumnType("nvarchar(max)");
 
@@ -900,6 +1504,9 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhotoPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Surname")
@@ -915,6 +1522,10 @@ namespace SchoolPortal.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("Username")
                         .IsUnique()
@@ -983,6 +1594,39 @@ namespace SchoolPortal.Data.Migrations
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("SchoolPortal.Core.Models.AttendanceRecord", b =>
+                {
+                    b.HasOne("SchoolPortal.Core.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPortal.Core.Models.Term", "Term")
+                        .WithMany()
+                        .HasForeignKey("TermId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.Audit.AuditLog", b =>
+                {
+                    b.HasOne("SchoolPortal.Core.Models.Audit.ActivityLog", "ActivityLog")
+                        .WithOne("AuditLog")
+                        .HasForeignKey("SchoolPortal.Core.Models.Audit.AuditLog", "ActivityLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.Audit.AuditLogChange", b =>
+                {
+                    b.HasOne("SchoolPortal.Core.Models.Audit.AuditLog", "AuditLog")
+                        .WithMany("AuditLogChanges")
+                        .HasForeignKey("AuditLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SchoolPortal.Core.Models.BehaviouralResult", b =>
                 {
                     b.HasOne("SchoolPortal.Core.Models.BehaviouralRating", "BehaviouralRating")
@@ -1006,6 +1650,10 @@ namespace SchoolPortal.Data.Migrations
 
             modelBuilder.Entity("SchoolPortal.Core.Models.Class", b =>
                 {
+                    b.HasOne("SchoolPortal.Core.Models.ClassRoom", null)
+                        .WithMany("CourseWorks")
+                        .HasForeignKey("ClassRoomId");
+
                     b.HasOne("SchoolPortal.Core.Models.ClassType", "ClassType")
                         .WithMany()
                         .HasForeignKey("ClassTypeId")
@@ -1018,12 +1666,6 @@ namespace SchoolPortal.Data.Migrations
                     b.HasOne("SchoolPortal.Core.Models.Class", "Class")
                         .WithMany("ClassRooms")
                         .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SchoolPortal.Core.Models.User", "Teacher")
-                        .WithMany("ClassRooms")
-                        .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1043,21 +1685,42 @@ namespace SchoolPortal.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SchoolPortal.Core.Models.Course", b =>
+            modelBuilder.Entity("SchoolPortal.Core.Models.ClassRoomTeacher", b =>
                 {
-                    b.HasOne("SchoolPortal.Core.Models.Class", "Class")
-                        .WithMany("Courses")
-                        .HasForeignKey("ClassId")
+                    b.HasOne("SchoolPortal.Core.Models.ClassRoom", "ClassRoom")
+                        .WithMany("ClassRoomTeachers")
+                        .HasForeignKey("ClassRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPortal.Core.Models.User", "Teacher")
+                        .WithMany("ClassRoomTeachers")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.CourseWork", b =>
+                {
+                    b.HasOne("SchoolPortal.Core.Models.ClassRoom", "ClassRoom")
+                        .WithMany()
+                        .HasForeignKey("ClassRoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.EndTermResult", b =>
                 {
-                    b.HasOne("SchoolPortal.Core.Models.Course", "Course")
+                    b.HasOne("SchoolPortal.Core.Models.Class", "Class")
                         .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPortal.Core.Models.ClassRoom", "ClassRoom")
+                        .WithMany()
+                        .HasForeignKey("ClassRoomId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SchoolPortal.Core.Models.Exam", "Exam")
@@ -1071,14 +1734,35 @@ namespace SchoolPortal.Data.Migrations
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("SchoolPortal.Core.Models.Subject", "Subject")
+                        .WithMany("EndTermResults")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.Exam", b =>
                 {
+                    b.HasOne("SchoolPortal.Core.Models.ExamType", "ExamType")
+                        .WithMany()
+                        .HasForeignKey("ExamTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("SchoolPortal.Core.Models.Term", "Term")
                         .WithMany()
                         .HasForeignKey("TermId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.Grade", b =>
+                {
+                    b.HasOne("SchoolPortal.Core.Models.TermSection", "TermSection")
+                        .WithMany()
+                        .HasForeignKey("TermSectionId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -1099,10 +1783,16 @@ namespace SchoolPortal.Data.Migrations
 
             modelBuilder.Entity("SchoolPortal.Core.Models.MidTermResult", b =>
                 {
-                    b.HasOne("SchoolPortal.Core.Models.Course", "Course")
+                    b.HasOne("SchoolPortal.Core.Models.Class", "Class")
                         .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPortal.Core.Models.ClassRoom", "ClassRoom")
+                        .WithMany()
+                        .HasForeignKey("ClassRoomId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("SchoolPortal.Core.Models.Exam", "Exam")
@@ -1114,6 +1804,12 @@ namespace SchoolPortal.Data.Migrations
                     b.HasOne("SchoolPortal.Core.Models.Student", "Student")
                         .WithMany("MidTermResults")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("SchoolPortal.Core.Models.Subject", "Subject")
+                        .WithMany("MidTermResults")
+                        .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -1205,6 +1901,15 @@ namespace SchoolPortal.Data.Migrations
                         .WithMany("StudentLoginHistories")
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("SchoolPortal.Core.Models.Subject", b =>
+                {
+                    b.HasOne("SchoolPortal.Core.Models.Class", "Class")
+                        .WithMany("Subjects")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SchoolPortal.Core.Models.UserLoginHistory", b =>

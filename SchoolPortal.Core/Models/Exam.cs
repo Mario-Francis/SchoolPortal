@@ -8,7 +8,7 @@ namespace SchoolPortal.Core.Models
 {
     public class Exam:BaseEntity,IUpdatable
     {
-        public string Name { get; set; }  // mid term quiz, end-term exam
+        public long ExamTypeId { get; set; }  // mid term quiz, end-term exam
         public string Session { get; set; }
         public long TermId { get; set; }
         public DateTimeOffset StartDate { get; set; }
@@ -23,5 +23,8 @@ namespace SchoolPortal.Core.Models
         public virtual User UpdatedByUser { get; set; }
         [ForeignKey("TermId")]
         public virtual Term Term { get; set; }
+        [ForeignKey("ExamTypeId")]
+        public virtual ExamType ExamType { get; set; }
+        
     }
 }

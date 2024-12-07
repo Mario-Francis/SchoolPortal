@@ -23,8 +23,23 @@
     <Compile Remove="Migrations\20210916112517_Updated_Models.Designer.cs" />
     <Compile Remove="Migrations\20210916112916_Updated_Models.cs" />
     <Compile Remove="Migrations\20210916112916_Updated_Models.Designer.cs" />
+    <Compile Remove="Migrations\20211011140236_Added_Audit_Tables.cs" />
+    <Compile Remove="Migrations\20211011140236_Added_Audit_Tables.Designer.cs" />
+    <Compile Remove="Migrations\20211029175619_Added.cs" />
+    <Compile Remove="Migrations\20211029175619_Added.Designer.cs" />
+    <Compile Remove="Migrations\20211211121327_Added_ClassId_And_ClassRoomId_To_Result_Tables.cs" />
+    <Compile Remove="Migrations\20211211121327_Added_ClassId_And_ClassRoomId_To_Result_Tables.Designer.cs" />
+    <Compile Remove="Migrations\20211212210102_Created_View_For_MidTermResults.cs" />
+    <Compile Remove="Migrations\20211212210102_Created_View_For_MidTermResults.Designer.cs" />
+    <Compile Remove="Migrations\20220402132404_check.cs" />
+    <Compile Remove="Migrations\20220402132404_check.Designer.cs" />
+    <Compile Remove="Migrations\20220522064220_Add unique constraints for username and email field for users and admission no and username field for students.cs" />
+    <Compile Remove="Migrations\20220522064220_Add unique constraints for username and email field for users and admission no and username field for students.Designer.cs" />
+    <Compile Remove="Migrations\20220604145327_test.cs" />
+    <Compile Remove="Migrations\20220604145327_test.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Audit.EntityFramework.Core.v3" Version="18.1.6" />
     <PackageReference Include="EFCore.BulkExtensions" Version="3.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.18" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.18">

@@ -1,0 +1,214 @@
+﻿
+@inject IDropdownService dropdownService
+@{
+    ViewData["Title"] = "Attendance Records";
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>Attendance Records</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Results">Results</a>
+        </li>
+        <li>Attendance Records</li>
+    </ul>
+</div>
+<!-- Breadcubs Area End Here -->
+
+<div class="card height-auto">
+    <div class="card-body">
+        <div class="text-right mb-3">
+            @* <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Record</button>*@
+            <button type="button" id="batchAddBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Batch Upload Records</button>
+        </div>
+        <div>
+
+        </div>
+        <div class="table-responsive">
+            <table id="recordsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Student</th>
+                        <th>Admission&nbsp;No</th>
+                        <th>Session</th>
+                        <th>Term</th>
+                        <th>Class</th>
+                        <th>Times&nbsp;School&nbsp;Opened</th>
+                        <th>Times&nbsp;Present</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Student</th>
+                        <th>Admission&nbsp;No</th>
+                        <th>Session</th>
+                        <th>Term</th>
+                        <th>Class</th>
+                        <th>Times&nbsp;School&nbsp;Opened</th>
+                        <th>Times&nbsp;Present</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-sm modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Attendance Record<span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form id="editForm">
+                    <fieldset>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="openCount" class="f14">* Times School Opened</label>
+                                    <input id="openCount" type="number" min="1" step="1" class="form-control" required />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="presentCount" class="f14">* Times Present</label>
+                                    <input id="presentCount" type="number" min="1" step="1" class="form-control" required />
+                                </div>
+                            </div>
+
+                        </div>
+                    </fieldset>
+                </form>
+
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12 action" data-dismiss="modal" form="editForm"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                <button type="submit" id="updateBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12 action" form="editForm"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<!-- upload batch -->
+<div class="modal fade" id="batchUploadModal">
+    <div class="modal-dialog modal-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Batch Upload Attendance Records<span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form id="uploadForm">
+                    <fieldset>
+                        <div class="alert alert-info f14">
+                            <h6 class="mb-1 f14 font-weight-bold"><i class="fa fa-info-circle"></i> &nbsp;Important Information</h6>
+                            <p class="m-0">
+                                Kindly ensure the attendance records excel list you wish to upload complies with the template. To download the excel template, click the download button below.
+                            </p>
+                            <p class="text-right mt-3"><a href="~/templates/Batch Upload Attendance Records.xlsx" download="Batch Attendance Records Template.xlsx" class="btn btn-info f12"><i class="fa fa-download"></i> Download template</a></p>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="session" class="f14">* Session</label>
+                                    <input type="text" id="session" class="form-control" placeholder="YYYY/YYYY" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="termId" class="f14">* Term</label>
+                                    <select class="form-control custom-select" id="termId" asp-items="@dropdownService.GetTerms()" required>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="schoolOpenCount" class="f14">* Times School Opened</label>
+                                    <input id="schoolOpenCount" type="number" min="1" step="1" class="form-control" required placeholder="Enter no. of times school opened" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="file" class="f14">* File</label>
+                                    <div class="input-group mb-3 custom_file">
+                                        <input type="file" class="d-none file" id="file" name="file" file-text-id="file-text" accept=".xls, .xlsx" required />
+                                        <input type="text" class="form-control" style="height: 37px;" id="file-text" disabled placeholder="Choose excel file" />
+                                        <div class="input-group-append">
+                                            <label class="input-group-text btn px-4 f12" title="Browse file" for="file"><i class="fa fa-folder-open"></i><span class="d-none d-md-inline-block"> &nbsp;&nbsp;Browse</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12 action" data-dismiss="modal" form="uploadForm"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                <button type="submit" id="uploadBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12 action" form="uploadForm"><i class="fa fa-upload"></i> &nbsp;Upload File</button>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+@section css{
+    <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/choices.js/choices.css" rel="stylesheet" />
+
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script src="~/lib/choices.js/choices.js"></script>
+    <script>
+
+    </script>
+
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/lib/datatables-buttons/js/dataTables.buttons.js"></script>
+    <script src="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.js"></script>
+    <script src="~/lib/jszip/jszip.js"></script>
+    <script src="~/lib/pdfmake/pdfmake.js"></script>
+    <script src="~/lib/pdfmake/vfs_fonts.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.html5.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.print.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.colVis.js"></script>
+
+    <script src="~/js/attendance_records.js" asp-append-version="true"></script>
+
+}

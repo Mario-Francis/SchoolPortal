@@ -1,0 +1,68 @@
+﻿@inject ISessionService service
+
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>@ViewBag.Title | Caleb International School</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.png">
+    <!-- Normalize CSS -->
+    <link rel="stylesheet" href="~/lib/normalize/normalize.css">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="~/css/main.css">
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <!-- Fontawesome CSS -->
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.css">
+    <!-- Flaticon CSS -->
+    <link rel="stylesheet" href="~/fonts/flaticon.css">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="~/lib/animate.css/animate.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/style.css">
+    @RenderSection("css", false);
+    <link rel="stylesheet" href="~/css/fonts.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true">
+    <!-- Modernize js -->
+    <script src="~/js/modernizr-3.6.0.min.js"></script>
+</head>
+
+<body class="auth-bg">
+    <!-- Preloader Start Here -->
+    <div id="preloader"></div>
+    <!-- Preloader End Here -->
+    <!-- Login Page Start Here -->
+    <div class="container-fluid">
+        @RenderBody()
+    </div>
+    <!-- Login Page End Here -->
+    <!-- jquery-->
+    <script src="~/lib/jquery/jquery.js"></script>
+    <!-- Plugins js -->
+    <script src="~/js/plugins.js"></script>
+    <!-- Bootstrap js -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <!-- Scroll Up Js -->
+    <script src="~/js/jquery.scrollUp.min.js"></script>
+    <script>
+         $base = '@service.BaseUrl';
+    </script>
+    <script src="~/lib/bootstrap-notify/bootstrap-notify.js" asp-append-version="true"></script>
+    <script src="~/lib//js-cookie/js.cookie.js" asp-append-version="true"></script>
+    <script src="~/js/notify.js" asp-append-version="true"></script>
+    <script src="~/js/utilities.js" asp-append-version="true"></script>
+    <!-- Custom Js -->
+    <script src="~/js/main.js"></script>
+    <script src="~/js/error_handler.js" asp-append-version="true"></script>
+    @RenderSection("js", false);
+   
+
+</body>
+
+</html>

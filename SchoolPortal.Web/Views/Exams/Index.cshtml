@@ -1,0 +1,201 @@
+﻿
+@inject IDropdownService dropdownService
+@{
+    ViewData["Title"] = "Exams";
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>Exams</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li>Exams</li>
+    </ul>
+</div>
+<!-- Breadcubs Area End Here -->
+
+<div class="card height-auto">
+    <div class="card-body">
+        <div class="text-right">
+            <button type="button" id="addBtn" class="btn btn-primary2 btn-md text-white px-4 py-2 f12 my-3"><i class="fa fa-plus"></i>&nbsp; Add Exam</button>
+        </div>
+        <div class="table-responsive">
+            <table id="examsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width:28px">#</th>
+                        <th>Session</th>
+                        <th>Term</th>
+                        <th>Type</th>
+                        <th>Start&nbsp;Date</th>
+                        <th>Start&nbsp;Date</th>
+                        <th>End&nbsp;Date</th>
+                        <th>End&nbsp;Date</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Date&nbsp;Created</th>
+                        <th>Updated&nbsp;By</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>Date&nbsp;Updated</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal">
+    <div class="modal-dialog modal-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New Exam <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="typeId" class="f14">* Exam Type</label>
+                                    <select id="typeId" class="form-control custom-select" asp-items="@dropdownService.GetExamTypes()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="session" class="f14">* Session</label>
+                                    <input type="text" id="session" class="form-control" placeholder="YYYY/YYYY" maxlength="9" required />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="termId" class="f14">* Term</label>
+                                    <select id="termId" class="form-control custom-select" required asp-items="@dropdownService.GetTerms()"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="startDate" class="f14">* Start Date</label>
+                                    <input type="text" id="startDate" class="form-control date" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="endDate" class="f14">* End Date</label>
+                                    <input type="text" id="endDate" class="form-control date" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="createBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Submit</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog modal-md modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Classroom <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="e_typeId" class="f14">* Exam Type</label>
+                                    <select id="e_typeId" class="form-control custom-select" asp-items="@dropdownService.GetExamTypes()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="e_session" class="f14">* Session</label>
+                                    <input type="text" id="e_session" class="form-control" placeholder="YYYY/YYYY" maxlength="9" required />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="e_termId" class="f14">* Term</label>
+                                    <select id="e_termId" class="form-control custom-select" required asp-items="@dropdownService.GetTerms()"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="e_startDate" class="f14">* Start Date</label>
+                                    <input type="text" id="e_startDate" class="form-control date" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="e_endDate" class="f14">* End Date</label>
+                                    <input type="text" id="e_endDate" class="form-control date" placeholder="YYYY-MM-DD" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section css{
+    <link href="~/lib/selectize.js/css/selectize.bootstrap4.css" rel="stylesheet" />
+
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/selectize.js/js/standalone/selectize.js"></script>
+    <script>
+
+    </script>
+
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/lib/datatables-buttons/js/dataTables.buttons.js"></script>
+    <script src="~/lib/datatables.net-buttons-bs4/buttons.bootstrap4.js"></script>
+    <script src="~/lib/jszip/jszip.js"></script>
+    <script src="~/lib/pdfmake/pdfmake.js"></script>
+    <script src="~/lib/pdfmake/vfs_fonts.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.html5.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.print.js"></script>
+    <script src="~/lib/datatables-buttons/js/buttons.colVis.js"></script>
+
+    <script src="~/js/exams.js" asp-append-version="true"></script>
+
+}

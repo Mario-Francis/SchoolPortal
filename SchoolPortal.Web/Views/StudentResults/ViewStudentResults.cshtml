@@ -1,0 +1,700 @@
+﻿@model StudentVM;
+@inject IDropdownService dropdownService
+@inject ISessionService service;
+@{
+    var name = Model.FullName;
+    ViewData["Title"] = service.IsStudent?"My Results":$"{name}'s Results";
+    var behaviouralRatings = ViewData["BehaviouralRatings"] as IEnumerable<BehaviouralRating>;
+    var isAdminOrHeadTeacher = User.IsInRole(Constants.ROLE_ADMIN) || User.IsInRole(Constants.ROLE_HEAD_TEACHER);
+}
+<!-- Breadcubs Area Start Here -->
+<div class="breadcrumbs-area">
+    <h3>@ViewData["Title"]</h3>
+    <ul>
+        <li>
+            <a asp-action="Index" asp-controller="Dashboard"><i class="fa fa-home"></i></a>
+        </li>
+        <li class="@(service.IsParent?"":"d-none")">
+            <a asp-action="" asp-controller="MyWards">My Wards</a>
+        </li>
+        @if (service.IsStudent)
+        {
+            <li>My Results</li>
+        }
+        else
+        {
+            <li>@name's Results</li>
+        }
+
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-xl-6 col-lg-8 col-md-12">
+        <div class="card">
+            <input type="hidden" id="studentId" value="@Model.Id" />
+            <div class="card-body roboto">
+                <h6 class="m-0">Search Results</h6>
+                <hr class="mt-2" />
+                <form>
+                    <div class="d-flex flex-row flex-wrap">
+                        <div class="form-group mr-1 flex-fill" style="min-width:150px;">
+                            <select id="s_session" class="custom-select form-control control-sm custom-select-sm" asp-items="@dropdownService.GetStudentSessions(Model.Id)">
+                            </select>
+                        </div>
+                        <div class="form-group mx-1 mr-2 flex-fill" style="min-width:150px;">
+                            <select id="s_term" class="custom-select form-control control-sm custom-select-sm" disabled>
+                                <option value="">- Select term -</option>
+                            </select>
+                            <p id="termLoader" class="f12 mt-2" style="display:none;"><i class="fa fa-circle-notch fa-spin"></i> Loading terms...</p>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" id="searchBtn" class="btn btn-primary2 control-sm btn-md text-white px-4 py-2 f14"><i class="fa fa-search"></i>&nbsp; Search</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card" id="resultsCard" style="display:none;">
+            <div class="card-body roboto">
+                <div class="d-flex flex-row">
+                    <h5 class="m-0 flex-fill" id="resultTitle">2021/2022 First Term Results</h5>
+                    <button id="closeBtn" class="btn float-right f14 text-secondary" title="close"><i class="fa fa-times"></i></button>
+                </div>
+
+
+                <hr class="my-3" />
+                <!--Results Tab-->
+                <div>
+                    <nav>
+                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                            <a class="nav-link active" id="nav-mid-tab" data-toggle="tab" href="#nav-mid" role="tab" aria-controls="nav-mid" aria-selected="true">Mid Term</a>
+                            <a class="nav-link" id="nav-end-tab" data-toggle="tab" href="#nav-end" role="tab" aria-controls="nav-end" aria-selected="false">End Term</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content px-3 p-3" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-mid" role="tabpanel" aria-labelledby="nav-mid-tab">
+                            <!--Mid term tab-->
+                            <div class="d-flex flex-md-row flex-column w-100">
+                                <div class="border rounded-lg">
+                                    <div class="nav flex-column nav-pills" id="v-pills-mid-tab" role="tablist" aria-orientation="vertical">
+                                        <a class="nav-link active" id="v-pills-cognitive-tab" data-toggle="pill" href="#v-pills-cognitive" role="tab" aria-controls="v-pills-cognitive" aria-selected="true">Cognitive&nbsp;Domain</a>
+                                        <a class="nav-link" id="v-pills-comment-tab" data-toggle="pill" href="#v-pills-comment" role="tab" aria-controls="v-pills-comment" aria-selected="false">Comments</a>
+                                    </div>
+                                </div>
+                                <div class="flex-fill tab-table">
+                                    <div class="tab-content py-2 px-3" id="v-pills-mid-tabContent">
+                                        <div class="tab-pane fade show active" id="v-pills-cognitive" role="tabpanel" aria-labelledby="v-pills-cognitive-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">Mid Term Result</h5>
+                                                <hr class="my-2" />
+                                                <div class="row f14">
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold">Session:</b> <span id="midSessionSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Term:</b> <span id="midTermSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Class:</b> <span id="midClassSpan"></span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="my-1">
+                                                <button type="button" id="mExportBtn" class="btn btn-primary2 f12 rounded"><i class="fa fa-file-pdf"></i> &nbsp;Export Result</button>
+                                            </p>
+                                            <div class="table-responsive">
+                                                <table id="midTermResultsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:28px">#</th>
+                                                            <th>&nbsp;</th>
+                                                            <th>Subject</th>
+                                                            <th>Classwork</th>
+                                                            <th>Test</th>
+                                                            <th>Exam</th>
+                                                            <th>Total</th>
+                                                            <th>Grade</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                    <tfoot class="f14">
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtained</td>
+                                                            <td class="px-4 py-3 "><span id="midTmoSpan"></span></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3  mini-bold">Percentage</td>
+                                                            <td class="px-4 py-3"><span id="midAvgSpan"></span></td>
+                                                            <td class="px-4 py-3"><span id="midAvgGradeSpan"></span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtainable</td>
+                                                            <td class="px-4 py-3 "><span id="midTmoSpan2"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-comment" role="tabpanel" aria-labelledby="v-pills-comment-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">Comments</h5>
+                                                <hr class="my-2" />
+                                                <p class="f14"><i class="fa fa-info-circle"></i> Comment on performance.</p>
+                                            </div>
+                                            <form>
+                                                <fieldset>
+                                                    <input type="hidden" id="midCommentId" value="" />
+                                                    <input type="hidden" id="midExamId" value="" />
+                                                    <div class="form-group">
+                                                        <label for="midTeacherComment" class="f12 font-weight-bold">Teacher's Comment</label>
+                                                        <p id="midTeacherComment" class="f14">---</p>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="midHeadTeacherComment" class="f12 font-weight-bold">Head Teacher's Comment</label>
+                                                        <p id="midHeadTeacherComment" class="f14">---</p>
+                                                    </div>
+                                                    <hr />
+                                                    <p class="text-right d-none">
+                                                        <button type="submit" id="midSaveComment" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Save Comments</button>
+                                                    </p>
+                                                </fieldset>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="tab-pane fade" id="nav-end" role="tabpanel" aria-labelledby="nav-end-tab">
+                            <!--End term tab-->
+                            <div class="d-flex flex-md-row flex-column">
+                                <div class="border rounded-lg">
+                                    <div class="nav flex-column nav-pills" id="v-pills-end-tab" role="tablist" aria-orientation="vertical">
+                                        <a class="nav-link active" id="v-pills-ecognitive-tab" data-toggle="pill" href="#v-pills-ecognitive" role="tab" aria-controls="v-pills-ecognitive" aria-selected="true">Cognitive&nbsp;Domain</a>
+                                        <a class="nav-link" id="v-pills-session-tab" data-toggle="pill" href="#v-pills-session" role="tab" aria-controls="v-pills-session" aria-selected="false">Cognitive&nbsp;(Aggregated)</a>
+                                        <a class="nav-link" id="v-pills-second-tab" data-toggle="pill" href="#v-pills-second" role="tab" aria-controls="v-pills-second" aria-selected="false">Cognitive&nbsp;(Aggregated)</a>
+                                        <a class="nav-link" id="v-pills-behavioural-tab" data-toggle="pill" href="#v-pills-behavioural" role="tab" aria-controls="v-pills-behavioural" aria-selected="false">Behavioural&nbsp;Ratings</a>
+                                        <a class="nav-link" id="v-pills-health-tab" data-toggle="pill" href="#v-pills-health" role="tab" aria-controls="v-pills-health" aria-selected="false">Health&nbsp;Records</a>
+                                        <a class="nav-link" id="v-pills-attendance-tab" data-toggle="pill" href="#v-pills-attendance" role="tab" aria-controls="v-pills-attendance" aria-selected="false">Attendance&nbsp;Records</a>
+                                        <a class="nav-link" id="v-pills-ecomment-tab" data-toggle="pill" href="#v-pills-ecomment" role="tab" aria-controls="v-pills-ecomment" aria-selected="false">Comments</a>
+                                    </div>
+                                </div>
+                                <div class="flex-fill tab-table">
+                                    <div class="tab-content py-2 px-3" id="v-pills-end-tabContent">
+                                        <div class="tab-pane fade show active" id="v-pills-ecognitive" role="tabpanel" aria-labelledby="v-pills-ecognitive-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">End Term Result</h5>
+                                                <hr class="my-2" />
+                                                <div class="row f14">
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold">Session:</b> <span id="endSessionSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Term:</b> <span id="endTermSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Class:</b> <span id="endClassSpan"></span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="my-1">
+                                                <button type="button" id="eExportBtn" class="btn btn-primary2 f12 rounded"><i class="fa fa-file-pdf"></i> &nbsp;Export Result</button>
+                                            </p>
+                                            <div class="table-responsive">
+                                                <table id="endTermResultsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:28px">#</th>
+                                                            <th>&nbsp;</th>
+                                                            <th>Subject</th>
+                                                            <th>1st&nbsp;Half</th>
+                                                            <th>Classwork</th>
+                                                            <th>Test</th>
+                                                            <th>Exam</th>
+                                                            <th>Total</th>
+                                                            <th>Term Total</th>
+                                                            <th>Grade</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                    <tfoot class="f14">
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtained</td>
+                                                            <td class="px-4 py-3 "><span id="endTmoSpan"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3  mini-bold">Percentage</td>
+                                                            <td class="px-4 py-3 "><span id="endAvgSpan"></span></td>
+                                                            <td class="px-4 py-3"><span id="endAvgGradeSpan"></span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtainable</td>
+                                                            <td class="px-4 py-3 "><span id="endTmoSpan2"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-session" role="tabpanel" aria-labelledby="v-pills-session-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">End of Session Result</h5>
+                                                <hr class="my-2" />
+                                                <div class="row f14">
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold">Session:</b> <span id="sEndSessionSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Term:</b> <span id="sEndTermSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Class:</b> <span id="sEndClassSpan"></span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="my-1">
+                                                <button type="button" id="esExportBtn" class="btn btn-primary2 f12 rounded"><i class="fa fa-file-pdf"></i> &nbsp;Export Result</button>
+                                            </p>
+                                            <div class="table-responsive">
+                                                <table id="sEndTermResultsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:28px">#</th>
+                                                            <th>&nbsp;</th>
+                                                            <th>Subject</th>
+                                                            <th>1st&nbsp;Half</th>
+                                                            <th>Classwork</th>
+                                                            <th>Test</th>
+                                                            <th>Exam</th>
+                                                            <th>Total</th>
+                                                            <th>Term Total</th>
+                                                            <th>1st&nbsp;Term</th>
+                                                            <th>2nd&nbsp;Term</th>
+                                                            <th>Average</th>
+                                                            <th>Grade</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                    <tfoot class="f14">
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtained</td>
+                                                            <td class="px-4 py-3 "><span id="sEndTmoSpan"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3  mini-bold">Percentage</td>
+                                                            <td class="px-4 py-3"><span id="sEndAvgSpan"></span></td>
+                                                            <td class="px-4 py-3"><span id="sEndAvgGradeSpan"></span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtainable</td>
+                                                            <td class="px-4 py-3 "><span id="sEndTmoSpan2"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="v-pills-second" role="tabpanel" aria-labelledby="v-pills-second-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">End of Second Term Aggregated Result</h5>
+                                                <hr class="my-2" />
+                                                <div class="row f14">
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold">Session:</b> <span id="t2EndSessionSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Term:</b> <span id="t2EndTermSpan"></span></p>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <p><b class="mini-bold pr-4">Class:</b> <span id="t2EndClassSpan"></span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="my-1">
+                                                <button type="button" id="t2ExportBtn" class="btn btn-primary2 f12 rounded"><i class="fa fa-file-pdf"></i> &nbsp;Export Result</button>
+                                            </p>
+                                            <div class="table-responsive">
+                                                <table id="t2EndTermResultsTable" class="table table-sm display text-nowrap f14 table-hover table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width:28px">#</th>
+                                                            <th>&nbsp;</th>
+                                                            <th>Subject</th>
+                                                            <th>1st&nbsp;Half</th>
+                                                            <th>Classwork</th>
+                                                            <th>Test</th>
+                                                            <th>Exam</th>
+                                                            <th>Total</th>
+                                                            <th>Term Total</th>
+                                                            <th>1st&nbsp;Term</th>
+                                                            <th>Average</th>
+                                                            <th>Grade</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    </tbody>
+                                                    <tfoot class="f14">
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtained</td>
+                                                            <td class="px-4 py-3 "><span id="t2EndTmoSpan"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3  mini-bold">Percentage</td>
+                                                            <td class="px-4 py-3 "><span id="t2EndAvgSpan"></span></td>
+                                                            <td class="px-4 py-3 "><span id="t2EndAvgGradeSpan"></span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="px-4 py-3 mini-bold">Total Mark Obtainable</td>
+                                                            <td class="px-4 py-3 "><span id="t2EndTmoSpan2"></span></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="v-pills-behavioural" role="tabpanel" aria-labelledby="v-pills-behavioural-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">Behavioural Ratings</h5>
+                                                <hr class="my-2 d-none" />
+                                                <p class="f14 d-none"><i class="fa fa-info-circle"></i> Kindly rate the student based on the below criterias.</p>
+                                            </div>
+                                            <form>
+                                                <fieldset>
+                                                    @foreach (var g in behaviouralRatings.GroupBy(r => r.Category))
+                                                    {
+                                                        <h6 class="m-0 f14 mt-3">@g.Key Domain</h6>
+                                                        <hr class="my-2" />
+                                                        <div class="row">
+                                                            @foreach (var r in g)
+                                                            {
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group">
+                                                                        <label for="rating_@r.Id" class="f12 font-weight-bold">@r.Name</label>
+                                                                        <p id="rating_@r.Id" name="ratings[]" rid="@r.Id" rcat="@r.Category" resid="0" class="f14">---</p>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    }
+                                                    <hr />
+                                                    <p class="text-right d-none">
+                                                        <button type="submit" id="endSaveRatings" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Save Ratings</button>
+                                                    </p>
+                                                </fieldset>
+                                            </form>
+                                        </div>
+                                        <div class="tab-pane fade" id="v-pills-health" role="tabpanel" aria-labelledby="v-pills-health-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">Health Records</h5>
+                                                <hr class="my-2  d-none" />
+                                                <p class="f14 d-none"><i class="fa fa-info-circle"></i> Kindly provide weight and height of student at the start and end of term.</p>
+                                            </div>
+                                            <form>
+                                                <fieldset>
+                                                    <input type="hidden" id="endRecordId" value="" />
+                                                    @*<input type="hidden" id="endRExamId" value="" />*@
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="startHeight" class="f12 font-weight-bold">Start Height (Mtr)</label>
+                                                                <p id="startHeight" class="f14">---</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="endHeight" class="f12 font-weight-bold">End Height (Mtr)</label>
+                                                                <p id="endHeight" class="f14">---</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="startWeight" class="f12 font-weight-bold">Start Weight (Kg)</label>
+                                                                <p id="startWeight" class="f14">---</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="endWeight" class="f12 font-weight-bold">End Weight (Kg)</label>
+                                                                <p id="endWeight" class="f14">---</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <hr />
+                                                    <p class="text-right d-none">
+                                                        <button type="submit" id="endSaveRecord" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Save Records</button>
+                                                    </p>
+                                                </fieldset>
+                                            </form>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="v-pills-attendance" role="tabpanel" aria-labelledby="v-pills-attendance-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">Attendance Records</h5>
+                                                <hr class="my-2" />
+                                                <p class="f14"><i class="fa fa-info-circle"></i> Kindly provide student attendance record.</p>
+                                            </div>
+                                            <form>
+                                                <fieldset>
+                                                    <input type="hidden" id="endARecordId" value="" />
+                                                    @*<input type="hidden" id="endRExamId" value="" />*@
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="openCount" class="f14">* Times School Opened</label>
+                                                                <p id="openCount" class="f14">---</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="presentCount" class="f14">* Times Present</label>
+                                                                <p id="presentCount" class="f14">---</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <hr class="d-none" />
+                                                    <p class="text-right d-none">
+                                                        <button type="submit" id="endSaveARecord" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Save Records</button>
+                                                    </p>
+                                                </fieldset>
+                                            </form>
+                                        </div>
+
+                                        <div class="tab-pane fade" id="v-pills-ecomment" role="tabpanel" aria-labelledby="v-pills-ecomment-tab">
+                                            <div class="jumbotron py-4">
+                                                <h5 class="m-0">Comments</h5>
+                                                <hr class="my-2" />
+                                                <p class="f14"><i class="fa fa-info-circle"></i> Comments on performance.</p>
+                                            </div>
+                                            <form>
+                                                <fieldset>
+                                                    <input type="hidden" id="endCommentId" value="" />
+                                                    <input type="hidden" id="endExamId" value="" />
+                                                    <div class="form-group">
+                                                        <label for="endTeacherComment" class="f12 font-weight-bold">Teacher's Comment</label>
+                                                        <p id="endTeacherComment" class="f14">---</p>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="endHeadTeacherComment" class="f12 font-weight-bold">Head Teacher's Comment</label>
+                                                        <p id="endHeadTeacherComment" class="f14">---</p>
+                                                    </div>
+                                                    <hr />
+                                                    <p class="text-right d-none">
+                                                        <button type="submit" id="endSaveComment" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Save Comments</button>
+                                                    </p>
+                                                </fieldset>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit MidTerm Modal -->
+<div class="modal fade" id="editMidTermModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Mid-Term Result <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <input type="hidden" id="m_examId" />
+                            <input type="hidden" id="m_classId" />
+                            <input type="hidden" id="m_subjectId" />
+                            <input type="hidden" id="m_studentId" />
+                            <div class="col-md-12">
+                                <h5 class="m-0 f18">@Model.FullName</h5>
+                                <h6 class="m-0 subject f12 text-secondary"></h6>
+                                <hr class="my-2" />
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="m_classwork" class="f14">* Classwork</label>
+                                    <input id="m_classwork" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter classwork score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="m_test" class="f14">* Test</label>
+                                    <input id="m_test" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter test score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="m_exam" class="f14">* Exam</label>
+                                    <input id="m_exam" type="number" class="form-control integer" maxlength="2" min="0" max="20" placeholder="Enter exam score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="m_total" class="f14">* Total</label>
+                                    <input id="m_total" type="number" class="form-control integer" maxlength="2" min="0" max="40" placeholder="Enter total score" required readonly />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateMidTermResultBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Edit EndTerm Modal -->
+<div class="modal fade" id="editEndTermModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit End-Term Result <span></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <form>
+                <fieldset>
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="row mt-2">
+                            <input type="hidden" id="e_examId" />
+                            <input type="hidden" id="e_classId" />
+                            <input type="hidden" id="e_subjectId" />
+                            <input type="hidden" id="e_studentId" />
+                            <div class="col-md-12">
+                                <h5 class="m-0 f18">@Model.FullName</h5>
+                                <h6 class="m-0 subject f12 text-secondary"></h6>
+                                <hr class="my-2" />
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_classwork" class="f14">* Classwork</label>
+                                    <input id="e_classwork" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter classwork score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_test" class="f14">* Test</label>
+                                    <input id="e_test" type="number" class="form-control integer" maxlength="2" min="0" max="10" placeholder="Enter test score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_exam" class="f14">* Exam</label>
+                                    <input id="e_exam" type="number" class="form-control integer" maxlength="2" min="0" max="40" placeholder="Enter exam score" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="e_total" class="f14">* Total</label>
+                                    <input id="e_total" type="number" class="form-control integer" maxlength="2" min="0" max="60" placeholder="Enter total score" required readonly />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-light border text-dark btn-sm px-4 py-2 f12" data-dismiss="modal"><i class="fa fa-times"></i> &nbsp;Cancel</button>
+                        <button type="submit" id="updateEndTermResultBtn" class="btn btn-primary2 btn-sm px-4 py-2 f12"><i class="fa fa-check-circle"></i> &nbsp;Update</button>
+                    </div>
+                </fieldset>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section css{
+    <link href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="~/lib/choices.js/choices.css" rel="stylesheet" />
+}
+
+@section js{
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/lib/choices.js/choices.js"></script>
+
+    <script src="~/js/view_student_results.js" asp-append-version="true"></script>
+
+}

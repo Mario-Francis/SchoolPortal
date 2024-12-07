@@ -21,6 +21,6 @@ namespace SchoolPortal.Core.Models
         [ForeignKey("ClassTypeId")]
         public virtual ClassType ClassType { get; set; }
         public virtual ICollection<ClassRoom> ClassRooms { get; set; }
-        public virtual ICollection<Course> Courses { get; set; }
+        public virtual ICollection<Subject> Subjects { get; set; }
     }
 }
